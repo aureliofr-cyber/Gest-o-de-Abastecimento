@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-<title>Controle Moto</title>
+<title>FuelLog</title>
 <meta name="theme-color" content="#14161b" />
 <link rel="manifest" href="manifest.json" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-<meta name="apple-mobile-web-app-title" content="Controle Moto" />
+<meta name="apple-mobile-web-app-title" content="FuelLog" />
 <link rel="apple-touch-icon" href="icon-192.png" />
 <style>
   :root{
@@ -96,9 +96,19 @@
   .sheetHead .t{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:600}
   .switchRow{display:flex;align-items:center;justify-content:space-between;gap:14px}
   .hide{display:none}
+  #splash{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px;transition:opacity .45s ease}
+  #splash img{width:96px;height:96px;filter:drop-shadow(0 0 18px rgba(255,180,84,.35))}
+  #splash .sTitle{font-size:36px;font-weight:800;letter-spacing:1px;color:var(--amber);text-shadow:0 0 16px rgba(255,180,84,.4)}
+  #splash .sSub{font-size:15px;color:var(--muted);max-width:280px;line-height:1.4}
+  #splash.gone{opacity:0;pointer-events:none}
 </style>
 </head>
 <body>
+<div id="splash">
+  <img src="icon-192.png" alt="" width="96" height="96" />
+  <div class="sTitle">FuelLog</div>
+  <div class="sSub">Gestor de Veículos e Combustíveis</div>
+</div>
 <div class="wrap">
   <div class="top">
     <span class="dot"></span><h1>Controle</h1>
@@ -688,6 +698,7 @@ document.querySelectorAll(".subtab").forEach(t=>t.onclick=()=>showSub(t.dataset.
 // init
 $("aDate").value=todayISO(); $("oDate").value=todayISO();
 load(); render(); resetOilForm();
+setTimeout(()=>{ const s=$("splash"); if(s){ s.classList.add("gone"); setTimeout(()=>{ s.style.display="none"; },500); } },1300);
 if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").then(()=>{ setTimeout(maybeNotifyOil,800); }).catch(()=>{ maybeNotifyOil(); }); }
 else maybeNotifyOil();
 </script>
