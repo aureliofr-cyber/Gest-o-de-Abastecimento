@@ -1,7 +1,7 @@
 {
-  "name": "Hodômetro Moto",
-  "short_name": "Hodômetro",
-  "description": "Registro de quilometragem da moto por GPS",
+  "name": "FuelLog",
+  "short_name": "FuelLog",
+  "description": "Gestor de Veículos e Combustíveis",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
