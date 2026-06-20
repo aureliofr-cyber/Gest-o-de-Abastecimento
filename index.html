@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<title>Controle Moto</title>
+<meta name="theme-color" content="#14161b" />
+<link rel="manifest" href="manifest.json" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<meta name="apple-mobile-web-app-title" content="Controle Moto" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<style>
+  :root{
+    --bg:#14161b; --panel:#1c1f26; --edge:#2a2e38; --slot:#0b0c0f;
+    --amber:#ffb454; --amberDim:#7a5a2e; --green:#7ad17a;
+    --ink:#eef0f4; --muted:#8b909c; --faint:#5a5f6b; --danger:#e06b5e;
+    --mono:"DejaVu Sans Mono","Courier New",ui-monospace,monospace;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:env(safe-area-inset-top) 16px 56px}
+  .wrap{max-width:460px;margin:0 auto;padding-top:18px}
+  .top{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)}
+  h1{font-size:14px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin:0;font-weight:600}
+  select{background:var(--slot);border:1px solid var(--edge);color:var(--ink);border-radius:8px;padding:7px 9px;font-size:13px;font-family:var(--sans)}
+  #vehSelect{margin-left:auto;max-width:150px}
+  select.fld{width:100%;margin:0 0 10px 0;padding:11px 12px;font-size:15px;border-radius:10px}
+  .gear{background:var(--slot);border:1px solid var(--edge);color:var(--ink);border-radius:8px;width:36px;height:34px;font-size:15px;cursor:pointer}
+  .tabs{display:flex;gap:6px;background:var(--slot);border:1px solid var(--edge);border-radius:12px;padding:4px;margin-bottom:16px}
+  .tab{flex:1;padding:9px 4px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);white-space:nowrap}
+  .tab.active{background:var(--panel);color:var(--amber)}
+  .subtabs{display:flex;gap:6px;margin-bottom:14px}
+  .subtab{flex:1;padding:9px;border:1px solid var(--edge);border-radius:9px;background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+  .subtab.active{background:var(--panel);color:var(--amber);border-color:var(--amber)}
+  .card{background:var(--panel);border:1px solid var(--edge);border-radius:16px;padding:16px;margin-bottom:16px}
+  .panelMain{background:linear-gradient(180deg,var(--panel),#171a20);box-shadow:0 10px 30px rgba(0,0,0,.4);padding:22px 18px 18px}
+  .eyebrow{color:var(--faint);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .odo{display:flex;align-items:flex-end;gap:4px;flex-wrap:wrap}
+  .digit{font-family:var(--mono);font-size:44px;line-height:56px;width:33px;text-align:center;background:var(--slot);border-radius:6px;border:1px solid var(--edge);font-weight:700;box-shadow:inset 0 2px 6px rgba(0,0,0,.6)}
+  .dec{font-family:var(--mono);font-size:25px;line-height:40px;padding-bottom:2px}
+  .unit{color:var(--muted);font-size:13px;padding-bottom:8px;margin-left:4px}
+  .hr{height:1px;background:var(--edge);margin:18px 0 14px}
+  .readings{display:flex;gap:8px}
+  .read{flex:1;min-width:70px}
+  .readings.left{justify-content:flex-start}
+  .readings.left .read{flex:0 0 auto;min-width:104px}
+  .read .lbl{color:var(--faint);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
+  .read .val{font-family:var(--mono);font-size:20px;color:var(--ink);font-weight:600}
+  .read .u{color:var(--faint);font-size:11px;margin-left:3px}
+  .btn{width:100%;padding:13px;border:none;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer;font-family:var(--sans)}
+  .btnAmber{background:var(--amber);color:#241a0c}
+  .btnGreen{background:var(--green);color:#0c1c0c}
+  .btnGhost{background:transparent;border:1px solid var(--edge);color:var(--muted)}
+  .btnAmberGhost{background:transparent;border:1px solid var(--amber);color:var(--amber)}
+  .btnDanger{background:transparent;border:1px solid var(--danger);color:var(--danger)}
+  input{width:100%;padding:11px 12px;background:var(--slot);border:1px solid var(--edge);border-radius:10px;color:var(--ink);font-size:15px;font-family:var(--sans);outline:none}
+  input:disabled{opacity:.4}
+  label{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}
+  .row{display:flex;gap:10px;margin-bottom:10px}.col{flex:1}
+  .err{color:var(--danger);font-size:12px;margin-top:8px}
+  .bars{display:flex;align-items:flex-end;gap:8px;height:110px}
+  .bcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .bval{font-family:var(--mono);font-size:10px;color:var(--muted)}
+  .bar{width:100%;min-height:3px;border-radius:4px;background:linear-gradient(180deg,var(--amber),var(--amberDim))}
+  .blbl{font-size:10px;color:var(--faint)}
+  .item{background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:12px 13px;margin-bottom:8px;position:relative}
+  .ihead{font-family:var(--mono);font-size:16px;color:var(--amber);font-weight:600}
+  .imeta{font-size:12px;color:var(--muted);margin-top:2px}
+  .find{display:flex;gap:14px;margin-top:9px;padding-top:9px;border-top:1px solid var(--edge)}
+  .find .i{flex:1}
+  .find .iv{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--green)}
+  .find .il{font-size:9px;color:var(--faint);letter-spacing:1px;text-transform:uppercase;margin-top:1px}
+  .acts{position:absolute;top:8px;right:8px;display:flex;gap:2px}
+  .iconbtn{background:none;border:none;color:var(--faint);cursor:pointer;font-size:15px;padding:4px 5px}
+  .iconbtn.delconfirm{color:var(--danger);font-size:11px;font-weight:700;letter-spacing:.5px}
+  .chip{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.5px;padding:2px 7px;border-radius:6px;background:rgba(255,180,84,.14);color:var(--amber);margin-left:6px;vertical-align:middle}
+  .chipT{background:rgba(122,209,122,.16);color:var(--green)}
+  .empty{color:var(--faint);font-size:13px;text-align:center;padding:20px 0}
+  .big{font-family:var(--mono);font-size:30px;font-weight:700}
+  .prog{height:8px;border-radius:5px;background:var(--slot);border:1px solid var(--edge);overflow:hidden;margin:10px 0 6px}
+  .progfill{height:100%;background:linear-gradient(90deg,var(--green),#9be09b)}
+  .banner{border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:13px;font-weight:600}
+  .bannerWarn{background:rgba(224,107,94,.14);border:1px solid var(--danger);color:#f0a79f}
+  .powerSub{color:var(--faint);font-size:11px;margin-top:3px}
+  .editing{outline:1px solid var(--amber);border-radius:12px;padding:10px;margin:-10px -10px 12px}
+  .switch{position:relative;width:60px;height:32px;border-radius:18px;background:var(--slot);border:1px solid var(--edge);cursor:pointer;flex-shrink:0;transition:background .2s}
+  .switch.on{background:rgba(122,209,122,.25);border-color:var(--green)}
+  .switch .knob{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--faint);transition:left .2s,background .2s}
+  .switch.on .knob{left:31px;background:var(--green)}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:50}
+  .sheet{background:var(--bg);border:1px solid var(--edge);border-radius:18px 18px 0 0;width:100%;max-width:460px;max-height:90vh;overflow:auto;padding:18px 16px 36px}
+  .sheetHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  .sheetHead .t{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .switchRow{display:flex;align-items:center;justify-content:space-between;gap:14px}
+  .hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <span class="dot"></span><h1>Controle</h1>
+    <select id="vehSelect"></select>
+    <button id="gearBtn" class="gear" aria-label="Configurações">&#9881;</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="indicadores">Indicadores</button>
+    <button class="tab" data-tab="manut">Abast./Óleo</button>
+    <button class="tab" data-tab="veiculo">Veículo</button>
+  </div>
+
+  <!-- ================= INDICADORES ================= -->
+  <div id="tab-indicadores">
+    <div id="oilBanner" class="banner bannerWarn hide"></div>
+
+    <div class="card panelMain">
+      <div class="eyebrow">Total rodado</div>
+      <div id="odoTotal" class="odo"></div>
+      <div class="hr"></div>
+      <div class="readings left">
+        <div class="read"><div class="lbl">KM total</div><div><span id="sTotal" class="val">0,0</span><span class="u">km</span></div></div>
+        <div class="read"><div class="lbl">Abasteci.</div><div><span id="sCount" class="val">0</span></div></div>
+        <div class="read"><div class="lbl">Trocas óleo</div><div><span id="sOil" class="val">0</span></div></div>
+      </div>
+    </div>
+
+    <div style="margin:0 2px 16px">
+      <label style="margin-bottom:6px">Período dos indicadores</label>
+      <select id="periodSel" class="fld" style="margin:0"></select>
+    </div>
+
+    <div class="card panelMain">
+      <div class="eyebrow">Consumo médio</div>
+      <div class="big" style="color:var(--amber)"><span id="avgKmL">—</span> <span style="font-size:14px;color:var(--faint)">km/L</span></div>
+      <div class="powerSub" style="margin-top:4px">Km rodados no período: <span id="aggKm" style="color:var(--ink);font-family:var(--mono)">0,0</span> km</div>
+      <div class="readings" style="margin-top:16px">
+        <div class="read"><div class="lbl">R$/km</div><div><span id="aggRkm" class="val">—</span></div></div>
+        <div class="read"><div class="lbl">L/km</div><div><span id="aggLkm" class="val">—</span></div></div>
+        <div class="read"><div class="lbl">Autonomia</div><div><span id="aggRange" class="val">—</span><span class="u">km</span></div></div>
+      </div>
+      <div class="readings" style="margin-top:14px">
+        <div class="read"><div class="lbl">Gasto</div><div><span id="aggSpent" class="val" style="font-size:17px">R$ 0,00</span></div></div>
+        <div class="read"><div class="lbl">Litros</div><div><span id="aggLit" class="val">0,0</span><span class="u">L</span></div></div>
+        <div class="read"><div class="lbl">Abastec.</div><div><span id="aggCount" class="val">0</span></div></div>
+      </div>
+      <div class="hr" style="margin:16px 0 14px"></div>
+      <div class="readings left">
+        <div class="read"><div class="lbl">Trocas de óleo</div><div><span id="aggOilCount" class="val">0</span></div></div>
+        <div class="read"><div class="lbl">Gasto óleo</div><div><span id="aggOilCost" class="val" style="font-size:17px">R$ 0,00</span></div></div>
+      </div>
+      <div id="periodCaption" class="powerSub" style="margin-top:12px"></div>
+    </div>
+
+    <div id="cardFuelTypes" class="card hide">
+      <div class="eyebrow">Por combustível</div>
+      <div id="fuelTypes"></div>
+    </div>
+
+    <div id="cardMonths" class="card hide">
+      <div class="eyebrow">Km e gastos por mês</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px;font-size:11px;color:var(--muted)">
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:11px;height:11px;border-radius:2px;background:linear-gradient(180deg,var(--amber),var(--amberDim))"></span>Km</span>
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:16px;height:3px;border-radius:2px;background:#6ea8ff"></span>Combustível R$</span>
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:16px;height:3px;border-radius:2px;background:var(--green)"></span>Óleo R$</span>
+      </div>
+      <div id="chart"></div>
+    </div>
+  </div>
+
+  <!-- ================= ABAST./ÓLEO ================= -->
+  <div id="tab-manut" class="hide">
+    <div class="subtabs">
+      <button class="subtab active" data-sub="abast">Abastecimento</button>
+      <button class="subtab" data-sub="oleo">Troca de óleo</button>
+    </div>
+
+    <!-- ---- sub: abastecimento ---- -->
+    <div id="sub-abast">
+      <div class="card">
+        <div class="eyebrow" id="fuelFormTitle">Novo abastecimento</div>
+        <div class="row">
+          <div class="col"><label>Data</label><input id="aDate" type="date" /></div>
+          <div class="col"><label>Km rodados</label><input id="aKm" type="text" inputmode="decimal" placeholder="0,0" /></div>
+        </div>
+        <label>Combustível</label>
+        <select id="aFuel" class="fld">
+          <option>Gasolina comum</option>
+          <option>Gasolina aditivada</option>
+          <option>Gasolina premium</option>
+          <option>Etanol</option>
+          <option>Diesel S-10</option>
+          <option>Diesel comum</option>
+          <option>GNV</option>
+          <option value="__outro">Outro…</option>
+        </select>
+        <input id="aFuelOther" class="hide" type="text" placeholder="qual combustível?" style="margin-bottom:10px" />
+        <div class="row">
+          <div class="col"><label>Valor total (R$)</label><input id="aTotal" type="text" inputmode="decimal" placeholder="0,00" /></div>
+          <div class="col"><label>Valor por litro (R$/L)</label><input id="aPpl" type="text" inputmode="decimal" placeholder="0,000" /></div>
+        </div>
+        <label>Litros (automático)</label>
+        <input id="aLit" type="text" readonly style="color:var(--amber)" placeholder="0,00" />
+        <div id="aTank" class="powerSub" style="margin:6px 0 12px 2px"></div>
+        <div id="aErr" class="err hide"></div>
+        <button id="btnFuel" class="btn btnAmber">Adicionar abastecimento</button>
+        <button id="btnFuelCancel" class="btn btnGhost hide" style="margin-top:8px">Cancelar edição</button>
+      </div>
+      <div class="eyebrow" style="margin:0 4px 10px">Histórico</div>
+      <div id="fuelList"></div>
+    </div>
+
+    <!-- ---- sub: troca de óleo ---- -->
+    <div id="sub-oleo" class="hide">
+      <div class="card panelMain">
+        <div class="eyebrow">Situação do óleo</div>
+        <div class="big"><span id="oilSince">0</span> <span style="font-size:14px;color:var(--faint)">km desde a última troca</span></div>
+        <div class="prog"><div id="oilProg" class="progfill" style="width:0%"></div></div>
+        <div id="oilStatus" class="powerSub"></div>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow" id="oilFormTitle">Registrar troca de óleo</div>
+        <label>Lubrificante cadastrado</label>
+        <select id="oLub" class="fld"></select>
+        <div class="row">
+          <div class="col"><label>Dia da troca</label><input id="oDate" type="date" /></div>
+          <div class="col"><label>Marca do óleo</label><input id="oBrand" type="text" placeholder="ex: Motul" /></div>
+        </div>
+        <div class="row">
+          <div class="col"><label>Tipo</label>
+            <select id="oType" class="fld" style="margin:0">
+              <option>Sintético</option><option>Semissintético</option><option>Mineral</option>
+            </select>
+          </div>
+          <div class="col"><label>Durabilidade (km)</label><input id="oDur" type="text" inputmode="numeric" list="durList" placeholder="ex: 5000" />
+            <datalist id="durList"><option value="1000"><option value="2000"><option value="3000"><option value="5000"><option value="7000"><option value="10000"></datalist>
+          </div>
+        </div>
+        <label>Valor gasto (R$)</label>
+        <input id="oCost" type="text" inputmode="decimal" placeholder="0,00" style="margin-bottom:12px" />
+        <div id="oErr" class="err hide"></div>
+        <button id="btnOil" class="btn btnGreen">Registrar troca</button>
+        <button id="btnOilCancel" class="btn btnGhost hide" style="margin-top:8px">Cancelar edição</button>
+      </div>
+
+      <div class="eyebrow" style="margin:0 4px 10px">Histórico de trocas</div>
+      <div id="oilList"></div>
+    </div>
+  </div>
+
+  <!-- ================= VEÍCULO ================= -->
+  <div id="tab-veiculo" class="hide">
+    <div class="card">
+      <div class="eyebrow">Dados do veículo</div>
+      <label>Nome / modelo</label>
+      <input id="vName" type="text" placeholder="ex: CB 500" style="margin-bottom:10px" />
+      <div class="row">
+        <div class="col"><label>Tanque (litros)</label><input id="vTank" type="text" inputmode="decimal" placeholder="0,0" /></div>
+        <div class="col"><label>KM inicial</label><input id="vKmInit" type="text" inputmode="numeric" placeholder="ex: 12300" /></div>
+      </div>
+      <div class="powerSub" style="margin:-2px 0 12px 2px">Km que a moto já tinha quando você começou a registrar aqui.</div>
+      <button id="btnVehSave" class="btn btnAmberGhost">Salvar dados</button>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Adicionar outro veículo</div>
+      <input id="nvName" type="text" placeholder="nome do veículo" style="margin-bottom:10px" />
+      <div class="row">
+        <div class="col"><label>Tanque (L)</label><input id="nvTank" type="text" inputmode="decimal" placeholder="0,0" /></div>
+        <div class="col"><label>KM inicial</label><input id="nvKmInit" type="text" inputmode="numeric" placeholder="ex: 0" /></div>
+      </div>
+      <button id="btnVehAdd" class="btn btnGhost">Adicionar veículo</button>
+    </div>
+
+    <button id="btnVehDel" class="btn btnDanger">Excluir este veículo e seus dados</button>
+  </div>
+</div>
+
+<!-- ================= CONFIGURAÇÕES (overlay) ================= -->
+<div id="overlay" class="overlay hide">
+  <div class="sheet">
+    <div class="sheetHead"><span class="t">Configurações</span><button id="closeCfg" class="iconbtn" style="font-size:18px">&#10005;</button></div>
+
+    <div class="card">
+      <div class="switchRow">
+        <div>
+          <div style="font-weight:600;font-size:15px">Alerta de troca de óleo</div>
+          <div class="powerSub">Notifica ao abrir o app quando estiver na hora</div>
+        </div>
+        <div id="oilSwitch" class="switch" role="switch" tabindex="0"><span class="knob"></span></div>
+      </div>
+      <div style="margin-top:14px">
+        <label>Avisar com antecedência de (km)</label>
+        <input id="advKm" type="text" inputmode="numeric" placeholder="ex: 200" />
+        <div class="powerSub" style="margin-top:6px">Notifica a partir de (km da troca + durabilidade − este valor).</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Cadastro de lubrificantes</div>
+      <div id="lubList" style="margin-bottom:12px"></div>
+      <div class="row"><div class="col"><label>Marca</label><input id="lBrand" type="text" placeholder="ex: Motul" /></div></div>
+      <div class="row">
+        <div class="col"><label>Tipo</label>
+          <select id="lType" class="fld" style="margin:0"><option>Sintético</option><option>Semissintético</option><option>Mineral</option></select>
+        </div>
+        <div class="col"><label>Durabilidade (km)</label><input id="lDur" type="text" inputmode="numeric" placeholder="ex: 5000" /></div>
+      </div>
+      <button id="btnLubAdd" class="btn btnGhost">Adicionar lubrificante</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const NM = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+
+const store = (()=>{ let mem={}; try{ const t="__t"; localStorage.setItem(t,"1"); localStorage.removeItem(t);
+  return {get:k=>localStorage.getItem(k), set:(k,v)=>localStorage.setItem(k,v)};
+}catch(e){ return {get:k=>(k in mem?mem[k]:null), set:(k,v)=>{mem[k]=v;}}; }})();
+
+const num = (v)=>{ const n=parseFloat(String(v).replace(",",".")); return isNaN(n)?0:n; };
+const toInput = (n)=> (n||n===0)? String(n).replace(".",",") : "";
+const km1 = (n)=> n.toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1});
+const d2 = (n)=> n.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
+const d3 = (n)=> n.toLocaleString("pt-BR",{minimumFractionDigits:3,maximumFractionDigits:3});
+const brl = (n)=> n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const todayISO = ()=>{ const d=new Date(); return new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,10); };
+const monthKey = (iso)=>iso.slice(0,7);
+const prettyDate = (iso)=>{ const [y,m,d]=iso.split("-"); return d+"/"+m+"/"+y; };
+const monthName = (k)=>{ const [y,m]=k.split("-"); return NM[parseInt(m,10)-1]+"/"+y.slice(2); };
+const uid = ()=> Date.now()+Math.floor(Math.random()*1000);
+
+function chartSVG(data){
+  if(!data.length) return "";
+  const W=348,H=210, mL=10,mR=10,mT=12,mB=26;
+  const pL=mL,pR=W-mR,pW=pR-pL,pT=mT,pB=H-mB,pH=pB-pT;
+  const n=data.length, slot=pW/n;
+  const kmMax=Math.max(1,...data.map(d=>d.km));
+  const moneyMax=Math.max(1,...data.map(d=>Math.max(d.fuel,d.oil)));
+  const cx=i=>pL+slot*(i+0.5);
+  const barW=Math.min(40, slot*0.5);
+  const lineY=val=>pB-(val/moneyMax)*pH;
+  let bars="",kml="",lbl="";
+  data.forEach((d,i)=>{
+    const bh=(d.km/kmMax)*pH, x=cx(i)-barW/2, y=pB-bh;
+    bars+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(0,bh).toFixed(1)}" rx="3" fill="url(#gAmber)"/>`;
+    kml+=`<text x="${cx(i).toFixed(1)}" y="${(y-4).toFixed(1)}" fill="#8b909c" font-size="9" text-anchor="middle" font-family="monospace">${Math.round(d.km)}</text>`;
+    lbl+=`<text x="${cx(i).toFixed(1)}" y="${H-9}" fill="#5a5f6b" font-size="10" text-anchor="middle">${monthName(d.m)}</text>`;
+  });
+  const pts=key=>data.map((d,i)=>`${cx(i).toFixed(1)},${lineY(d[key]).toFixed(1)}`).join(" ");
+  const dots=(key,c)=>data.map((d,i)=>`<circle cx="${cx(i).toFixed(1)}" cy="${lineY(d[key]).toFixed(1)}" r="3" fill="${c}"/>`).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" xmlns="http://www.w3.org/2000/svg" style="display:block">
+    <defs><linearGradient id="gAmber" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb454"/><stop offset="1" stop-color="#7a5a2e"/></linearGradient></defs>
+    ${bars}${kml}
+    <polyline points="${pts('fuel')}" fill="none" stroke="#6ea8ff" stroke-width="2" stroke-linejoin="round"/>
+    <polyline points="${pts('oil')}" fill="none" stroke="#7ad17a" stroke-width="2" stroke-linejoin="round"/>
+    ${dots('fuel','#6ea8ff')}${dots('oil','#7ad17a')}
+    ${lbl}
+  </svg>`;
+}
+
+function renderOdo(el,value,color){
+  const ip=Math.floor(value), dec=Math.round((value-ip)*10);
+  const intLen=Math.max(6, String(ip).length); // mínimo 6, cresce até 10 (1 bilhão) ou mais
+  const chars=String(ip).padStart(intLen,"0").split("");
+  const n=chars.length;
+  const w=Math.max(15, Math.min(33, Math.floor(300/n)));      // largura do dígito p/ caber na tela
+  const fs=Math.round(w*1.32), lh=Math.round(w*1.72), dfs=Math.max(16,Math.round(fs*0.58));
+  el.innerHTML=chars.map(c=>`<span class="digit" style="width:${w}px;font-size:${fs}px;line-height:${lh}px;color:${color};text-shadow:0 0 10px ${color}66">${c}</span>`).join("")
+    +`<span class="dec" style="font-size:${dfs}px;color:${color};text-shadow:0 0 8px ${color}55">,${dec}</span><span class="unit">km</span>`;
+}
+
+let vehicles, fuels, oils, lubricants, activeId, selPeriod="all", editFuel=null, editOil=null, pendingDel=null, delTimer=null;
+function load(){
+  try{ vehicles=JSON.parse(store.get("vehicles")||"[]"); }catch(e){ vehicles=[]; }
+  try{ fuels=JSON.parse(store.get("fuels")||"[]"); }catch(e){ fuels=[]; }
+  try{ oils=JSON.parse(store.get("oils")||"[]"); }catch(e){ oils=[]; }
+  try{ lubricants=JSON.parse(store.get("lubricants")||"[]"); }catch(e){ lubricants=[]; }
+  if(!vehicles.length){ vehicles=[{id:uid(),name:"Minha moto",tank:0,oilAlertOn:false,oilAdvance:0}]; }
+  vehicles.forEach(v=>{ if(v.tank==null)v.tank=0; if(v.oilAlertOn==null)v.oilAlertOn=false; if(v.oilAdvance==null)v.oilAdvance=0; if(v.kmInitial==null)v.kmInitial=0; });
+  activeId=store.get("activeId");
+  if(!vehicles.some(v=>String(v.id)===String(activeId))) activeId=vehicles[0].id;
+  fuels.forEach(f=>{ if(f.vehicleId==null)f.vehicleId=activeId; if(f.km==null)f.km=0; if(f.fuel==null)f.fuel=""; });
+  oils.forEach(o=>{ if(o.vehicleId==null)o.vehicleId=activeId; });
+  saveAll();
+}
+function saveAll(){
+  store.set("vehicles",JSON.stringify(vehicles)); store.set("fuels",JSON.stringify(fuels));
+  store.set("oils",JSON.stringify(oils)); store.set("lubricants",JSON.stringify(lubricants));
+  store.set("activeId",String(activeId));
+}
+
+const av = ()=> vehicles.find(v=>String(v.id)===String(activeId)) || vehicles[0];
+const fuelsFor = (v)=> fuels.filter(f=>String(f.vehicleId)===String(v.id)).sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id);
+const oilsFor = (v)=> oils.filter(o=>String(o.vehicleId)===String(v.id)).sort((a,b)=>(a.kmAt-b.kmAt)||a.date.localeCompare(b.date)||a.id-b.id);
+const totalKm = (v)=> fuelsFor(v).reduce((s,f)=>s+(f.km||0),0);
+const realKm = (v)=> (v.kmInitial||0)+totalKm(v);
+
+function aggFrom(fs){
+  let km=0,lit=0,spent=0;
+  fs.forEach(f=>{ km+=f.km||0; lit+=f.liters||0; spent+=f.total||0; });
+  return {fs,km,lit,spent, kmL:lit>0?km/lit:null, rkm:km>0?spent/km:null, lkm:km>0?lit/km:null};
+}
+const agg = (v)=> aggFrom(fuelsFor(v));
+
+function oilState(v){
+  const ocs=oilsFor(v); const total=totalKm(v);
+  if(!ocs.length) return {has:false,total};
+  const last=ocs[ocs.length-1];
+  const dueAt=(last.kmAt||0)+(last.durability||0);
+  const since=total-(last.kmAt||0);
+  const adv=v.oilAlertOn?(v.oilAdvance||0):0;
+  const threshold=dueAt-adv;
+  return {has:true,last,dueAt,since,threshold,total,due:total>=threshold,overdue:total>=dueAt};
+}
+
+// ---------- notificações ----------
+async function ensureNotifyPerm(){
+  if(!("Notification" in window)) return false;
+  if(Notification.permission==="granted") return true;
+  if(Notification.permission==="denied") return false;
+  try{ return (await Notification.requestPermission())==="granted"; }catch(e){ return false; }
+}
+async function showOilNotif(body){
+  try{
+    if(!("Notification" in window) || Notification.permission!=="granted") return;
+    const reg = ("serviceWorker" in navigator) ? await navigator.serviceWorker.getRegistration() : null;
+    const opts={body,icon:"icon-192.png",badge:"icon-192.png",tag:"oil-"+activeId};
+    if(reg && reg.showNotification) reg.showNotification("Troca de óleo", opts);
+    else new Notification("Troca de óleo", opts);
+  }catch(e){}
+}
+function maybeNotifyOil(){
+  const v=av(); if(!v.oilAlertOn) return;
+  const st=oilState(v); if(!st.has || !st.due) return;
+  const body = st.overdue ? (v.name+": troca vencida há "+Math.round(st.total-st.dueAt)+" km.")
+                          : (v.name+": faltam "+Math.round(st.dueAt-st.total)+" km para a troca.");
+  showOilNotif(body);
+}
+
+function renderVehSelect(){
+  $("vehSelect").innerHTML=vehicles.map(v=>`<option value="${v.id}" ${String(v.id)===String(activeId)?"selected":""}>🏍 ${v.name}</option>`).join("");
+}
+function renderLubOptions(){
+  $("oLub").innerHTML='<option value="">— informar manualmente —</option>'+lubricants.map(l=>`<option value="${l.id}">${l.brand} · ${l.type} · ${l.durability} km</option>`).join("");
+}
+
+function delBtn(kind,id){ const k=kind+":"+id, on=pendingDel===k;
+  return `<button class="iconbtn${on?' delconfirm':''}" data-del="${k}">${on?'excluir?':'&times;'}</button>`; }
+function doDelete(key){ const i=key.indexOf(":"), kind=key.slice(0,i), id=key.slice(i+1);
+  pendingDel=null; clearTimeout(delTimer);
+  if(kind==="fuel") fuels=fuels.filter(f=>String(f.id)!==id);
+  else if(kind==="oil") oils=oils.filter(o=>String(o.id)!==id);
+  saveAll(); render(); }
+
+function annFuels(v){
+  const fs=fuelsFor(v); // ascendente (mais antigo -> mais novo)
+  return fs.map((f,i)=>({ id:f.id, date:f.date, fuel:f.fuel||"", km:f.km||0, liters:f.liters||0, total:f.total||0, ppl:f.ppl||0,
+    rendered: i<fs.length-1 ? (fs[i+1].km||0) : null })); // distância rodada com este combustível = km do próximo abast.
+}
+
+function render(){
+  const v=av();
+  renderVehSelect();
+  renderLubOptions();
+  const a=agg(v);
+
+  // total (acumulado)
+  renderOdo($("odoTotal"),realKm(v),"#ffb454");
+  $("sTotal").textContent=km1(realKm(v));
+  $("sCount").textContent=a.fs.length;
+  $("sOil").textContent=oilsFor(v).length;
+
+  // período
+  const ann=annFuels(v);
+  const monthsList=[...new Set(ann.map(f=>monthKey(f.date)))].sort((x,y)=>y.localeCompare(x));
+  if(selPeriod!=="all" && !monthsList.includes(selPeriod)) selPeriod="all";
+  $("periodSel").innerHTML='<option value="all">Geral (todos os meses)</option>'+monthsList.map(m=>`<option value="${m}">${monthName(m)}</option>`).join("");
+  $("periodSel").value=selPeriod;
+  const periodAnn = selPeriod==="all" ? ann : ann.filter(f=>monthKey(f.date)===selPeriod);
+  // tanque a tanque: o rendimento usa a distância rodada COM aquele combustível (km do próximo abastecimento)
+  let dist=0, litAttr=0, costAttr=0, spentAll=0, litAll=0, kmEntered=0;
+  periodAnn.forEach(f=>{ spentAll+=f.total; litAll+=f.liters; kmEntered+=f.km;
+    if(f.rendered!=null){ dist+=f.rendered; litAttr+=f.liters; costAttr+=f.total; } });
+  const kmL=litAttr>0?dist/litAttr:null, rkm=dist>0?costAttr/dist:null, lkm=dist>0?litAttr/dist:null;
+  $("avgKmL").textContent = kmL!=null?km1(kmL):"—";
+  $("aggKm").textContent  = km1(kmEntered);
+  $("aggRkm").textContent = rkm!=null?brl(rkm):"—";
+  $("aggLkm").textContent = lkm!=null?d3(lkm):"—";
+  $("aggRange").textContent= (kmL!=null && v.tank>0)?Math.round(kmL*v.tank):"—";
+  $("aggSpent").textContent= brl(spentAll);
+  $("aggLit").textContent  = km1(litAll);
+  $("aggCount").textContent= periodAnn.length;
+  const oilsP = selPeriod==="all" ? oilsFor(v) : oilsFor(v).filter(o=>monthKey(o.date)===selPeriod);
+  $("aggOilCount").textContent = oilsP.length;
+  $("aggOilCost").textContent  = brl(oilsP.reduce((s,o)=>s+(o.cost||0),0));
+  if(selPeriod==="all"){
+    const bmc={}; ann.forEach(f=>bmc[monthKey(f.date)]=(bmc[monthKey(f.date)]||0)+f.total);
+    const n=Object.keys(bmc).length;
+    $("periodCaption").textContent = n?("Geral · custo médio mensal "+brl(spentAll/n)+" em "+n+(n>1?" meses":" mês")):"Geral · sem abastecimentos ainda";
+  } else {
+    $("periodCaption").textContent = "Mês de "+monthName(selPeriod)+" · "+periodAnn.length+(periodAnn.length>1?" abastecimentos":" abastecimento");
+  }
+
+  // km e gastos por mês (barras = km, linhas = R$ combustível/óleo)
+  const os=oilsFor(v);
+  const ms=new Set(); a.fs.forEach(f=>ms.add(monthKey(f.date))); os.forEach(o=>ms.add(monthKey(o.date)));
+  const cmonths=[...ms].sort().slice(-6);
+  const cdata=cmonths.map(m=>({ m,
+    km:   a.fs.filter(f=>monthKey(f.date)===m).reduce((s,f)=>s+(f.km||0),0),
+    fuel: a.fs.filter(f=>monthKey(f.date)===m).reduce((s,f)=>s+(f.total||0),0),
+    oil:  os.filter(o=>monthKey(o.date)===m).reduce((s,o)=>s+(o.cost||0),0) }));
+  if(cdata.length){ $("cardMonths").classList.remove("hide"); $("chart").innerHTML=chartSVG(cdata); }
+  else $("cardMonths").classList.add("hide");
+
+  // por combustível (período) — rendimento tanque a tanque
+  const grp={};
+  periodAnn.forEach(f=>{ const key=(f.fuel||"Não informado"); if(!grp[key])grp[key]={dist:0,litAttr:0,costAttr:0,litAll:0,spent:0,n:0};
+    const g=grp[key]; g.litAll+=f.liters; g.spent+=f.total; g.n++;
+    if(f.rendered!=null){ g.dist+=f.rendered; g.litAttr+=f.liters; g.costAttr+=f.total; } });
+  const groups=Object.entries(grp);
+  if(groups.length>=2){ $("cardFuelTypes").classList.remove("hide");
+    $("fuelTypes").innerHTML=groups.sort((x,y)=>y[1].litAll-x[1].litAll).map(([name,g])=>{
+      const gkmL=g.litAttr>0?g.dist/g.litAttr:null, grkm=g.dist>0?g.costAttr/g.dist:null;
+      return `<div class="item" style="margin-bottom:8px"><div class="ihead" style="font-size:14px">${name} <span style="font-size:11px;color:var(--faint)">· ${g.n} abast. · ${km1(g.litAll)} L</span></div>
+        <div class="find" style="margin-top:6px"><div class="i"><div class="iv">${gkmL!=null?km1(gkmL):"—"}</div><div class="il">km/L</div></div>
+        <div class="i"><div class="iv">${grkm!=null?brl(grkm):"—"}</div><div class="il">R$/km</div></div>
+        <div class="i"><div class="iv" style="color:var(--amber)">${brl(g.spent)}</div><div class="il">gasto</div></div></div></div>`;
+    }).join("");
+  } else $("cardFuelTypes").classList.add("hide");
+
+  // óleo: situação + banner
+  const st=oilState(v);
+  if(st.has){
+    const interval=st.last.durability||0;
+    const pct = interval>0 ? Math.min(100,(st.since/interval)*100) : 0;
+    $("oilSince").textContent=Math.round(st.since);
+    $("oilProg").style.width=pct+"%";
+    $("oilProg").style.background = st.overdue ? "var(--danger)" : "linear-gradient(90deg,var(--green),#9be09b)";
+    $("oilStatus").textContent = st.overdue
+      ? ("Troca vencida há "+Math.round(st.total-st.dueAt)+" km (limite aos "+Math.round(st.dueAt+(v.kmInitial||0))+" km).")
+      : ("Faltam "+Math.round(st.dueAt-st.total)+" km — próxima troca aos "+Math.round(st.dueAt+(v.kmInitial||0))+" km.");
+    $("oilStatus").style.color = st.overdue ? "var(--danger)" : "var(--faint)";
+  } else {
+    $("oilSince").textContent="0"; $("oilProg").style.width="0%";
+    $("oilStatus").textContent="Nenhuma troca registrada ainda. Registre a primeira abaixo.";
+    $("oilStatus").style.color="var(--faint)";
+  }
+  if(st.has && st.overdue){ $("oilBanner").classList.remove("hide");
+    $("oilBanner").textContent = "⚠️ Troca de óleo do "+v.name+" vencida há "+Math.round(st.total-st.dueAt)+" km.";
+  } else $("oilBanner").classList.add("hide");
+
+  // lista abastecimentos (rendimento = distância rodada com este combustível)
+  $("fuelList").innerHTML = ann.length ? ann.slice().reverse().map(f=>{
+    const dist=f.rendered;
+    const fkmL=(dist!=null&&f.liters>0)?dist/f.liters:null, frkm=(dist!=null&&dist>0)?f.total/dist:null, flkm=(dist!=null&&dist>0)?f.liters/dist:null;
+    const pctTank=v.tank>0?Math.round((f.liters/v.tank)*100):null;
+    const status = dist!=null
+      ? `<span class="chip chipT">rodou ${km1(dist)} km</span>`
+      : `<span class="chip" style="background:rgba(139,144,156,.18);color:var(--muted)">aguardando próximo</span>`;
+    return `<div class="item"><div class="acts"><button class="iconbtn" data-edit-fuel="${f.id}">&#9998;</button>${delBtn('fuel',f.id)}</div>
+      <div class="ihead" style="padding-right:54px">${km1(f.liters)} <span style="font-size:11px;color:var(--faint)">L · ${brl(f.total)}</span>${f.fuel?`<span class="chip">${f.fuel}</span>`:""}${status}</div>
+      <div class="imeta">${prettyDate(f.date)} · ${km1(f.km)} km até abastecer · ${brl(f.ppl)}/L${pctTank!=null?(" · "+pctTank+"% tanque"):""}</div>
+      <div class="find"><div class="i"><div class="iv">${fkmL!=null?km1(fkmL):"—"}</div><div class="il">km/L</div></div>
+        <div class="i"><div class="iv">${frkm!=null?brl(frkm):"—"}</div><div class="il">R$/km</div></div>
+        <div class="i"><div class="iv">${flkm!=null?d3(flkm):"—"}</div><div class="il">L/km</div></div></div></div>`;
+  }).join("") : '<div class="empty">Nenhum abastecimento registrado.</div>';
+  document.querySelectorAll("[data-edit-fuel]").forEach(b=>b.onclick=()=>startEditFuel(b.dataset.editFuel));
+
+  // lista trocas de óleo
+  const ocs=oilsFor(v);
+  $("oilList").innerHTML = ocs.length ? ocs.slice().reverse().map(o=>
+    `<div class="item"><div class="acts"><button class="iconbtn" data-edit-oil="${o.id}">&#9998;</button>${delBtn('oil',o.id)}</div>
+      <div class="ihead" style="font-size:15px">${o.brand||"Óleo"} <span class="chip chipT">${o.type||""}</span></div>
+      <div class="imeta">${prettyDate(o.date)} · aos ${Math.round((o.kmAt||0)+(v.kmInitial||0))} km · dura ${Math.round(o.durability||0)} km${o.cost?(" · "+brl(o.cost)):""}</div></div>`
+  ).join("") : '<div class="empty">Nenhuma troca registrada.</div>';
+  document.querySelectorAll("[data-edit-oil]").forEach(b=>b.onclick=()=>startEditOil(b.dataset.editOil));
+  document.querySelectorAll("[data-del]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation();
+    const k=b.dataset.del;
+    if(pendingDel===k){ doDelete(k); }
+    else { pendingDel=k; render(); clearTimeout(delTimer); delTimer=setTimeout(()=>{ if(pendingDel){pendingDel=null;render();} },3000); } });
+
+  // dados veículo
+  $("vName").value=v.name; $("vTank").value=v.tank?km1(v.tank):""; $("vKmInit").value=v.kmInitial?String(v.kmInitial):"";
+  $("btnVehDel").style.display = vehicles.length>1?"block":"none";
+}
+
+// ---------- abastecimento (add/edit) ----------
+function calcLit(){ const t=num($("aTotal").value),p=num($("aPpl").value); const l=(p>0)?t/p:0; $("aLit").value=l>0?d2(l):""; return l; }
+$("aTotal").oninput=calcLit; $("aPpl").oninput=calcLit;
+$("aFuel").onchange=()=>{ $("aFuelOther").classList.toggle("hide",$("aFuel").value!=="__outro"); };
+function fuelValue(){ return $("aFuel").value==="__outro"?$("aFuelOther").value.trim():$("aFuel").value; }
+function resetFuelForm(){ editFuel=null; $("aKm").value="";$("aTotal").value="";$("aPpl").value="";$("aLit").value="";$("aFuel").value="Gasolina comum";$("aFuelOther").value="";$("aFuelOther").classList.add("hide");$("aDate").value=todayISO();
+  $("fuelFormTitle").textContent="Novo abastecimento"; $("btnFuel").textContent="Adicionar abastecimento"; $("btnFuelCancel").classList.add("hide"); }
+function startEditFuel(id){ const f=fuels.find(x=>String(x.id)===String(id)); if(!f)return; editFuel=f.id;
+  $("aDate").value=f.date; $("aKm").value=toInput(f.km); $("aTotal").value=toInput(f.total); $("aPpl").value=toInput(f.ppl); calcLit();
+  const opt=[...$("aFuel").options].some(o=>o.value===f.fuel);
+  if(f.fuel && !opt){ $("aFuel").value="__outro"; $("aFuelOther").value=f.fuel; $("aFuelOther").classList.remove("hide"); }
+  else { $("aFuel").value=f.fuel||"Gasolina comum"; $("aFuelOther").classList.add("hide"); }
+  $("fuelFormTitle").textContent="Editar abastecimento"; $("btnFuel").textContent="Salvar alterações"; $("btnFuelCancel").classList.remove("hide");
+  showTab("manut"); showSub("abast"); window.scrollTo({top:0,behavior:"smooth"}); }
+$("btnFuelCancel").onclick=resetFuelForm;
+$("btnFuel").onclick=()=>{ const km=num($("aKm").value),t=num($("aTotal").value),p=num($("aPpl").value),l=calcLit(); const e=$("aErr");
+  if(t<=0||p<=0){ e.textContent="Preencha o valor total e o valor por litro."; e.classList.remove("hide"); return; }
+  if(km<=0){ e.textContent="Informe os km rodados."; e.classList.remove("hide"); return; } e.classList.add("hide");
+  if(editFuel){ const f=fuels.find(x=>x.id===editFuel); Object.assign(f,{date:$("aDate").value||todayISO(),km,total:t,ppl:p,liters:Math.round(l*100)/100,fuel:fuelValue()}); }
+  else { fuels.push({id:uid(),vehicleId:activeId,date:$("aDate").value||todayISO(),km,total:t,ppl:p,liters:Math.round(l*100)/100,fuel:fuelValue()}); }
+  saveAll(); resetFuelForm(); render(); maybeNotifyOil(); };
+
+// ---------- troca de óleo (add/edit) ----------
+$("oLub").onchange=()=>{ const l=lubricants.find(x=>String(x.id)===$("oLub").value); if(l){ $("oBrand").value=l.brand; $("oType").value=l.type; $("oDur").value=l.durability; } };
+function resetOilForm(){ editOil=null; $("oDate").value=todayISO(); $("oLub").value=""; $("oBrand").value=""; $("oType").value="Sintético"; $("oDur").value=""; $("oCost").value="";
+  $("oilFormTitle").textContent="Registrar troca de óleo"; $("btnOil").textContent="Registrar troca"; $("btnOilCancel").classList.add("hide"); }
+function startEditOil(id){ const o=oils.find(x=>String(x.id)===String(id)); if(!o)return; editOil=o.id;
+  $("oDate").value=o.date; $("oBrand").value=o.brand||""; $("oType").value=o.type||"Sintético"; $("oDur").value=o.durability||""; $("oCost").value=toInput(o.cost); $("oLub").value="";
+  $("oilFormTitle").textContent="Editar troca de óleo"; $("btnOil").textContent="Salvar alterações"; $("btnOilCancel").classList.remove("hide");
+  showTab("manut"); showSub("oleo"); window.scrollTo({top:0,behavior:"smooth"}); }
+$("btnOilCancel").onclick=resetOilForm;
+$("btnOil").onclick=()=>{ const dur=num($("oDur").value), cost=num($("oCost").value), e=$("oErr");
+  const brand=$("oBrand").value.trim(), type=$("oType").value, date=$("oDate").value||todayISO();
+  if(dur<=0){ e.textContent="Informe a durabilidade do óleo em km."; e.classList.remove("hide"); return; } e.classList.add("hide");
+  if(editOil){ const o=oils.find(x=>x.id===editOil); Object.assign(o,{date,brand,type,durability:dur,cost}); }
+  else { oils.push({id:uid(),vehicleId:activeId,date,brand,type,durability:dur,cost,kmAt:totalKm(av())}); }
+  saveAll(); resetOilForm(); render(); };
+
+// ---------- veículo ----------
+$("btnVehSave").onclick=()=>{ const v=av(); const nm=$("vName").value.trim(); if(nm)v.name=nm; v.tank=num($("vTank").value); v.kmInitial=Math.round(num($("vKmInit").value)); saveAll(); render(); };
+$("btnVehAdd").onclick=()=>{ const nm=$("nvName").value.trim(); if(!nm)return; const nv={id:uid(),name:nm,tank:num($("nvTank").value),kmInitial:Math.round(num($("nvKmInit").value)),oilAlertOn:false,oilAdvance:0}; vehicles.push(nv); activeId=nv.id; saveAll(); $("nvName").value="";$("nvTank").value="";$("nvKmInit").value=""; showTab("indicadores"); render(); };
+let vehDelArm=false;
+$("btnVehDel").onclick=()=>{ if(vehicles.length<=1)return;
+  if(!vehDelArm){ vehDelArm=true; $("btnVehDel").textContent="Tocar de novo para excluir "+av().name;
+    setTimeout(()=>{ vehDelArm=false; $("btnVehDel").textContent="Excluir este veículo e seus dados"; },4000); return; }
+  vehDelArm=false; $("btnVehDel").textContent="Excluir este veículo e seus dados";
+  const id=activeId; fuels=fuels.filter(f=>String(f.vehicleId)!==String(id)); oils=oils.filter(o=>String(o.vehicleId)!==String(id)); vehicles=vehicles.filter(v=>String(v.id)!==String(id)); activeId=vehicles[0].id; saveAll(); render(); };
+$("vehSelect").onchange=(e)=>{ activeId=e.target.value; resetFuelForm(); resetOilForm(); saveAll(); render(); };
+$("periodSel").onchange=(e)=>{ selPeriod=e.target.value; render(); };
+
+// ---------- configurações ----------
+function renderSettings(){
+  const v=av();
+  $("oilSwitch").classList.toggle("on",!!v.oilAlertOn);
+  $("advKm").disabled=!v.oilAlertOn;
+  $("advKm").value = v.oilAlertOn ? (v.oilAdvance?String(v.oilAdvance):"") : "";
+  $("lubList").innerHTML = lubricants.length ? lubricants.map(l=>
+    `<div class="item" style="margin-bottom:8px"><div class="acts"><button class="iconbtn" data-del-lub="${l.id}">&times;</button></div>
+      <div class="ihead" style="font-size:14px">${l.brand}</div><div class="imeta">${l.type} · dura ${l.durability} km</div></div>`).join("")
+    : '<div class="empty">Nenhum lubrificante cadastrado.</div>';
+  document.querySelectorAll("[data-del-lub]").forEach(b=>b.onclick=()=>{ lubricants=lubricants.filter(l=>String(l.id)!==b.dataset.delLub); saveAll(); renderSettings(); render(); });
+}
+$("gearBtn").onclick=()=>{ renderSettings(); $("overlay").classList.remove("hide"); };
+$("closeCfg").onclick=()=>$("overlay").classList.add("hide");
+$("overlay").onclick=(e)=>{ if(e.target===$("overlay")) $("overlay").classList.add("hide"); };
+$("oilSwitch").onclick=async ()=>{ const v=av(); v.oilAlertOn=!v.oilAlertOn; if(v.oilAlertOn){ await ensureNotifyPerm(); } saveAll(); renderSettings(); render(); maybeNotifyOil(); };
+$("advKm").oninput=()=>{ const v=av(); if(v.oilAlertOn){ v.oilAdvance=Math.round(num($("advKm").value)); saveAll(); render(); } };
+$("btnLubAdd").onclick=()=>{ const brand=$("lBrand").value.trim(), type=$("lType").value, dur=Math.round(num($("lDur").value));
+  if(!brand||dur<=0)return; lubricants.push({id:uid(),brand,type,durability:dur}); saveAll(); $("lBrand").value="";$("lDur").value=""; renderSettings(); render(); };
+
+// ---------- navegação ----------
+function showTab(name){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===name));
+  ["indicadores","manut","veiculo"].forEach(n=>$("tab-"+n).classList.toggle("hide",n!==name));
+}
+function showSub(name){
+  document.querySelectorAll(".subtab").forEach(t=>t.classList.toggle("active",t.dataset.sub===name));
+  $("sub-abast").classList.toggle("hide",name!=="abast");
+  $("sub-oleo").classList.toggle("hide",name!=="oleo");
+}
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>showTab(t.dataset.tab));
+document.querySelectorAll(".subtab").forEach(t=>t.onclick=()=>showSub(t.dataset.sub));
+
+// init
+$("aDate").value=todayISO(); $("oDate").value=todayISO();
+load(); render();
+if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").then(()=>{ setTimeout(maybeNotifyOil,800); }).catch(()=>{ maybeNotifyOil(); }); }
+else maybeNotifyOil();
+</script>
+</body>
+</html>
