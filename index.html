@@ -26,7 +26,7 @@
   .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)}
   h1{font-size:14px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin:0;font-weight:600}
   select{background:var(--slot);border:1px solid var(--edge);color:var(--ink);border-radius:8px;padding:7px 9px;font-size:13px;font-family:var(--sans)}
-  #vehSelect{margin-left:auto;max-width:150px}
+  #vehSelect{margin-left:auto;flex:1 1 auto;min-width:0;max-width:none}
   select.fld{width:100%;margin:0 0 10px 0;padding:11px 12px;font-size:15px;border-radius:10px}
   .gear{background:var(--slot);border:1px solid var(--edge);color:var(--ink);border-radius:8px;width:36px;height:34px;font-size:15px;cursor:pointer}
   .tabs{display:flex;gap:6px;background:var(--slot);border:1px solid var(--edge);border-radius:12px;padding:4px;margin-bottom:16px}
@@ -239,6 +239,10 @@
             <datalist id="durList"><option value="1000"><option value="2000"><option value="3000"><option value="5000"><option value="7000"><option value="10000"></datalist>
           </div>
         </div>
+        <div class="row">
+          <div class="col"><label>KM atual (hodômetro)</label><input id="oKm" type="text" inputmode="numeric" placeholder="ex: 34723" /></div>
+          <div class="col"><label>Óleo usado (L)</label><input id="oQty" type="text" inputmode="decimal" placeholder="ex: 1,0" /></div>
+        </div>
         <label>Valor gasto (R$)</label>
         <input id="oCost" type="text" inputmode="decimal" placeholder="0,00" style="margin-bottom:12px" />
         <div id="oErr" class="err hide"></div>
@@ -261,6 +265,8 @@
         <div class="col"><label>Tanque (litros)</label><input id="vTank" type="text" inputmode="decimal" placeholder="0,0" /></div>
         <div class="col"><label>KM inicial</label><input id="vKmInit" type="text" inputmode="numeric" placeholder="ex: 12300" /></div>
       </div>
+      <label>Capacidade de óleo do motor (litros)</label>
+      <input id="vOilCap" type="text" inputmode="decimal" placeholder="ex: 1,1" style="margin-bottom:6px" />
       <div class="powerSub" style="margin:-2px 0 12px 2px">Km que a moto já tinha quando você começou a registrar aqui.</div>
       <button id="btnVehSave" class="btn btnAmberGhost">Salvar dados</button>
     </div>
@@ -272,6 +278,8 @@
         <div class="col"><label>Tanque (L)</label><input id="nvTank" type="text" inputmode="decimal" placeholder="0,0" /></div>
         <div class="col"><label>KM inicial</label><input id="nvKmInit" type="text" inputmode="numeric" placeholder="ex: 0" /></div>
       </div>
+      <label>Capacidade de óleo (L)</label>
+      <input id="nvOilCap" type="text" inputmode="decimal" placeholder="ex: 1,1" style="margin-bottom:12px" />
       <button id="btnVehAdd" class="btn btnGhost">Adicionar veículo</button>
     </div>
 
@@ -380,12 +388,14 @@ function load(){
   try{ fuels=JSON.parse(store.get("fuels")||"[]"); }catch(e){ fuels=[]; }
   try{ oils=JSON.parse(store.get("oils")||"[]"); }catch(e){ oils=[]; }
   try{ lubricants=JSON.parse(store.get("lubricants")||"[]"); }catch(e){ lubricants=[]; }
-  if(!vehicles.length){ vehicles=[{id:uid(),name:"Minha moto",tank:0,oilAlertOn:false,oilAdvance:0}]; }
-  vehicles.forEach(v=>{ if(v.tank==null)v.tank=0; if(v.oilAlertOn==null)v.oilAlertOn=false; if(v.oilAdvance==null)v.oilAdvance=0; if(v.kmInitial==null)v.kmInitial=0; });
+  if(!vehicles.length){ vehicles=[{id:uid(),name:"Minha moto",tank:0,oilAlertOn:false,oilAdvance:0,kmInitial:0,oilCapacity:0}]; }
+  vehicles.forEach(v=>{ if(v.tank==null)v.tank=0; if(v.oilAlertOn==null)v.oilAlertOn=false; if(v.oilAdvance==null)v.oilAdvance=0; if(v.kmInitial==null)v.kmInitial=0; if(v.oilCapacity==null)v.oilCapacity=0; });
   activeId=store.get("activeId");
   if(!vehicles.some(v=>String(v.id)===String(activeId))) activeId=vehicles[0].id;
   fuels.forEach(f=>{ if(f.vehicleId==null)f.vehicleId=activeId; if(f.km==null)f.km=0; if(f.fuel==null)f.fuel=""; });
-  oils.forEach(o=>{ if(o.vehicleId==null)o.vehicleId=activeId; });
+  oils.forEach(o=>{ if(o.vehicleId==null)o.vehicleId=activeId;
+    if(o.kmReal==null){ const vv=vehicles.find(x=>String(x.id)===String(o.vehicleId)); o.kmReal=(o.kmAt||0)+((vv&&vv.kmInitial)||0); } // migra: km real = km inicial + distância na troca
+    if(o.oilQty==null)o.oilQty=0; });
   saveAll();
 }
 function saveAll(){
@@ -396,7 +406,7 @@ function saveAll(){
 
 const av = ()=> vehicles.find(v=>String(v.id)===String(activeId)) || vehicles[0];
 const fuelsFor = (v)=> fuels.filter(f=>String(f.vehicleId)===String(v.id)).sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id);
-const oilsFor = (v)=> oils.filter(o=>String(o.vehicleId)===String(v.id)).sort((a,b)=>(a.kmAt-b.kmAt)||a.date.localeCompare(b.date)||a.id-b.id);
+const oilsFor = (v)=> oils.filter(o=>String(o.vehicleId)===String(v.id)).sort((a,b)=>((a.kmReal||0)-(b.kmReal||0))||a.date.localeCompare(b.date)||a.id-b.id);
 const totalKm = (v)=> fuelsFor(v).reduce((s,f)=>s+(f.km||0),0);
 const realKm = (v)=> (v.kmInitial||0)+totalKm(v);
 
@@ -408,11 +418,12 @@ function aggFrom(fs){
 const agg = (v)=> aggFrom(fuelsFor(v));
 
 function oilState(v){
-  const ocs=oilsFor(v); const total=totalKm(v);
+  const ocs=oilsFor(v); const total=realKm(v); // hodômetro real estimado
   if(!ocs.length) return {has:false,total};
   const last=ocs[ocs.length-1];
-  const dueAt=(last.kmAt||0)+(last.durability||0);
-  const since=total-(last.kmAt||0);
+  const base=(last.kmReal||0);
+  const dueAt=base+(last.durability||0);
+  const since=Math.max(0,total-base);
   const adv=v.oilAlertOn?(v.oilAdvance||0):0;
   const threshold=dueAt-adv;
   return {has:true,last,dueAt,since,threshold,total,due:total>=threshold,overdue:total>=dueAt};
@@ -542,8 +553,8 @@ function render(){
     $("oilProg").style.width=pct+"%";
     $("oilProg").style.background = st.overdue ? "var(--danger)" : "linear-gradient(90deg,var(--green),#9be09b)";
     $("oilStatus").textContent = st.overdue
-      ? ("Troca vencida há "+Math.round(st.total-st.dueAt)+" km (limite aos "+Math.round(st.dueAt+(v.kmInitial||0))+" km).")
-      : ("Faltam "+Math.round(st.dueAt-st.total)+" km — próxima troca aos "+Math.round(st.dueAt+(v.kmInitial||0))+" km.");
+      ? ("Troca vencida há "+Math.round(st.total-st.dueAt)+" km (limite aos "+Math.round(st.dueAt)+" km).")
+      : ("Faltam "+Math.round(st.dueAt-st.total)+" km — próxima troca aos "+Math.round(st.dueAt)+" km.");
     $("oilStatus").style.color = st.overdue ? "var(--danger)" : "var(--faint)";
   } else {
     $("oilSince").textContent="0"; $("oilProg").style.width="0%";
@@ -576,7 +587,7 @@ function render(){
   $("oilList").innerHTML = ocs.length ? ocs.slice().reverse().map(o=>
     `<div class="item"><div class="acts"><button class="iconbtn" data-edit-oil="${o.id}">&#9998;</button>${delBtn('oil',o.id)}</div>
       <div class="ihead" style="font-size:15px">${o.brand||"Óleo"} <span class="chip chipT">${o.type||""}</span></div>
-      <div class="imeta">${prettyDate(o.date)} · aos ${Math.round((o.kmAt||0)+(v.kmInitial||0))} km · dura ${Math.round(o.durability||0)} km${o.cost?(" · "+brl(o.cost)):""}</div></div>`
+      <div class="imeta">${prettyDate(o.date)} · aos ${Math.round(o.kmReal||0)} km · dura ${Math.round(o.durability||0)} km${o.oilQty?(" · "+km1(o.oilQty)+" L de óleo"):""}${o.cost?(" · "+brl(o.cost)):""}</div></div>`
   ).join("") : '<div class="empty">Nenhuma troca registrada.</div>';
   document.querySelectorAll("[data-edit-oil]").forEach(b=>b.onclick=()=>startEditOil(b.dataset.editOil));
   document.querySelectorAll("[data-del]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation();
@@ -585,7 +596,7 @@ function render(){
     else { pendingDel=k; render(); clearTimeout(delTimer); delTimer=setTimeout(()=>{ if(pendingDel){pendingDel=null;render();} },3000); } });
 
   // dados veículo
-  $("vName").value=v.name; $("vTank").value=v.tank?km1(v.tank):""; $("vKmInit").value=v.kmInitial?String(v.kmInitial):"";
+  $("vName").value=v.name; $("vTank").value=v.tank?km1(v.tank):""; $("vKmInit").value=v.kmInitial?String(v.kmInitial):""; $("vOilCap").value=v.oilCapacity?km1(v.oilCapacity):"";
   $("btnVehDel").style.display = vehicles.length>1?"block":"none";
 }
 
@@ -613,23 +624,25 @@ $("btnFuel").onclick=()=>{ const km=num($("aKm").value),t=num($("aTotal").value)
 
 // ---------- troca de óleo (add/edit) ----------
 $("oLub").onchange=()=>{ const l=lubricants.find(x=>String(x.id)===$("oLub").value); if(l){ $("oBrand").value=l.brand; $("oType").value=l.type; $("oDur").value=l.durability; } };
-function resetOilForm(){ editOil=null; $("oDate").value=todayISO(); $("oLub").value=""; $("oBrand").value=""; $("oType").value="Sintético"; $("oDur").value=""; $("oCost").value="";
+function resetOilForm(){ editOil=null; const v=av(); $("oDate").value=todayISO(); $("oLub").value=""; $("oBrand").value=""; $("oType").value="Sintético"; $("oDur").value=""; $("oCost").value="";
+  $("oKm").value=String(Math.round(realKm(v))); $("oQty").value=v.oilCapacity?toInput(v.oilCapacity):"";
   $("oilFormTitle").textContent="Registrar troca de óleo"; $("btnOil").textContent="Registrar troca"; $("btnOilCancel").classList.add("hide"); }
 function startEditOil(id){ const o=oils.find(x=>String(x.id)===String(id)); if(!o)return; editOil=o.id;
-  $("oDate").value=o.date; $("oBrand").value=o.brand||""; $("oType").value=o.type||"Sintético"; $("oDur").value=o.durability||""; $("oCost").value=toInput(o.cost); $("oLub").value="";
+  $("oDate").value=o.date; $("oBrand").value=o.brand||""; $("oType").value=o.type||"Sintético"; $("oDur").value=o.durability||""; $("oCost").value=toInput(o.cost); $("oKm").value=String(Math.round(o.kmReal||0)); $("oQty").value=o.oilQty?toInput(o.oilQty):""; $("oLub").value="";
   $("oilFormTitle").textContent="Editar troca de óleo"; $("btnOil").textContent="Salvar alterações"; $("btnOilCancel").classList.remove("hide");
   showTab("manut"); showSub("oleo"); window.scrollTo({top:0,behavior:"smooth"}); }
 $("btnOilCancel").onclick=resetOilForm;
-$("btnOil").onclick=()=>{ const dur=num($("oDur").value), cost=num($("oCost").value), e=$("oErr");
+$("btnOil").onclick=()=>{ const dur=num($("oDur").value), cost=num($("oCost").value), kmReal=Math.round(num($("oKm").value)), oilQty=num($("oQty").value), e=$("oErr");
   const brand=$("oBrand").value.trim(), type=$("oType").value, date=$("oDate").value||todayISO();
-  if(dur<=0){ e.textContent="Informe a durabilidade do óleo em km."; e.classList.remove("hide"); return; } e.classList.add("hide");
-  if(editOil){ const o=oils.find(x=>x.id===editOil); Object.assign(o,{date,brand,type,durability:dur,cost}); }
-  else { oils.push({id:uid(),vehicleId:activeId,date,brand,type,durability:dur,cost,kmAt:totalKm(av())}); }
+  if(dur<=0){ e.textContent="Informe a durabilidade do óleo em km."; e.classList.remove("hide"); return; }
+  if(kmReal<=0){ e.textContent="Informe o KM atual do hodômetro na troca."; e.classList.remove("hide"); return; } e.classList.add("hide");
+  if(editOil){ const o=oils.find(x=>x.id===editOil); Object.assign(o,{date,brand,type,durability:dur,cost,kmReal,oilQty}); }
+  else { oils.push({id:uid(),vehicleId:activeId,date,brand,type,durability:dur,cost,kmReal,oilQty,kmAt:totalKm(av())}); }
   saveAll(); resetOilForm(); render(); };
 
 // ---------- veículo ----------
-$("btnVehSave").onclick=()=>{ const v=av(); const nm=$("vName").value.trim(); if(nm)v.name=nm; v.tank=num($("vTank").value); v.kmInitial=Math.round(num($("vKmInit").value)); saveAll(); render(); };
-$("btnVehAdd").onclick=()=>{ const nm=$("nvName").value.trim(); if(!nm)return; const nv={id:uid(),name:nm,tank:num($("nvTank").value),kmInitial:Math.round(num($("nvKmInit").value)),oilAlertOn:false,oilAdvance:0}; vehicles.push(nv); activeId=nv.id; saveAll(); $("nvName").value="";$("nvTank").value="";$("nvKmInit").value=""; showTab("indicadores"); render(); };
+$("btnVehSave").onclick=()=>{ const v=av(); const nm=$("vName").value.trim(); if(nm)v.name=nm; v.tank=num($("vTank").value); v.kmInitial=Math.round(num($("vKmInit").value)); v.oilCapacity=num($("vOilCap").value); saveAll(); render(); };
+$("btnVehAdd").onclick=()=>{ const nm=$("nvName").value.trim(); if(!nm)return; const nv={id:uid(),name:nm,tank:num($("nvTank").value),kmInitial:Math.round(num($("nvKmInit").value)),oilCapacity:num($("nvOilCap").value),oilAlertOn:false,oilAdvance:0}; vehicles.push(nv); activeId=nv.id; saveAll(); $("nvName").value="";$("nvTank").value="";$("nvKmInit").value="";$("nvOilCap").value=""; showTab("indicadores"); render(); };
 let vehDelArm=false;
 $("btnVehDel").onclick=()=>{ if(vehicles.length<=1)return;
   if(!vehDelArm){ vehDelArm=true; $("btnVehDel").textContent="Tocar de novo para excluir "+av().name;
@@ -674,7 +687,7 @@ document.querySelectorAll(".subtab").forEach(t=>t.onclick=()=>showSub(t.dataset.
 
 // init
 $("aDate").value=todayISO(); $("oDate").value=todayISO();
-load(); render();
+load(); render(); resetOilForm();
 if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").then(()=>{ setTimeout(maybeNotifyOil,800); }).catch(()=>{ maybeNotifyOil(); }); }
 else maybeNotifyOil();
 </script>
