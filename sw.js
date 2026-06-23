@@ -1,4 +1,4 @@
-const CACHE = "hodometro-v20";
+const CACHE = "hodometro-v21";
 const ASSETS = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png"];
 
 self.addEventListener("install", (e) => {
