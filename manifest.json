@@ -1,14 +1,22 @@
 {
+  "id": "/index.html",
   "name": "FuelLog",
   "short_name": "FuelLog",
-  "description": "Gestor de Veículos e Combustíveis",
+  "description": "Gestor de Veículos e Combustíveis: abastecimentos, consumo (km/L), custos e troca de óleo.",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone"],
   "orientation": "portrait",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["productivity", "utilities", "lifestyle"],
   "background_color": "#14161b",
   "theme_color": "#14161b",
+  "prefer_related_applications": false,
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

@@ -101,7 +101,43 @@
   #splash .sTitle{font-size:36px;font-weight:800;letter-spacing:1px;color:var(--amber);text-shadow:0 0 16px rgba(255,180,84,.4)}
   #splash .sSub{font-size:15px;color:var(--muted);max-width:280px;line-height:1.4}
   #splash.gone{opacity:0;pointer-events:none}
+  /* tema claro */
+  body.light{ --bg:#eef0f4; --panel:#ffffff; --edge:#d9dde4; --slot:#eef1f5; --ink:#1b1d23; --muted:#5c6270; --faint:#9aa1ad; }
+  body.light .panelMain{ background:var(--panel) }
+  body.light .digit{ background:#0b0c0f } /* mantém visor escuro p/ legibilidade do âmbar */
+  body.light .tab.active{ background:#eef1f5 }
+  body.light #splash{ background:var(--bg) }
+  /* checkboxes de combustível */
+  .fchk{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+  .fchk label{display:flex;align-items:center;gap:6px;background:var(--slot);border:1px solid var(--edge);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--ink);cursor:pointer;margin:0}
+  .fchk input{width:auto;padding:0;margin:0}
+  /* seletor múltiplo (combustíveis) */
+  .msel{margin-bottom:12px}
+  .mselField{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--slot);border:1px solid var(--edge);border-radius:10px;padding:11px 12px;color:var(--ink);font-size:15px;cursor:pointer}
+  .mselField .mselArrow{color:var(--faint);flex-shrink:0}
+  .mselText{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mselText.ph{color:var(--faint)}
+  .mselList{margin-top:6px;border:1px solid var(--edge);border-radius:10px;overflow:hidden}
+  .mselOpt{display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--panel);border-bottom:1px solid var(--edge);cursor:pointer;font-size:14px;color:var(--ink)}
+  .mselOpt:last-child{border-bottom:none}
+  .mselCk{width:20px;height:20px;border-radius:5px;border:2px solid var(--faint);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:transparent;font-size:13px;font-weight:900;line-height:1}
+  .mselOpt.on .mselCk{border-color:var(--amber);background:var(--amber);color:#241a0c}
+  .addRow{width:34px;height:34px;border-radius:50%;border:2px solid var(--green);background:transparent;color:var(--green);font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700}
+  .frow{border-top:1px dashed var(--edge);padding-top:12px;margin-top:10px}
+  .frow:first-child{border-top:none;padding-top:0;margin-top:0}
+  .fr-remove{background:none;border:none;cursor:pointer;font-size:12px;padding:2px 4px}
+  /* área de texto / suporte */
+  textarea{width:100%;min-height:130px;padding:11px 12px;background:var(--slot);border:1px solid var(--edge);border-radius:10px;color:var(--ink);font-size:14px;font-family:var(--sans);outline:none;resize:vertical}
+  .counter{font-size:11px;color:var(--faint);text-align:right;margin-top:4px}
+  .menuItem{display:flex;align-items:center;justify-content:space-between;width:100%;background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:14px 14px;color:var(--ink);font-size:15px;font-weight:600;cursor:pointer;font-family:var(--sans);margin-bottom:16px}
+  .menuItem .chev{color:var(--faint);font-size:18px}
+  .ver{text-align:center;color:var(--faint);font-size:11px;margin-top:6px}
+  .thumb{position:relative;display:inline-block;margin-top:10px}
+  .thumb img{max-width:120px;max-height:120px;border-radius:8px;border:1px solid var(--edge)}
+  .thumb button{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;border:none;background:var(--danger);color:#fff;cursor:pointer;font-size:13px}
+  .ok{color:var(--green);font-size:12px;margin-top:8px}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 <div id="splash">
@@ -195,24 +231,14 @@
           <div class="col"><label>Data</label><input id="aDate" type="date" /></div>
           <div class="col"><label>Km rodados</label><input id="aKm" type="text" inputmode="decimal" placeholder="0,0" /></div>
         </div>
-        <label>Combustível</label>
-        <select id="aFuel" class="fld">
-          <option>Gasolina comum</option>
-          <option>Gasolina aditivada</option>
-          <option>Gasolina premium</option>
-          <option>Etanol</option>
-          <option>Diesel S-10</option>
-          <option>Diesel comum</option>
-          <option>GNV</option>
-          <option value="__outro">Outro…</option>
-        </select>
-        <input id="aFuelOther" class="hide" type="text" placeholder="qual combustível?" style="margin-bottom:10px" />
-        <div class="row">
-          <div class="col"><label>Valor total (R$)</label><input id="aTotal" type="text" inputmode="decimal" placeholder="0,00" /></div>
-          <div class="col"><label>Valor por litro (R$/L)</label><input id="aPpl" type="text" inputmode="decimal" placeholder="0,000" /></div>
+        <div id="fuelRows"></div>
+        <div id="addFuelRowWrap" style="display:none;justify-content:flex-start;margin:4px 0 12px">
+          <button id="addFuelRow" class="addRow" aria-label="Adicionar combustível">+</button>
         </div>
-        <label>Litros (automático)</label>
-        <input id="aLit" type="text" readonly style="color:var(--amber)" placeholder="0,00" />
+        <div id="aLitWrap">
+          <label>Litros total (automático)</label>
+          <input id="aLit" type="text" readonly style="color:var(--amber)" placeholder="0,00" />
+        </div>
         <div id="aTank" class="powerSub" style="margin:6px 0 12px 2px"></div>
         <div id="aErr" class="err hide"></div>
         <button id="btnFuel" class="btn btnAmber">Adicionar abastecimento</button>
@@ -278,6 +304,11 @@
       <label>Capacidade de óleo do motor (litros)</label>
       <input id="vOilCap" type="text" inputmode="decimal" placeholder="ex: 1,1" style="margin-bottom:6px" />
       <div class="powerSub" style="margin:-2px 0 12px 2px">Km que a moto já tinha quando você começou a registrar aqui.</div>
+      <label>Combustível(is) utilizado(s)</label>
+      <div class="msel">
+        <div class="mselField" id="vFuelField"><span id="vFuelText" class="mselText ph">Selecionar…</span><span class="mselArrow">&#9662;</span></div>
+        <div id="vFuelList" class="mselList hide"></div>
+      </div>
       <button id="btnVehSave" class="btn btnAmberGhost">Salvar dados</button>
     </div>
 
@@ -290,6 +321,11 @@
       </div>
       <label>Capacidade de óleo (L)</label>
       <input id="nvOilCap" type="text" inputmode="decimal" placeholder="ex: 1,1" style="margin-bottom:12px" />
+      <label>Combustível(is) utilizado(s)</label>
+      <div class="msel">
+        <div class="mselField" id="nvFuelField"><span id="nvFuelText" class="mselText ph">Selecionar…</span><span class="mselArrow">&#9662;</span></div>
+        <div id="nvFuelList" class="mselList hide"></div>
+      </div>
       <button id="btnVehAdd" class="btn btnGhost">Adicionar veículo</button>
     </div>
 
@@ -301,6 +337,16 @@
 <div id="overlay" class="overlay hide">
   <div class="sheet">
     <div class="sheetHead"><span class="t">Configurações</span><button id="closeCfg" class="iconbtn" style="font-size:18px">&#10005;</button></div>
+
+    <div class="card">
+      <div class="switchRow">
+        <div>
+          <div style="font-weight:600;font-size:15px">Modo escuro</div>
+          <div class="powerSub">Alterna entre tema escuro e claro</div>
+        </div>
+        <div id="darkSwitch" class="switch" role="switch" tabindex="0"><span class="knob"></span></div>
+      </div>
+    </div>
 
     <div class="card">
       <div class="switchRow">
@@ -329,12 +375,42 @@
       </div>
       <button id="btnLubAdd" class="btn btnGhost">Adicionar lubrificante</button>
     </div>
+
+    <button id="btnSupport" class="menuItem"><span>Suporte</span><span class="chev">&#8250;</span></button>
+    <div class="ver" id="appVer"></div>
+  </div>
+</div>
+
+<!-- ================= SUPORTE (overlay) ================= -->
+<div id="supportOverlay" class="overlay hide">
+  <div class="sheet">
+    <div class="sheetHead"><span class="t">Suporte</span><button id="closeSupport" class="iconbtn" style="font-size:18px">&#10005;</button></div>
+    <div class="powerSub" style="font-size:13px;line-height:1.5;margin-bottom:14px">Envie suas dúvidas, elogios, reclamações, sugestões de melhorias e ferramentas e/ou apontamento de erros:</div>
+    <textarea id="supMsg" maxlength="2000" placeholder="Escreva aqui…"></textarea>
+    <div class="counter"><span id="supCount">0</span>/2000</div>
+    <label style="margin-top:8px">Anexar print (imagem, até 2 MB)</label>
+    <input id="supFile" type="file" accept="image/*" />
+    <div id="supThumb"></div>
+    <div id="supErr" class="err hide"></div>
+    <div id="supOk" class="ok hide"></div>
+    <div class="row" style="margin:14px 0 0">
+      <button id="btnSupSend" class="btn btnAmber col">Enviar</button>
+      <button id="btnSupBack" class="btn btnGhost col">Voltar</button>
+    </div>
+    <div class="eyebrow" style="margin:20px 4px 10px">Histórico de envios</div>
+    <div id="supList"></div>
   </div>
 </div>
 
 <script>
 const $ = (id) => document.getElementById(id);
 const NM = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const VERSION = "1.0";
+const FUEL_OPTIONS = ["Gasolina comum","Gasolina aditivada","Gasolina premium","Etanol","Diesel S-10","Diesel comum","GNV"];
+const SUPPORT_EMAIL = "suporte.fuellog@outlook.com";
+// Para envio automático COM anexo, crie conta grátis no EmailJS e preencha as 3 chaves abaixo
+// (no template do EmailJS, defina o destinatário como suporte.fuellog@outlook.com):
+const EMAILJS = { publicKey:"", serviceId:"", templateId:"" };
 
 const store = (()=>{ let mem={}; try{ const t="__t"; localStorage.setItem(t,"1"); localStorage.removeItem(t);
   return {get:k=>localStorage.getItem(k), set:(k,v)=>localStorage.setItem(k,v)};
@@ -392,17 +468,19 @@ function renderOdo(el,value,color){
     +`<span class="dec" style="font-size:${dfs}px;color:${color};text-shadow:0 0 8px ${color}55">,${dec}</span><span class="unit">km</span>`;
 }
 
-let vehicles, fuels, oils, lubricants, activeId, selPeriod="all", editFuel=null, editOil=null, pendingDel=null, delTimer=null;
+let vehicles, fuels, oils, lubricants, activeId, selPeriod="all", editFuel=null, editOil=null, pendingDel=null, delTimer=null, support=[], theme="dark", supAttach=null, vehFuelSel=[], newFuelSel=[], formRows=[{fuel:"",total:"",ppl:""}];
 function load(){
   try{ vehicles=JSON.parse(store.get("vehicles")||"[]"); }catch(e){ vehicles=[]; }
   try{ fuels=JSON.parse(store.get("fuels")||"[]"); }catch(e){ fuels=[]; }
   try{ oils=JSON.parse(store.get("oils")||"[]"); }catch(e){ oils=[]; }
   try{ lubricants=JSON.parse(store.get("lubricants")||"[]"); }catch(e){ lubricants=[]; }
-  if(!vehicles.length){ vehicles=[{id:uid(),name:"Minha moto",tank:0,oilAlertOn:false,oilAdvance:0,kmInitial:0,oilCapacity:0}]; }
-  vehicles.forEach(v=>{ if(v.tank==null)v.tank=0; if(v.oilAlertOn==null)v.oilAlertOn=false; if(v.oilAdvance==null)v.oilAdvance=0; if(v.kmInitial==null)v.kmInitial=0; if(v.oilCapacity==null)v.oilCapacity=0; });
+  try{ support=JSON.parse(store.get("support")||"[]"); }catch(e){ support=[]; }
+  theme=store.get("theme")||"dark";
+  if(!vehicles.length){ vehicles=[{id:uid(),name:"Minha moto",tank:0,oilAlertOn:false,oilAdvance:0,kmInitial:0,oilCapacity:0,fuelTypes:[]}]; }
+  vehicles.forEach(v=>{ if(v.tank==null)v.tank=0; if(v.oilAlertOn==null)v.oilAlertOn=false; if(v.oilAdvance==null)v.oilAdvance=0; if(v.kmInitial==null)v.kmInitial=0; if(v.oilCapacity==null)v.oilCapacity=0; if(!Array.isArray(v.fuelTypes))v.fuelTypes=[]; });
   activeId=store.get("activeId");
   if(!vehicles.some(v=>String(v.id)===String(activeId))) activeId=vehicles[0].id;
-  fuels.forEach(f=>{ if(f.vehicleId==null)f.vehicleId=activeId; if(f.km==null)f.km=0; if(f.fuel==null)f.fuel=""; });
+  fuels.forEach(f=>{ if(f.vehicleId==null)f.vehicleId=activeId; if(f.km==null)f.km=0; if(f.fuel==null)f.fuel=""; if(!Array.isArray(f.items)) f.items=[{fuel:f.fuel||"",total:f.total||0,ppl:f.ppl||0,liters:f.liters||0}]; });
   oils.forEach(o=>{ if(o.vehicleId==null)o.vehicleId=activeId;
     if(o.kmReal==null){ const vv=vehicles.find(x=>String(x.id)===String(o.vehicleId)); o.kmReal=(o.kmAt||0)+((vv&&vv.kmInitial)||0); } // migra: km real = km inicial + distância na troca
     if(o.oilQty==null)o.oilQty=0; });
@@ -411,7 +489,7 @@ function load(){
 function saveAll(){
   store.set("vehicles",JSON.stringify(vehicles)); store.set("fuels",JSON.stringify(fuels));
   store.set("oils",JSON.stringify(oils)); store.set("lubricants",JSON.stringify(lubricants));
-  store.set("activeId",String(activeId));
+  store.set("support",JSON.stringify(support)); store.set("activeId",String(activeId));
 }
 
 const av = ()=> vehicles.find(v=>String(v.id)===String(activeId)) || vehicles[0];
@@ -469,6 +547,25 @@ function renderVehSelect(){
 function renderLubOptions(){
   $("oLub").innerHTML='<option value="">— informar manualmente —</option>'+lubricants.map(l=>`<option value="${l.id}">${l.brand} · ${l.type} · ${l.durability} km</option>`).join("");
 }
+function renderVehFuelChecks(){
+  vehFuelSel=[...av().fuelTypes];
+  paintMsel("vFuel", vehFuelSel);
+  paintMsel("nvFuel", newFuelSel);
+}
+function paintMsel(prefix, sel){
+  const t=$(prefix+"Text");
+  t.textContent = sel.length ? sel.join(", ") : "Selecionar…";
+  t.classList.toggle("ph", sel.length===0);
+  $(prefix+"List").innerHTML = FUEL_OPTIONS.map(f=>`<div class="mselOpt${sel.includes(f)?" on":""}" data-f="${f}"><span>${f}</span><span class="mselCk">&#10003;</span></div>`).join("");
+  $(prefix+"List").querySelectorAll(".mselOpt").forEach(o=>o.onclick=()=>{
+    const f=o.dataset.f, i=sel.indexOf(f);
+    if(i>=0) sel.splice(i,1); else sel.push(f);
+    o.classList.toggle("on");
+    t.textContent = sel.length ? sel.join(", ") : "Selecionar…";
+    t.classList.toggle("ph", sel.length===0);
+  });
+}
+function readChecks(){ return []; }
 
 function delBtn(kind,id){ const k=kind+":"+id, on=pendingDel===k;
   return `<button class="iconbtn${on?' delconfirm':''}" data-del="${k}">${on?'excluir?':'&times;'}</button>`; }
@@ -481,6 +578,7 @@ function doDelete(key){ const i=key.indexOf(":"), kind=key.slice(0,i), id=key.sl
 function annFuels(v){
   const fs=fuelsFor(v); // ascendente (mais antigo -> mais novo)
   return fs.map((f,i)=>({ id:f.id, date:f.date, fuel:f.fuel||"", km:f.km||0, liters:f.liters||0, total:f.total||0, ppl:f.ppl||0,
+    items: (f.items&&f.items.length)?f.items:[{fuel:f.fuel||"",total:f.total||0,ppl:f.ppl||0,liters:f.liters||0}],
     rendered: i<fs.length-1 ? (fs[i+1].km||0) : null })); // distância rodada com este combustível = km do próximo abast.
 }
 
@@ -488,6 +586,7 @@ function render(){
   const v=av();
   renderVehSelect();
   renderLubOptions();
+  renderVehFuelChecks();
   const a=agg(v);
 
   // total (acumulado)
@@ -538,11 +637,12 @@ function render(){
   if(cdata.length){ $("cardMonths").classList.remove("hide"); $("chart").innerHTML=chartSVG(cdata); }
   else $("cardMonths").classList.add("hide");
 
-  // por combustível (período) — rendimento tanque a tanque
+  // por combustível (período) — rendimento tanque a tanque, rateado por litros quando há mistura
   const grp={};
-  periodAnn.forEach(f=>{ const key=(f.fuel||"Não informado"); if(!grp[key])grp[key]={dist:0,litAttr:0,costAttr:0,litAll:0,spent:0,n:0};
-    const g=grp[key]; g.litAll+=f.liters; g.spent+=f.total; g.n++;
-    if(f.rendered!=null){ g.dist+=f.rendered; g.litAttr+=f.liters; g.costAttr+=f.total; } });
+  periodAnn.forEach(f=>{ const fl=f.liters||0;
+    (f.items||[]).forEach(it=>{ const key=it.fuel||"Não informado"; if(!grp[key])grp[key]={dist:0,litAttr:0,costAttr:0,litAll:0,spent:0,n:0};
+      const g=grp[key]; g.litAll+=it.liters||0; g.spent+=it.total||0; g.n++;
+      if(f.rendered!=null && fl>0){ const share=(it.liters||0)/fl; g.dist+=f.rendered*share; g.litAttr+=it.liters||0; g.costAttr+=it.total||0; } }); });
   const groups=Object.entries(grp);
   if(groups.length>=2){ $("cardFuelTypes").classList.remove("hide");
     $("fuelTypes").innerHTML=groups.sort((x,y)=>y[1].litAll-x[1].litAll).map(([name,g])=>{
@@ -610,26 +710,57 @@ function render(){
   $("btnVehDel").style.display = vehicles.length>1?"block":"none";
 }
 
-// ---------- abastecimento (add/edit) ----------
-function calcLit(){ const t=num($("aTotal").value),p=num($("aPpl").value); const l=(p>0)?t/p:0; $("aLit").value=l>0?d2(l):""; return l; }
-$("aTotal").oninput=calcLit; $("aPpl").oninput=calcLit;
-$("aFuel").onchange=()=>{ $("aFuelOther").classList.toggle("hide",$("aFuel").value!=="__outro"); };
-function fuelValue(){ return $("aFuel").value==="__outro"?$("aFuelOther").value.trim():$("aFuel").value; }
-function resetFuelForm(){ editFuel=null; $("aKm").value="";$("aTotal").value="";$("aPpl").value="";$("aLit").value="";$("aFuel").value="Gasolina comum";$("aFuelOther").value="";$("aFuelOther").classList.add("hide");$("aDate").value=todayISO();
+// ---------- abastecimento (múltiplos combustíveis) ----------
+function maskDec(el,dec){ let d=el.value.replace(/\D/g,""); if(!d){ el.value=""; return; } d=d.padStart(dec+1,"0"); const intp=String(parseInt(d.slice(0,d.length-dec),10)); const frac=d.slice(d.length-dec); el.value = dec>0 ? (intp+","+frac) : intp; }
+$("aKm").oninput=()=>maskDec($("aKm"),1);
+function availFuels(){ const v=av(); return (v.fuelTypes&&v.fuelTypes.length)?v.fuelTypes:FUEL_OPTIONS; }
+function readRowsFromDOM(){ const rows=[...document.querySelectorAll("#fuelRows .frow")]; if(rows.length) formRows=rows.map(r=>({ fuel:r.querySelector(".fr-fuel").value, total:r.querySelector(".fr-total").value, ppl:r.querySelector(".fr-ppl").value })); }
+function recalcLit(){ let liters=0; document.querySelectorAll("#fuelRows .frow").forEach(r=>{ const t=num(r.querySelector(".fr-total").value), p=num(r.querySelector(".fr-ppl").value); const l=(p>0)?t/p:0; liters+=l; const fl=r.querySelector(".fr-lit"); if(fl) fl.value = l>0 ? d2(l) : ""; }); $("aLit").value = liters>0 ? d2(liters) : ""; if($("aLitWrap")) $("aLitWrap").style.display = (formRows.length>1)?"block":"none"; return liters; }
+function renderFuelRows(){
+  const fuels=availFuels();
+  $("fuelRows").innerHTML=formRows.map((r,i)=>`
+    <div class="frow" data-i="${i}">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <label style="margin-bottom:5px">Combustível${i>0?(" "+(i+1)):""}</label>
+        ${i>0?`<button class="fr-remove" data-i="${i}" style="color:var(--danger)">remover</button>`:""}
+      </div>
+      <select class="fld fr-fuel">${fuels.map(f=>`<option ${f===r.fuel?"selected":""}>${f}</option>`).join("")}</select>
+      <div class="row" style="margin-bottom:8px">
+        <div class="col"><label>Valor total (R$)</label><input class="fr-total" type="text" inputmode="decimal" placeholder="0,00" value="${r.total||""}"/></div>
+        <div class="col"><label>Valor por litro (R$/L)</label><input class="fr-ppl" type="text" inputmode="decimal" placeholder="0,000" value="${r.ppl||""}"/></div>
+      </div>
+      <label>Litros (automático)</label>
+      <input class="fr-lit" type="text" readonly placeholder="0,00" style="color:var(--amber)" />
+    </div>`).join("");
+  document.querySelectorAll("#fuelRows .fr-total").forEach(el=>el.oninput=()=>{ maskDec(el,2); recalcLit(); });
+  document.querySelectorAll("#fuelRows .fr-ppl").forEach(el=>el.oninput=()=>{ maskDec(el,3); recalcLit(); });
+  document.querySelectorAll("#fuelRows .fr-remove").forEach(b=>b.onclick=()=>{ readRowsFromDOM(); formRows.splice(parseInt(b.dataset.i,10),1); renderFuelRows(); });
+  const n=fuels.length;
+  $("addFuelRowWrap").style.display = (formRows.length<n && n>1) ? "flex" : "none";
+  recalcLit();
+}
+$("addFuelRow").onclick=()=>{ readRowsFromDOM(); const used=formRows.map(r=>r.fuel); const next=availFuels().find(f=>!used.includes(f))||availFuels()[0]; formRows.push({fuel:next,total:"",ppl:""}); renderFuelRows(); };
+function resetFuelForm(){ editFuel=null; $("aKm").value=""; $("aDate").value=todayISO(); formRows=[{fuel:(availFuels()[0]||""),total:"",ppl:""}]; renderFuelRows();
   $("fuelFormTitle").textContent="Novo abastecimento"; $("btnFuel").textContent="Adicionar abastecimento"; $("btnFuelCancel").classList.add("hide"); }
 function startEditFuel(id){ const f=fuels.find(x=>String(x.id)===String(id)); if(!f)return; editFuel=f.id;
-  $("aDate").value=f.date; $("aKm").value=toInput(f.km); $("aTotal").value=toInput(f.total); $("aPpl").value=toInput(f.ppl); calcLit();
-  const opt=[...$("aFuel").options].some(o=>o.value===f.fuel);
-  if(f.fuel && !opt){ $("aFuel").value="__outro"; $("aFuelOther").value=f.fuel; $("aFuelOther").classList.remove("hide"); }
-  else { $("aFuel").value=f.fuel||"Gasolina comum"; $("aFuelOther").classList.add("hide"); }
+  $("aDate").value=f.date; $("aKm").value=toInput(f.km);
+  const items=(f.items&&f.items.length)?f.items:[{fuel:f.fuel,total:f.total,ppl:f.ppl,liters:f.liters}];
+  formRows=items.map(it=>({fuel:it.fuel||"",total:toInput(it.total),ppl:toInput(it.ppl)}));
+  renderFuelRows();
   $("fuelFormTitle").textContent="Editar abastecimento"; $("btnFuel").textContent="Salvar alterações"; $("btnFuelCancel").classList.remove("hide");
   showTab("manut"); showSub("abast"); window.scrollTo({top:0,behavior:"smooth"}); }
 $("btnFuelCancel").onclick=resetFuelForm;
-$("btnFuel").onclick=()=>{ const km=num($("aKm").value),t=num($("aTotal").value),p=num($("aPpl").value),l=calcLit(); const e=$("aErr");
-  if(t<=0||p<=0){ e.textContent="Preencha o valor total e o valor por litro."; e.classList.remove("hide"); return; }
+$("btnFuel").onclick=()=>{ readRowsFromDOM(); const km=num($("aKm").value); const e=$("aErr");
+  const items=formRows.map(r=>({fuel:r.fuel,total:num(r.total),ppl:num(r.ppl)})).filter(it=>it.total>0&&it.ppl>0)
+    .map(it=>({fuel:it.fuel,total:it.total,ppl:it.ppl,liters:Math.round((it.total/it.ppl)*100)/100}));
+  if(!items.length){ e.textContent="Preencha o valor total e o valor por litro."; e.classList.remove("hide"); return; }
   if(km<=0){ e.textContent="Informe os km rodados."; e.classList.remove("hide"); return; } e.classList.add("hide");
-  if(editFuel){ const f=fuels.find(x=>x.id===editFuel); Object.assign(f,{date:$("aDate").value||todayISO(),km,total:t,ppl:p,liters:Math.round(l*100)/100,fuel:fuelValue()}); }
-  else { fuels.push({id:uid(),vehicleId:activeId,date:$("aDate").value||todayISO(),km,total:t,ppl:p,liters:Math.round(l*100)/100,fuel:fuelValue()}); }
+  const total=Math.round(items.reduce((s,i)=>s+i.total,0)*100)/100;
+  const liters=Math.round(items.reduce((s,i)=>s+i.liters,0)*100)/100;
+  const fuelLabel=items.map(i=>i.fuel).join(" + ");
+  const ppl=liters>0?total/liters:0;
+  if(editFuel){ const f=fuels.find(x=>x.id===editFuel); Object.assign(f,{date:$("aDate").value||todayISO(),km,items,total,liters,ppl,fuel:fuelLabel}); }
+  else { fuels.push({id:uid(),vehicleId:activeId,date:$("aDate").value||todayISO(),km,items,total,liters,ppl,fuel:fuelLabel}); }
   saveAll(); resetFuelForm(); render(); maybeNotifyOil(); };
 
 // ---------- troca de óleo (add/edit) ----------
@@ -651,8 +782,10 @@ $("btnOil").onclick=()=>{ const dur=num($("oDur").value), cost=num($("oCost").va
   saveAll(); resetOilForm(); render(); };
 
 // ---------- veículo ----------
-$("btnVehSave").onclick=()=>{ const v=av(); const nm=$("vName").value.trim(); if(nm)v.name=nm; v.tank=num($("vTank").value); v.kmInitial=Math.round(num($("vKmInit").value)); v.oilCapacity=num($("vOilCap").value); saveAll(); render(); };
-$("btnVehAdd").onclick=()=>{ const nm=$("nvName").value.trim(); if(!nm)return; const nv={id:uid(),name:nm,tank:num($("nvTank").value),kmInitial:Math.round(num($("nvKmInit").value)),oilCapacity:num($("nvOilCap").value),oilAlertOn:false,oilAdvance:0}; vehicles.push(nv); activeId=nv.id; saveAll(); $("nvName").value="";$("nvTank").value="";$("nvKmInit").value="";$("nvOilCap").value=""; showTab("indicadores"); render(); };
+$("btnVehSave").onclick=()=>{ const v=av(); const nm=$("vName").value.trim(); if(nm)v.name=nm; v.tank=num($("vTank").value); v.kmInitial=Math.round(num($("vKmInit").value)); v.oilCapacity=num($("vOilCap").value); v.fuelTypes=[...vehFuelSel]; saveAll(); render(); };
+$("btnVehAdd").onclick=()=>{ const nm=$("nvName").value.trim(); if(!nm)return; const nv={id:uid(),name:nm,tank:num($("nvTank").value),kmInitial:Math.round(num($("nvKmInit").value)),oilCapacity:num($("nvOilCap").value),fuelTypes:[...newFuelSel],oilAlertOn:false,oilAdvance:0}; vehicles.push(nv); activeId=nv.id; newFuelSel=[]; $("nvFuelList").classList.add("hide"); saveAll(); $("nvName").value="";$("nvTank").value="";$("nvKmInit").value="";$("nvOilCap").value=""; showTab("indicadores"); render(); };
+$("vFuelField").onclick=()=>$("vFuelList").classList.toggle("hide");
+$("nvFuelField").onclick=()=>$("nvFuelList").classList.toggle("hide");
 let vehDelArm=false;
 $("btnVehDel").onclick=()=>{ if(vehicles.length<=1)return;
   if(!vehDelArm){ vehDelArm=true; $("btnVehDel").textContent="Tocar de novo para excluir "+av().name;
@@ -665,6 +798,8 @@ $("periodSel").onchange=(e)=>{ selPeriod=e.target.value; render(); };
 // ---------- configurações ----------
 function renderSettings(){
   const v=av();
+  $("darkSwitch").classList.toggle("on", theme==="dark");
+  $("appVer").textContent="FuelLog • versão "+VERSION;
   $("oilSwitch").classList.toggle("on",!!v.oilAlertOn);
   $("advKm").disabled=!v.oilAlertOn;
   $("advKm").value = v.oilAlertOn ? (v.oilAdvance?String(v.oilAdvance):"") : "";
@@ -682,6 +817,54 @@ $("advKm").oninput=()=>{ const v=av(); if(v.oilAlertOn){ v.oilAdvance=Math.round
 $("btnLubAdd").onclick=()=>{ const brand=$("lBrand").value.trim(), type=$("lType").value, dur=Math.round(num($("lDur").value));
   if(!brand||dur<=0)return; lubricants.push({id:uid(),brand,type,durability:dur}); saveAll(); $("lBrand").value="";$("lDur").value=""; renderSettings(); render(); };
 
+// ---------- tema ----------
+function applyTheme(){ document.body.classList.toggle("light", theme==="light");
+  const ds=$("darkSwitch"); if(ds) ds.classList.toggle("on", theme==="dark");
+  const tc=document.querySelector('meta[name="theme-color"]'); if(tc) tc.setAttribute("content", theme==="light"?"#eef0f4":"#14161b"); }
+$("darkSwitch").onclick=()=>{ theme=(theme==="dark")?"light":"dark"; store.set("theme",theme); applyTheme(); };
+
+// ---------- suporte ----------
+function openSupport(){ $("overlay").classList.add("hide"); supAttach=null; $("supMsg").value=""; $("supCount").textContent="0"; $("supFile").value=""; $("supThumb").innerHTML=""; $("supErr").classList.add("hide"); $("supOk").classList.add("hide"); renderSupportList(); $("supportOverlay").classList.remove("hide"); }
+function closeSupport(back){ $("supportOverlay").classList.add("hide"); if(back) $("overlay").classList.remove("hide"); }
+$("btnSupport").onclick=openSupport;
+$("closeSupport").onclick=()=>closeSupport(false);
+$("btnSupBack").onclick=()=>closeSupport(true);
+$("supMsg").oninput=()=>{ $("supCount").textContent=$("supMsg").value.length; };
+$("supFile").onchange=()=>{ const f=$("supFile").files[0]; const e=$("supErr"); e.classList.add("hide");
+  if(!f){ supAttach=null; $("supThumb").innerHTML=""; return; }
+  if(!f.type.startsWith("image/")){ e.textContent="Anexe um arquivo de imagem."; e.classList.remove("hide"); $("supFile").value=""; return; }
+  if(f.size>2*1024*1024){ e.textContent="A imagem deve ter no máximo 2 MB."; e.classList.remove("hide"); $("supFile").value=""; supAttach=null; $("supThumb").innerHTML=""; return; }
+  const r=new FileReader(); r.onload=()=>{ supAttach={name:f.name,data:r.result}; $("supThumb").innerHTML=`<div class="thumb"><img src="${r.result}" alt=""/><button id="supRm">&times;</button></div>`; $("supRm").onclick=()=>{ supAttach=null; $("supFile").value=""; $("supThumb").innerHTML=""; }; }; r.readAsDataURL(f); };
+$("btnSupSend").onclick=async ()=>{ const msg=$("supMsg").value.trim(); const e=$("supErr"), ok=$("supOk"); e.classList.add("hide"); ok.classList.add("hide");
+  if(!msg){ e.textContent="Escreva sua mensagem antes de enviar."; e.classList.remove("hide"); return; }
+  let sent=false;
+  if(EMAILJS.publicKey && window.emailjs){
+    try{ emailjs.init(EMAILJS.publicKey);
+      await emailjs.send(EMAILJS.serviceId, EMAILJS.templateId, { message:msg, to_email:SUPPORT_EMAIL, image:(supAttach?supAttach.data:"") });
+      sent=true;
+    }catch(err){ sent=false; }
+  }
+  if(!sent){ // fallback: abre o app de e-mail (sem anexo)
+    const body=encodeURIComponent(msg+(supAttach?"\n\n[Anexo selecionado: não enviado automaticamente — anexe manualmente no e-mail.]":""));
+    window.location.href="mailto:"+SUPPORT_EMAIL+"?subject="+encodeURIComponent("FuelLog — Suporte")+"&body="+body;
+  }
+  support.unshift({ id:uid(), date:todayISO(), text:msg, attach:!!supAttach, via:(sent?"automático":"e-mail") });
+  saveAll(); renderSupportList();
+  $("supMsg").value=""; $("supCount").textContent="0"; $("supFile").value=""; $("supThumb").innerHTML=""; supAttach=null;
+  ok.textContent = sent ? "Enviado para o suporte. Obrigado!" : "Abrimos seu app de e-mail para concluir o envio.";
+  ok.classList.remove("hide"); };
+function renderSupportList(){
+  $("supList").innerHTML = support.length ? support.map(s=>
+    `<div class="item"><div class="acts">${delBtn("sup",s.id)}</div>
+      <div class="ihead" style="font-size:13px;color:var(--ink)">${prettyDate(s.date)} ${s.attach?'<span class="chip">📎 anexo</span>':''}</div>
+      <div class="imeta" style="white-space:normal">${(s.text||"").replace(/</g,"&lt;").slice(0,160)}${(s.text||"").length>160?"…":""}</div></div>`).join("")
+    : '<div class="empty">Nenhum envio ainda.</div>';
+  document.querySelectorAll('[data-del="sup"]').forEach(()=>{}); // ligados pelo handler global em render(); reanexa abaixo
+  document.querySelectorAll("#supList [data-del]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation(); const k=b.dataset.del;
+    if(pendingDel===k){ const id=k.slice(4); support=support.filter(s=>String(s.id)!==id); pendingDel=null; clearTimeout(delTimer); saveAll(); renderSupportList(); }
+    else { pendingDel=k; renderSupportList(); clearTimeout(delTimer); delTimer=setTimeout(()=>{ if(pendingDel){ pendingDel=null; renderSupportList(); } },3000); } });
+}
+
 // ---------- navegação ----------
 function showTab(name){
   document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===name));
@@ -697,7 +880,8 @@ document.querySelectorAll(".subtab").forEach(t=>t.onclick=()=>showSub(t.dataset.
 
 // init
 $("aDate").value=todayISO(); $("oDate").value=todayISO();
-load(); render(); resetOilForm();
+load(); applyTheme(); render(); resetOilForm(); resetFuelForm();
+$("appVer").textContent="FuelLog • versão "+VERSION;
 setTimeout(()=>{ const s=$("splash"); if(s){ s.classList.add("gone"); setTimeout(()=>{ s.style.display="none"; },500); } },1300);
 if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").then(()=>{ setTimeout(maybeNotifyOil,800); }).catch(()=>{ maybeNotifyOil(); }); }
 else maybeNotifyOil();
