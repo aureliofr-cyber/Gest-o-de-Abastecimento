@@ -74,7 +74,8 @@
   .find .iv{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--green)}
   .find .il{font-size:9px;color:var(--faint);letter-spacing:1px;text-transform:uppercase;margin-top:1px}
   .acts{position:absolute;top:8px;right:8px;display:flex;gap:2px}
-  .iconbtn{background:none;border:none;color:var(--faint);cursor:pointer;font-size:15px;padding:4px 5px}
+  .iconbtn{background:none;border:none;color:var(--faint);cursor:pointer;font-size:15px;padding:4px 5px;display:inline-flex;align-items:center;justify-content:center}
+  .iconbtn svg{width:18px;height:18px;display:block}
   .iconbtn.delconfirm{color:var(--danger);font-size:11px;font-weight:700;letter-spacing:.5px}
   .chip{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.5px;padding:2px 7px;border-radius:6px;background:rgba(255,180,84,.14);color:var(--amber);margin-left:6px;vertical-align:middle}
   .chipT{background:rgba(122,209,122,.16);color:var(--green)}
@@ -92,6 +93,8 @@
   .switch.on .knob{left:23px;background:var(--green)}
   .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:50}
   .sheet{background:var(--bg);border:1px solid var(--edge);border-radius:18px 18px 0 0;width:100%;max-width:460px;max-height:90vh;overflow:auto;padding:18px 16px 36px}
+  .overlay.center{align-items:center}
+  .overlay.center .sheet{border-radius:18px;max-height:88vh;margin:0 14px;padding:18px 16px 22px;box-shadow:0 16px 50px rgba(0,0,0,.5)}
   .sheetHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
   .sheetHead .t{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:600}
   .switchRow{display:flex;align-items:center;justify-content:space-between;gap:14px}
@@ -264,8 +267,8 @@
         <div class="vehFormHead">
           <div class="eyebrow" id="fuelFormTitle" style="margin:0">Novo abastecimento</div>
           <div class="vehFormActs">
-            <button id="fuelEditBtn" class="iconbtn hide" title="Editar">&#9998;</button>
-            <button id="fuelDelBtn" class="iconbtn hide" title="Excluir">&#128465;</button>
+            <button id="fuelEditBtn" class="iconbtn hide" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+            <button id="fuelDelBtn" class="iconbtn hide" title="Excluir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"/><path d="M10 11v6M14 11v6"/></svg></button>
           </div>
         </div>
         <div class="row">
@@ -348,8 +351,8 @@
       <div class="vehFormHead">
         <div class="eyebrow" id="vehFormTitle" style="margin:0">Dados do veículo</div>
         <div class="vehFormActs">
-          <button id="vehEditBtn" class="iconbtn hide" title="Editar">&#9998;</button>
-          <button id="vehDelBtn" class="iconbtn hide" title="Excluir">&#128465;</button>
+          <button id="vehEditBtn" class="iconbtn hide" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+          <button id="vehDelBtn" class="iconbtn hide" title="Excluir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"/><path d="M10 11v6M14 11v6"/></svg></button>
         </div>
       </div>
       <label>Tipo do veículo</label>
@@ -507,12 +510,11 @@
       <div id="donMsg" class="ok hide"></div>
     </div>
     <button id="btnPremium" class="btn btnAmber" style="margin-bottom:10px">⭐ Migre para a versão Premium</button>
-    <button id="btnDevBack" class="btn btnGhost">Voltar</button>
   </div>
 </div>
 
 <!-- ================= PREMIUM (overlay) ================= -->
-<div id="premiumOverlay" class="overlay hide">
+<div id="premiumOverlay" class="overlay center hide">
   <div class="sheet">
     <div class="sheetHead"><span class="t">Versão Premium</span><button id="closePremium" class="iconbtn" style="font-size:18px">&#10005;</button></div>
     <div class="card">
@@ -537,7 +539,6 @@
       </div>
       <div id="premMsg" class="ok hide"></div>
     </div>
-    <button id="btnPremiumBack" class="btn btnGhost">Voltar</button>
   </div>
 </div>
 
@@ -966,7 +967,7 @@ function renderVehList(){
     <div class="vehRow" data-veh="${v.id}">
       <span class="vehIcon">${typeIcon(v.type)}</span>
       <span class="vehName">${vehName(v).replace(/</g,"&lt;")}</span>
-      <button class="iconbtn vehEye" data-eye="${v.id}" title="Ver dados">👁</button>
+      <button class="iconbtn vehEye" data-eye="${v.id}" title="Ver dados"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
     </div>`).join("");
   document.querySelectorAll("#vehList .vehRow").forEach(r=>r.onclick=()=>{ const id=r.dataset.veh; activeId=id; saveAll(); resetFuelForm(); resetOilForm(); openVehForm(id,"view"); render(); });
   document.querySelectorAll("#vehList .vehEye").forEach(b=>b.onclick=(e)=>{ e.stopPropagation(); const id=b.dataset.eye; activeId=id; saveAll(); resetFuelForm(); resetOilForm(); openVehForm(id,"view"); render(); });
@@ -1140,7 +1141,6 @@ function openDev(){ $("overlay").classList.add("hide"); $("pixKey").textContent=
 function closeDev(back){ $("devOverlay").classList.add("hide"); if(back) $("overlay").classList.remove("hide"); }
 $("btnDev").onclick=openDev;
 $("closeDev").onclick=()=>closeDev(false);
-$("btnDevBack").onclick=()=>closeDev(true);
 $("btnCopyKey").onclick=async ()=>{ const okv=await copyText(PIX.key); $("donMsg").textContent=okv?"Chave Pix copiada!":"Não foi possível copiar — copie manualmente."; $("donMsg").classList.remove("hide"); };
 function showPix(amount){ const code=pixBRCode(amount); $("pixCode").textContent=code; $("donCodeVal").textContent = amount>0?("· R$ "+d2(amount)):""; $("donCodeWrap").classList.remove("hide"); }
 document.querySelectorAll("#donVals .donVal").forEach(b=>b.onclick=()=>{
@@ -1158,7 +1158,6 @@ $("btnPremium").onclick=openPremium;
 $("starBtn").onclick=()=>{ $("overlay").classList.add("hide"); $("devOverlay").classList.add("hide"); $("premCodeWrap").classList.add("hide"); $("premMsg").classList.add("hide"); $("premiumOverlay").classList.remove("hide"); };
 $("devBackArrow").onclick=()=>closeDev(true);
 $("closePremium").onclick=()=>closePremium(false);
-$("btnPremiumBack").onclick=()=>closePremium(true);
 $("btnPremiumPay").onclick=()=>{ $("premPixCode").textContent=pixBRCode(30); $("premCodeWrap").classList.remove("hide"); $("premMsg").classList.add("hide"); };
 $("btnCopyPrem").onclick=async ()=>{ const okv=await copyText($("premPixCode").textContent); $("premMsg").textContent=okv?"Código Pix copiado! Cole no app do seu banco.":"Não foi possível copiar — selecione o código e copie."; $("premMsg").classList.remove("hide"); };
 
@@ -1179,7 +1178,8 @@ document.querySelectorAll(".subtab").forEach(t=>t.onclick=()=>showSub(t.dataset.
 // init
 $("aDate").value=todayISO(); $("oDate").value=todayISO();
 try{ load(); applyTheme(); render(); resetOilForm(); resetFuelForm(); initAds(); $("appVer").textContent="FuelLog • versão "+VERSION; }catch(err){ console.error(err); }
-setTimeout(()=>{ const s=$("splash"); if(s){ s.classList.add("gone"); setTimeout(()=>{ s.style.display="none"; },500); } },1300);
+setTimeout(()=>{ const s=$("splash"); if(s){ s.classList.add("gone"); setTimeout(()=>{ s.style.display="none"; },500); }
+  setTimeout(()=>{ try{ openPremium(); }catch(e){} },600); },1300);
 if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").then(()=>{ setTimeout(maybeNotifyOil,800); }).catch(()=>{ maybeNotifyOil(); }); }
 else maybeNotifyOil();
 </script>
