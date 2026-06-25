@@ -143,6 +143,22 @@
   .confirmBox{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:20px;max-width:330px;width:88%;box-shadow:0 14px 44px rgba(0,0,0,.45)}
   .confirmMsg{font-size:15px;color:var(--ink);margin-bottom:16px;line-height:1.45;text-align:center}
   .item.clk{cursor:pointer}
+  /* anúncio de rodapé */
+  #adbar{position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--panel);border-top:1px solid var(--edge);display:flex;align-items:center;justify-content:center;min-height:52px;padding:3px}
+  body.has-ads .wrap{padding-bottom:66px}
+  /* doação / desenvolvedor */
+  .donVals{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 12px}
+  .donVal{flex:1 1 28%;min-width:72px;text-align:center;padding:12px 8px;border:1px solid var(--edge);border-radius:10px;background:var(--slot);color:var(--ink);font-weight:700;cursor:pointer;font-size:15px}
+  .donVal.on{border-color:var(--green);background:rgba(122,209,122,.18);color:var(--green)}
+  .pixBox{background:var(--slot);border:1px solid var(--edge);border-radius:10px;padding:11px;font-family:var(--mono);font-size:11px;word-break:break-all;color:var(--ink);max-height:120px;overflow:auto}
+  .copyRow{display:flex;align-items:center;gap:8px;background:var(--slot);border:1px solid var(--edge);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+  .copyRow .ck{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono);font-size:13px;color:var(--ink)}
+  .premList{margin:10px 0 14px}
+  .premItem{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--edge);font-size:14px;color:var(--ink)}
+  .premItem:last-child{border-bottom:none}
+  .premItem .pk{width:22px;height:22px;border-radius:50%;background:rgba(122,209,122,.2);color:var(--green);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0}
+  .premPrice{text-align:center;font-size:28px;font-weight:800;color:var(--amber);margin:6px 0 4px}
+  .premPrice small{display:block;font-size:12px;color:var(--faint);font-weight:400}
   /* área de texto / suporte */
   textarea{width:100%;min-height:130px;padding:11px 12px;background:var(--slot);border:1px solid var(--edge);border-radius:10px;color:var(--ink);font-size:14px;font-family:var(--sans);outline:none;resize:vertical}
   .counter{font-size:11px;color:var(--faint);text-align:right;margin-top:4px}
@@ -166,6 +182,7 @@
   <div class="top">
     <span class="dot"></span><h1>Controle</h1>
     <select id="vehSelect"></select>
+    <button id="starBtn" class="gear" aria-label="Versão Premium" style="color:var(--amber)">&#9733;</button>
     <button id="gearBtn" class="gear" aria-label="Configurações">&#9881;</button>
   </div>
 
@@ -425,6 +442,7 @@
     </div>
 
     <button id="btnSupport" class="menuItem"><span>Suporte</span><span class="chev">&#8250;</span></button>
+    <button id="btnDev" class="menuItem"><span>Desenvolvedor</span><span class="chev">&#8250;</span></button>
     <div class="ver" id="appVer"></div>
   </div>
 </div>
@@ -458,6 +476,73 @@
   </div>
 </div>
 
+<!-- ================= DESENVOLVEDOR (overlay) ================= -->
+<div id="devOverlay" class="overlay hide">
+  <div class="sheet">
+    <div class="sheetHead"><span class="t">Desenvolvedor</span><span style="display:flex;gap:4px"><button id="devBackArrow" class="iconbtn" title="Voltar às configurações" style="font-size:18px">&#8592;</button><button id="closeDev" class="iconbtn" style="font-size:18px">&#10005;</button></span></div>
+    <div class="card">
+      <div class="eyebrow" style="font-size:15px;color:var(--ink);font-weight:700;letter-spacing:0">☕ Pague um café ao desenvolvedor</div>
+      <div class="powerSub" style="font-size:13px;line-height:1.5;margin:6px 0 14px">Este app é gratuito e feito com carinho. Se ele te ajuda, considere apoiar com um Pix de qualquer valor — isso ajuda a manter e melhorar o FuelLog. Muito obrigado! 🙏</div>
+      <label>Chave Pix</label>
+      <div class="copyRow"><span class="ck" id="pixKey">—</span><button id="btnCopyKey" class="btn btnGhost" style="width:auto;padding:8px 12px;margin:0">Copiar</button></div>
+      <label>Escolha um valor</label>
+      <div class="donVals" id="donVals">
+        <div class="donVal" data-val="2">R$ 2</div>
+        <div class="donVal" data-val="4">R$ 4</div>
+        <div class="donVal" data-val="6">R$ 6</div>
+        <div class="donVal" data-val="8">R$ 8</div>
+        <div class="donVal" data-val="10">R$ 10</div>
+        <div class="donVal" data-val="other">Outro</div>
+      </div>
+      <div id="donOtherWrap" class="hide" style="margin-bottom:12px">
+        <label>Outro valor (R$)</label>
+        <input id="donOther" type="text" inputmode="decimal" placeholder="0,00" />
+      </div>
+      <div id="donCodeWrap" class="hide">
+        <label>Pix Copia e Cola <span id="donCodeVal" style="color:var(--green)"></span></label>
+        <div class="pixBox" id="pixCode"></div>
+        <button id="btnCopyPix" class="btn btnGreen" style="margin-top:10px">Copiar código Pix</button>
+        <div class="powerSub" style="margin-top:8px">Copie e cole na opção “Pix Copia e Cola” do app do seu banco.</div>
+      </div>
+      <div id="donMsg" class="ok hide"></div>
+    </div>
+    <button id="btnPremium" class="btn btnAmber" style="margin-bottom:10px">⭐ Migre para a versão Premium</button>
+    <button id="btnDevBack" class="btn btnGhost">Voltar</button>
+  </div>
+</div>
+
+<!-- ================= PREMIUM (overlay) ================= -->
+<div id="premiumOverlay" class="overlay hide">
+  <div class="sheet">
+    <div class="sheetHead"><span class="t">Versão Premium</span><button id="closePremium" class="iconbtn" style="font-size:18px">&#10005;</button></div>
+    <div class="card">
+      <div class="eyebrow" style="font-size:15px;color:var(--ink);font-weight:700;letter-spacing:0">⭐ FuelLog Premium</div>
+      <div class="powerSub" style="margin:6px 0 0;font-style:italic">Ideal para motoristas e entregadores por aplicativos e autônomos.</div>
+      <div class="powerSub" style="margin:6px 0 4px">Desbloqueie recursos avançados:</div>
+      <div class="premList">
+        <div class="premItem"><span class="pk">&#10003;</span> Fluxo de caixa</div>
+        <div class="premItem"><span class="pk">&#10003;</span> Controle de manutenção de veículos</div>
+        <div class="premItem"><span class="pk">&#10003;</span> Impostos</div>
+        <div class="premItem"><span class="pk">&#10003;</span> Veículos elétricos</div>
+        <div class="premItem"><span class="pk">&#10003;</span> Cadastro ilimitado de veículos</div>
+        <div class="premItem"><span class="pk">&#10003;</span> Sem anúncios</div>
+      </div>
+      <div class="premPrice">R$ 30,00<small>pagamento único</small></div>
+      <button id="btnPremiumPay" class="btn btnAmber">Migrar por R$ 30,00 (Pix)</button>
+      <div id="premCodeWrap" class="hide" style="margin-top:12px">
+        <label>Pix Copia e Cola · R$ 30,00</label>
+        <div class="pixBox" id="premPixCode"></div>
+        <button id="btnCopyPrem" class="btn btnGreen" style="margin-top:10px">Copiar código Pix</button>
+        <div class="powerSub" style="margin-top:8px">Após o pagamento, fale com o Suporte para liberarmos a sua versão Premium.</div>
+      </div>
+      <div id="premMsg" class="ok hide"></div>
+    </div>
+    <button id="btnPremiumBack" class="btn btnGhost">Voltar</button>
+  </div>
+</div>
+
+<div id="adbar" class="hide"></div>
+
 <script>
 const $ = (id) => document.getElementById(id);
 const NM = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
@@ -470,6 +555,11 @@ function vehName(v){ const s=[v.maker,v.model,v.plate].map(x=>(x||"").trim()).fi
 // Para envio automático COM anexo, crie conta grátis no EmailJS e preencha as 3 chaves abaixo
 // (no template do EmailJS, defina o destinatário como suporte.fuellog@outlook.com):
 const EMAILJS = { publicKey:"s47jSGsm_E-UkJ7ZR", serviceId:"service_a82fmwo", templateId:"template_40g40xo" };
+// ANÚNCIO DE RODAPÉ (Google AdSense). Preencha após aprovação da conta:
+//   client = "ca-pub-XXXXXXXXXXXXXXXX"  |  slot = "1234567890"
+const ADS = { client:"", slot:"" };
+// DOAÇÃO PIX. Troque "key" pela sua chave real (CPF, e-mail, telefone ou chave aleatória):
+const PIX = { key:"403f7739-631c-4b2a-b6ce-2e9ab1defbe4", name:"Aurélio Freire Severo", city:"Recife" };
 
 const store = (()=>{ let mem={}; try{ const t="__t"; localStorage.setItem(t,"1"); localStorage.removeItem(t);
   return {get:k=>localStorage.getItem(k), set:(k,v)=>localStorage.setItem(k,v)};
@@ -1019,6 +1109,59 @@ function renderSupportList(){
     else { pendingDel=k; renderSupportList(); clearTimeout(delTimer); delTimer=setTimeout(()=>{ if(pendingDel){ pendingDel=null; renderSupportList(); } },3000); } });
 }
 
+// ---------- anúncio de rodapé ----------
+function initAds(){
+  const bar=$("adbar"); if(!bar) return;
+  if(!ADS.client || !ADS.slot){ bar.classList.add("hide"); document.body.classList.remove("has-ads"); return; }
+  document.body.classList.add("has-ads"); bar.classList.remove("hide");
+  if(!document.getElementById("adsbygoogle-js")){
+    const s=document.createElement("script"); s.id="adsbygoogle-js"; s.async=true; s.crossOrigin="anonymous";
+    s.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client="+ADS.client; document.head.appendChild(s);
+  }
+  bar.innerHTML='<ins class="adsbygoogle" style="display:inline-block;width:320px;height:50px" data-ad-client="'+ADS.client+'" data-ad-slot="'+ADS.slot+'"></ins>';
+  try{ (window.adsbygoogle=window.adsbygoogle||[]).push({}); }catch(e){}
+}
+
+// ---------- desenvolvedor / Pix ----------
+const _norm = (s)=>(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
+function pixField(id,val){ const v=String(val); return id+String(v.length).padStart(2,"0")+v; }
+function crc16(str){ let crc=0xFFFF; for(let i=0;i<str.length;i++){ crc^=str.charCodeAt(i)<<8; for(let j=0;j<8;j++){ crc=(crc&0x8000)?((crc<<1)^0x1021):(crc<<1); crc&=0xFFFF; } } return crc.toString(16).toUpperCase().padStart(4,"0"); }
+function pixBRCode(amount){
+  const name=_norm(PIX.name).substring(0,25), city=_norm(PIX.city).substring(0,15);
+  const mai = pixField("26", pixField("00","br.gov.bcb.pix")+pixField("01",PIX.key));
+  let p = pixField("00","01")+mai+pixField("52","0000")+pixField("53","986")+
+    (amount>0?pixField("54", Number(amount).toFixed(2)):"")+
+    pixField("58","BR")+pixField("59",name||"FULANO")+pixField("60",city||"BRASIL")+
+    pixField("62", pixField("05","***"))+"6304";
+  return p + crc16(p);
+}
+async function copyText(txt){ try{ await navigator.clipboard.writeText(txt); return true; }catch(e){ try{ const t=document.createElement("textarea"); t.value=txt; t.style.position="fixed"; t.style.opacity="0"; document.body.appendChild(t); t.select(); document.execCommand("copy"); document.body.removeChild(t); return true; }catch(_){ return false; } } }
+function openDev(){ $("overlay").classList.add("hide"); $("pixKey").textContent=PIX.key; document.querySelectorAll("#donVals .donVal").forEach(x=>x.classList.remove("on")); $("donOtherWrap").classList.add("hide"); $("donOther").value=""; $("donCodeWrap").classList.add("hide"); $("donMsg").classList.add("hide"); $("devOverlay").classList.remove("hide"); }
+function closeDev(back){ $("devOverlay").classList.add("hide"); if(back) $("overlay").classList.remove("hide"); }
+$("btnDev").onclick=openDev;
+$("closeDev").onclick=()=>closeDev(false);
+$("btnDevBack").onclick=()=>closeDev(true);
+$("btnCopyKey").onclick=async ()=>{ const okv=await copyText(PIX.key); $("donMsg").textContent=okv?"Chave Pix copiada!":"Não foi possível copiar — copie manualmente."; $("donMsg").classList.remove("hide"); };
+function showPix(amount){ const code=pixBRCode(amount); $("pixCode").textContent=code; $("donCodeVal").textContent = amount>0?("· R$ "+d2(amount)):""; $("donCodeWrap").classList.remove("hide"); }
+document.querySelectorAll("#donVals .donVal").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("#donVals .donVal").forEach(x=>x.classList.remove("on")); b.classList.add("on"); $("donMsg").classList.add("hide");
+  if(b.dataset.val==="other"){ $("donOtherWrap").classList.remove("hide"); $("donCodeWrap").classList.add("hide"); $("donOther").focus(); }
+  else { $("donOtherWrap").classList.add("hide"); showPix(parseFloat(b.dataset.val)); }
+});
+$("donOther").oninput=()=>{ maskDec($("donOther"),2); const v=num($("donOther").value); if(v>0) showPix(v); else $("donCodeWrap").classList.add("hide"); };
+$("btnCopyPix").onclick=async ()=>{ const okv=await copyText($("pixCode").textContent); $("donMsg").textContent=okv?"Código Pix copiado! Cole no app do seu banco.":"Não foi possível copiar — selecione o código e copie."; $("donMsg").classList.remove("hide"); };
+
+// ---------- premium ----------
+function openPremium(){ $("devOverlay").classList.add("hide"); $("premCodeWrap").classList.add("hide"); $("premMsg").classList.add("hide"); $("premiumOverlay").classList.remove("hide"); }
+function closePremium(back){ $("premiumOverlay").classList.add("hide"); if(back) $("devOverlay").classList.remove("hide"); }
+$("btnPremium").onclick=openPremium;
+$("starBtn").onclick=()=>{ $("overlay").classList.add("hide"); $("devOverlay").classList.add("hide"); $("premCodeWrap").classList.add("hide"); $("premMsg").classList.add("hide"); $("premiumOverlay").classList.remove("hide"); };
+$("devBackArrow").onclick=()=>closeDev(true);
+$("closePremium").onclick=()=>closePremium(false);
+$("btnPremiumBack").onclick=()=>closePremium(true);
+$("btnPremiumPay").onclick=()=>{ $("premPixCode").textContent=pixBRCode(30); $("premCodeWrap").classList.remove("hide"); $("premMsg").classList.add("hide"); };
+$("btnCopyPrem").onclick=async ()=>{ const okv=await copyText($("premPixCode").textContent); $("premMsg").textContent=okv?"Código Pix copiado! Cole no app do seu banco.":"Não foi possível copiar — selecione o código e copie."; $("premMsg").classList.remove("hide"); };
+
 // ---------- navegação ----------
 function showTab(name){
   document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===name));
@@ -1035,8 +1178,7 @@ document.querySelectorAll(".subtab").forEach(t=>t.onclick=()=>showSub(t.dataset.
 
 // init
 $("aDate").value=todayISO(); $("oDate").value=todayISO();
-load(); applyTheme(); render(); resetOilForm(); resetFuelForm();
-$("appVer").textContent="FuelLog • versão "+VERSION;
+try{ load(); applyTheme(); render(); resetOilForm(); resetFuelForm(); initAds(); $("appVer").textContent="FuelLog • versão "+VERSION; }catch(err){ console.error(err); }
 setTimeout(()=>{ const s=$("splash"); if(s){ s.classList.add("gone"); setTimeout(()=>{ s.style.display="none"; },500); } },1300);
 if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").then(()=>{ setTimeout(maybeNotifyOil,800); }).catch(()=>{ maybeNotifyOil(); }); }
 else maybeNotifyOil();
