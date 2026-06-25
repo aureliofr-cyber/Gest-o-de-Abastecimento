@@ -86,10 +86,10 @@
   .bannerWarn{background:rgba(224,107,94,.14);border:1px solid var(--danger);color:#f0a79f}
   .powerSub{color:var(--faint);font-size:11px;margin-top:3px}
   .editing{outline:1px solid var(--amber);border-radius:12px;padding:10px;margin:-10px -10px 12px}
-  .switch{position:relative;width:60px;height:32px;border-radius:18px;background:var(--slot);border:1px solid var(--edge);cursor:pointer;flex-shrink:0;transition:background .2s}
+  .switch{position:relative;width:46px;height:25px;border-radius:14px;background:var(--slot);border:1px solid var(--edge);cursor:pointer;flex-shrink:0;transition:background .2s}
   .switch.on{background:rgba(122,209,122,.25);border-color:var(--green)}
-  .switch .knob{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--faint);transition:left .2s,background .2s}
-  .switch.on .knob{left:31px;background:var(--green)}
+  .switch .knob{position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:var(--faint);transition:left .2s,background .2s}
+  .switch.on .knob{left:23px;background:var(--green)}
   .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:50}
   .sheet{background:var(--bg);border:1px solid var(--edge);border-radius:18px 18px 0 0;width:100%;max-width:460px;max-height:90vh;overflow:auto;padding:18px 16px 36px}
   .sheetHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
@@ -126,6 +126,23 @@
   .frow{border-top:1px dashed var(--edge);padding-top:12px;margin-top:10px}
   .frow:first-child{border-top:none;padding-top:0;margin-top:0}
   .fr-remove{background:none;border:none;cursor:pointer;font-size:12px;padding:2px 4px}
+  /* aba veículo */
+  .vehAddBtn{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px}
+  .circlePlus{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;border:2px solid currentColor;font-size:15px;line-height:1;font-weight:700}
+  .vehRow{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--edge);border-radius:10px;background:var(--panel);margin-bottom:8px;cursor:pointer}
+  .vehRow .vehIcon{font-size:20px;flex-shrink:0}
+  .vehRow .vehName{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;color:var(--ink)}
+  .vehEye{font-size:18px;flex-shrink:0}
+  .vehFormHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .vehFormActs{display:flex;gap:4px}
+  .vehFormActs .iconbtn{font-size:17px;width:34px;height:34px}
+  #vehFormCard.locked input,#vehFormCard.locked select{opacity:.75}
+  #vehFormCard.locked .mselField{pointer-events:none;opacity:.75}
+  .cov{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:24px}
+  .cov.hide{display:none}
+  .confirmBox{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:20px;max-width:330px;width:88%;box-shadow:0 14px 44px rgba(0,0,0,.45)}
+  .confirmMsg{font-size:15px;color:var(--ink);margin-bottom:16px;line-height:1.45;text-align:center}
+  .item.clk{cursor:pointer}
   /* área de texto / suporte */
   textarea{width:100%;min-height:130px;padding:11px 12px;background:var(--slot);border:1px solid var(--edge);border-radius:10px;color:var(--ink);font-size:14px;font-family:var(--sans);outline:none;resize:vertical}
   .counter{font-size:11px;color:var(--faint);text-align:right;margin-top:4px}
@@ -225,11 +242,18 @@
 
     <!-- ---- sub: abastecimento ---- -->
     <div id="sub-abast">
-      <div class="card">
-        <div class="eyebrow" id="fuelFormTitle">Novo abastecimento</div>
+      <button id="btnNewFuel" class="btn btnGhost vehAddBtn"><span class="circlePlus">+</span> Informar novo abastecimento</button>
+      <div class="card hide" id="fuelFormCard">
+        <div class="vehFormHead">
+          <div class="eyebrow" id="fuelFormTitle" style="margin:0">Novo abastecimento</div>
+          <div class="vehFormActs">
+            <button id="fuelEditBtn" class="iconbtn hide" title="Editar">&#9998;</button>
+            <button id="fuelDelBtn" class="iconbtn hide" title="Excluir">&#128465;</button>
+          </div>
+        </div>
         <div class="row">
           <div class="col"><label>Data</label><input id="aDate" type="date" /></div>
-          <div class="col"><label>Km rodados</label><input id="aKm" type="text" inputmode="decimal" placeholder="0,0" /></div>
+          <div class="col"><label id="aKmLabel">Km Rodado (Trip)</label><input id="aKm" type="text" inputmode="decimal" placeholder="0,0" /></div>
         </div>
         <div id="fuelRows"></div>
         <div id="addFuelRowWrap" style="display:none;align-items:center;gap:10px;margin:4px 0 12px">
@@ -238,7 +262,7 @@
         </div>
         <div id="aLitWrap">
           <label>Litros total (automático)</label>
-          <input id="aLit" type="text" readonly style="color:var(--amber)" placeholder="0,00" />
+          <input id="aLit" type="text" readonly style="color:var(--amber)" placeholder="0,000" />
         </div>
         <div id="aTank" class="powerSub" style="margin:6px 0 12px 2px"></div>
         <div id="aErr" class="err hide"></div>
@@ -258,7 +282,9 @@
         <div id="oilStatus" class="powerSub"></div>
       </div>
 
-      <div class="card">
+      <button id="btnNewOil" class="btn btnGhost vehAddBtn"><span class="circlePlus">+</span> Informar nova troca de óleo</button>
+
+      <div class="card hide" id="oilFormCard">
         <div class="eyebrow" id="oilFormTitle">Registrar troca de óleo</div>
         <label>Lubrificante cadastrado</label>
         <select id="oLub" class="fld"></select>
@@ -294,43 +320,64 @@
 
   <!-- ================= VEÍCULO ================= -->
   <div id="tab-veiculo" class="hide">
-    <div class="card">
-      <div class="eyebrow">Dados do veículo</div>
-      <label>Nome / modelo</label>
-      <input id="vName" type="text" placeholder="ex: CB 500" style="margin-bottom:10px" />
+    <button id="btnNewVeh" class="btn btnGhost vehAddBtn"><span class="circlePlus">+</span> Cadastrar veículo</button>
+
+    <div id="vehListWrap" class="card">
+      <div class="eyebrow">Meus veículos</div>
+      <div id="vehList"></div>
+    </div>
+
+    <div id="vehFormCard" class="card hide">
+      <div class="vehFormHead">
+        <div class="eyebrow" id="vehFormTitle" style="margin:0">Dados do veículo</div>
+        <div class="vehFormActs">
+          <button id="vehEditBtn" class="iconbtn hide" title="Editar">&#9998;</button>
+          <button id="vehDelBtn" class="iconbtn hide" title="Excluir">&#128465;</button>
+        </div>
+      </div>
+      <label>Tipo do veículo</label>
+      <select id="vType" class="fld">
+        <option value="moto">Moto</option>
+        <option value="carro">Carro</option>
+        <option value="van">Van</option>
+        <option value="onibus">Ônibus</option>
+        <option value="caminhao">Caminhão</option>
+      </select>
+      <div class="row">
+        <div class="col"><label>Fabricante</label><input id="vMaker" type="text" placeholder="ex: HONDA" /></div>
+        <div class="col"><label>Modelo</label><input id="vModel" type="text" placeholder="ex: BROS" /></div>
+      </div>
+      <div class="row">
+        <div class="col"><label>Ano de fabricação</label><input id="vYear" type="text" inputmode="numeric" placeholder="ex: 2022" /></div>
+        <div class="col"><label>Placa do veículo</label><input id="vPlate" type="text" placeholder="ex: ABC1D23" /></div>
+      </div>
       <div class="row">
         <div class="col"><label>Tanque (litros)</label><input id="vTank" type="text" inputmode="decimal" placeholder="0,0" /></div>
-        <div class="col"><label>KM inicial</label><input id="vKmInit" type="text" inputmode="numeric" placeholder="ex: 12300" /></div>
+        <div class="col"><label>KM inicial</label><input id="vKmInit" type="text" readonly placeholder="Definido no 1º abast." /></div>
       </div>
       <label>Capacidade de óleo do motor (litros)</label>
       <input id="vOilCap" type="text" inputmode="decimal" placeholder="ex: 1,1" style="margin-bottom:6px" />
-      <div class="powerSub" style="margin:-2px 0 12px 2px">Km que a moto já tinha quando você começou a registrar aqui.</div>
+      <div class="powerSub" style="margin:-2px 0 12px 2px">Km que o veículo já tinha quando você começou a registrar aqui.</div>
       <label>Combustível(is) utilizado(s)</label>
       <div class="msel">
         <div class="mselField" id="vFuelField"><span id="vFuelText" class="mselText ph">Selecionar…</span><span class="mselArrow">&#9662;</span></div>
         <div id="vFuelList" class="mselList hide"></div>
       </div>
+      <div id="vehErr" class="err hide"></div>
       <button id="btnVehSave" class="btn btnAmberGhost">Salvar dados</button>
+      <button id="btnVehCancel" class="btn btnGhost" style="margin-top:8px">Voltar</button>
     </div>
+  </div>
+</div>
 
-    <div class="card">
-      <div class="eyebrow">Adicionar outro veículo</div>
-      <input id="nvName" type="text" placeholder="nome do veículo" style="margin-bottom:10px" />
-      <div class="row">
-        <div class="col"><label>Tanque (L)</label><input id="nvTank" type="text" inputmode="decimal" placeholder="0,0" /></div>
-        <div class="col"><label>KM inicial</label><input id="nvKmInit" type="text" inputmode="numeric" placeholder="ex: 0" /></div>
-      </div>
-      <label>Capacidade de óleo (L)</label>
-      <input id="nvOilCap" type="text" inputmode="decimal" placeholder="ex: 1,1" style="margin-bottom:12px" />
-      <label>Combustível(is) utilizado(s)</label>
-      <div class="msel">
-        <div class="mselField" id="nvFuelField"><span id="nvFuelText" class="mselText ph">Selecionar…</span><span class="mselArrow">&#9662;</span></div>
-        <div id="nvFuelList" class="mselList hide"></div>
-      </div>
-      <button id="btnVehAdd" class="btn btnGhost">Adicionar veículo</button>
+<!-- ================= CONFIRMAÇÃO ================= -->
+<div id="confirmOverlay" class="cov hide">
+  <div class="confirmBox">
+    <div id="confirmMsg" class="confirmMsg">Tem certeza?</div>
+    <div class="row">
+      <button id="confirmYes" class="btn btnAmber col">Salvar</button>
+      <button id="confirmNo" class="btn btnGhost col">Cancelar</button>
     </div>
-
-    <button id="btnVehDel" class="btn btnDanger">Excluir este veículo e seus dados</button>
   </div>
 </div>
 
@@ -387,11 +434,19 @@
   <div class="sheet">
     <div class="sheetHead"><span class="t">Suporte</span><button id="closeSupport" class="iconbtn" style="font-size:18px">&#10005;</button></div>
     <div class="powerSub" style="font-size:13px;line-height:1.5;margin-bottom:14px">Envie suas dúvidas, elogios, reclamações, sugestões de melhorias e ferramentas e/ou apontamento de erros:</div>
+    <label>Tema</label>
+    <select id="supTema" class="fld">
+      <option>Elogios/Reclamações</option>
+      <option>Erros</option>
+      <option>Sugestões de Melhorias</option>
+    </select>
     <textarea id="supMsg" maxlength="2000" placeholder="Escreva aqui…"></textarea>
     <div class="counter"><span id="supCount">0</span>/2000</div>
-    <label style="margin-top:8px">Anexar print (imagem, até 2 MB)</label>
-    <input id="supFile" type="file" accept="image/*" />
-    <div id="supThumb"></div>
+    <div id="supAttachWrap" class="hide">
+      <label style="margin-top:8px">Anexar print (imagem, até 2 MB)</label>
+      <input id="supFile" type="file" accept="image/*" />
+      <div id="supThumb"></div>
+    </div>
     <div id="supErr" class="err hide"></div>
     <div id="supOk" class="ok hide"></div>
     <div class="row" style="margin:14px 0 0">
@@ -409,9 +464,12 @@ const NM = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","d
 const VERSION = "1.0";
 const FUEL_OPTIONS = ["Gasolina comum","Gasolina aditivada","Gasolina premium","Etanol","Diesel S-10","Diesel comum","GNV"];
 const SUPPORT_EMAIL = "suporte.fuellog@outlook.com";
+const VEH_TYPES = [["moto","Moto","🏍️"],["carro","Carro","🚗"],["van","Van","🚐"],["onibus","Ônibus","🚌"],["caminhao","Caminhão","🚚"]];
+function typeIcon(t){ const f=VEH_TYPES.find(x=>x[0]===t); return f?f[2]:"🚗"; }
+function vehName(v){ const s=[v.maker,v.model,v.plate].map(x=>(x||"").trim()).filter(Boolean).join(" "); return s||v.name||"Veículo"; }
 // Para envio automático COM anexo, crie conta grátis no EmailJS e preencha as 3 chaves abaixo
 // (no template do EmailJS, defina o destinatário como suporte.fuellog@outlook.com):
-const EMAILJS = { publicKey:"", serviceId:"", templateId:"" };
+const EMAILJS = { publicKey:"s47jSGsm_E-UkJ7ZR", serviceId:"service_a82fmwo", templateId:"template_40g40xo" };
 
 const store = (()=>{ let mem={}; try{ const t="__t"; localStorage.setItem(t,"1"); localStorage.removeItem(t);
   return {get:k=>localStorage.getItem(k), set:(k,v)=>localStorage.setItem(k,v)};
@@ -471,7 +529,7 @@ function renderOdo(el,value,color){
     +`<span class="dec" style="font-size:${dfs}px;color:${color};text-shadow:0 0 8px ${color}55">,${dec}</span><span class="unit">km</span>`;
 }
 
-let vehicles, fuels, oils, lubricants, activeId, selPeriod="all", editFuel=null, editOil=null, pendingDel=null, delTimer=null, support=[], theme="dark", supAttach=null, vehFuelSel=[], newFuelSel=[], formRows=[{fuel:"",total:"",ppl:""}];
+let vehicles, fuels, oils, lubricants, activeId, selPeriod="all", editFuel=null, editOil=null, pendingDel=null, delTimer=null, support=[], theme="dark", supAttach=null, vehFuelSel=[], newFuelSel=[], formRows=[{fuel:"",total:"",ppl:""}], vehFormId=null, confirmCb=null, fuelLocked=false;
 function load(){
   try{ vehicles=JSON.parse(store.get("vehicles")||"[]"); }catch(e){ vehicles=[]; }
   try{ fuels=JSON.parse(store.get("fuels")||"[]"); }catch(e){ fuels=[]; }
@@ -480,7 +538,7 @@ function load(){
   try{ support=JSON.parse(store.get("support")||"[]"); }catch(e){ support=[]; }
   theme=store.get("theme")||"dark";
   if(!vehicles.length){ vehicles=[{id:uid(),name:"Minha moto",tank:0,oilAlertOn:false,oilAdvance:0,kmInitial:0,oilCapacity:0,fuelTypes:[]}]; }
-  vehicles.forEach(v=>{ if(v.tank==null)v.tank=0; if(v.oilAlertOn==null)v.oilAlertOn=false; if(v.oilAdvance==null)v.oilAdvance=0; if(v.kmInitial==null)v.kmInitial=0; if(v.oilCapacity==null)v.oilCapacity=0; if(!Array.isArray(v.fuelTypes))v.fuelTypes=[]; });
+  vehicles.forEach(v=>{ if(v.tank==null)v.tank=0; if(v.oilAlertOn==null)v.oilAlertOn=false; if(v.oilAdvance==null)v.oilAdvance=0; if(v.kmInitial==null)v.kmInitial=0; if(v.oilCapacity==null)v.oilCapacity=0; if(!Array.isArray(v.fuelTypes))v.fuelTypes=[]; if(v.type==null)v.type="moto"; if(v.maker==null)v.maker=""; if(v.model==null)v.model=""; if(v.plate==null)v.plate=""; if(v.year==null)v.year=""; });
   activeId=store.get("activeId");
   if(!vehicles.some(v=>String(v.id)===String(activeId))) activeId=vehicles[0].id;
   fuels.forEach(f=>{ if(f.vehicleId==null)f.vehicleId=activeId; if(f.km==null)f.km=0; if(f.fuel==null)f.fuel=""; if(!Array.isArray(f.items)) f.items=[{fuel:f.fuel||"",total:f.total||0,ppl:f.ppl||0,liters:f.liters||0}]; });
@@ -545,15 +603,13 @@ function maybeNotifyOil(){
 }
 
 function renderVehSelect(){
-  $("vehSelect").innerHTML=vehicles.map(v=>`<option value="${v.id}" ${String(v.id)===String(activeId)?"selected":""}>🏍 ${v.name}</option>`).join("");
+  $("vehSelect").innerHTML=vehicles.map(v=>`<option value="${v.id}" ${String(v.id)===String(activeId)?"selected":""}>${typeIcon(v.type)} ${vehName(v)}</option>`).join("");
 }
 function renderLubOptions(){
   $("oLub").innerHTML='<option value="">— informar manualmente —</option>'+lubricants.map(l=>`<option value="${l.id}">${l.brand} · ${l.type} · ${l.durability} km</option>`).join("");
 }
 function renderVehFuelChecks(){
-  vehFuelSel=[...av().fuelTypes];
   paintMsel("vFuel", vehFuelSel);
-  paintMsel("nvFuel", newFuelSel);
 }
 function paintMsel(prefix, sel){
   const t=$(prefix+"Text");
@@ -686,14 +742,14 @@ function render(){
     const status = dist!=null
       ? `<span class="chip chipT">rodou ${km1(dist)} km</span>`
       : `<span class="chip" style="background:rgba(139,144,156,.18);color:var(--muted)">aguardando próximo</span>`;
-    return `<div class="item"><div class="acts"><button class="iconbtn" data-edit-fuel="${f.id}">&#9998;</button>${delBtn('fuel',f.id)}</div>
-      <div class="ihead" style="padding-right:54px">${km1(f.liters)} <span style="font-size:11px;color:var(--faint)">L · ${brl(f.total)}</span>${f.fuel?`<span class="chip">${f.fuel}</span>`:""}${status}</div>
+    return `<div class="item clk" data-view-fuel="${f.id}">
+      <div class="ihead">${km1(f.liters)} <span style="font-size:11px;color:var(--faint)">L · ${brl(f.total)}</span>${f.fuel?`<span class="chip">${f.fuel}</span>`:""}${status}</div>
       <div class="imeta">${prettyDate(f.date)} · ${km1(f.km)} km até abastecer · ${brl(f.ppl)}/L${pctTank!=null?(" · "+pctTank+"% tanque"):""}</div>
       <div class="find"><div class="i"><div class="iv">${fkmL!=null?km1(fkmL):"—"}</div><div class="il">km/L</div></div>
         <div class="i"><div class="iv">${frkm!=null?brl(frkm):"—"}</div><div class="il">R$/km</div></div>
         <div class="i"><div class="iv">${flkm!=null?d3(flkm):"—"}</div><div class="il">L/km</div></div></div></div>`;
   }).join("") : '<div class="empty">Nenhum abastecimento registrado.</div>';
-  document.querySelectorAll("[data-edit-fuel]").forEach(b=>b.onclick=()=>startEditFuel(b.dataset.editFuel));
+  document.querySelectorAll("[data-view-fuel]").forEach(b=>b.onclick=()=>viewFuel(b.dataset.viewFuel));
 
   // lista trocas de óleo
   const ocs=oilsFor(v);
@@ -708,9 +764,8 @@ function render(){
     if(pendingDel===k){ doDelete(k); }
     else { pendingDel=k; render(); clearTimeout(delTimer); delTimer=setTimeout(()=>{ if(pendingDel){pendingDel=null;render();} },3000); } });
 
-  // dados veículo
-  $("vName").value=v.name; $("vTank").value=v.tank?km1(v.tank):""; $("vKmInit").value=v.kmInitial?String(v.kmInitial):""; $("vOilCap").value=v.oilCapacity?km1(v.oilCapacity):"";
-  $("btnVehDel").style.display = vehicles.length>1?"block":"none";
+  // lista de veículos
+  renderVehList();
 }
 
 // ---------- abastecimento (múltiplos combustíveis) ----------
@@ -718,7 +773,7 @@ function maskDec(el,dec){ let d=el.value.replace(/\D/g,""); if(!d){ el.value="";
 $("aKm").oninput=()=>maskDec($("aKm"),1);
 function availFuels(){ const v=av(); return (v.fuelTypes&&v.fuelTypes.length)?v.fuelTypes:FUEL_OPTIONS; }
 function readRowsFromDOM(){ const rows=[...document.querySelectorAll("#fuelRows .frow")]; if(rows.length) formRows=rows.map(r=>({ fuel:r.querySelector(".fr-fuel").value, total:r.querySelector(".fr-total").value, ppl:r.querySelector(".fr-ppl").value })); }
-function recalcLit(){ let liters=0; document.querySelectorAll("#fuelRows .frow").forEach(r=>{ const t=num(r.querySelector(".fr-total").value), p=num(r.querySelector(".fr-ppl").value); const l=(p>0)?t/p:0; liters+=l; const fl=r.querySelector(".fr-lit"); if(fl) fl.value = l>0 ? d2(l) : ""; }); $("aLit").value = liters>0 ? d2(liters) : ""; if($("aLitWrap")) $("aLitWrap").style.display = (formRows.length>1)?"block":"none"; return liters; }
+function recalcLit(){ let liters=0; document.querySelectorAll("#fuelRows .frow").forEach(r=>{ const t=num(r.querySelector(".fr-total").value), p=num(r.querySelector(".fr-ppl").value); const l=(p>0)?t/p:0; liters+=l; const fl=r.querySelector(".fr-lit"); if(fl) fl.value = l>0 ? d3(l) : ""; }); $("aLit").value = liters>0 ? d3(liters) : ""; if($("aLitWrap")) $("aLitWrap").style.display = (formRows.length>1)?"block":"none"; return liters; }
 function renderFuelRows(){
   const fuels=availFuels();
   $("fuelRows").innerHTML=formRows.map((r,i)=>`
@@ -730,73 +785,162 @@ function renderFuelRows(){
       <select class="fld fr-fuel">${fuels.map(f=>`<option ${f===r.fuel?"selected":""}>${f}</option>`).join("")}</select>
       <div class="row" style="margin-bottom:8px">
         <div class="col"><label>Valor total (R$)</label><input class="fr-total" type="text" inputmode="decimal" placeholder="0,00" value="${r.total||""}"/></div>
-        <div class="col"><label>Valor por litro (R$/L)</label><input class="fr-ppl" type="text" inputmode="decimal" placeholder="0,000" value="${r.ppl||""}"/></div>
+        <div class="col"><label>Valor por litro (R$/L)</label><input class="fr-ppl" type="text" inputmode="decimal" placeholder="0,00" value="${r.ppl||""}"/></div>
       </div>
       <label>Litros (automático)</label>
-      <input class="fr-lit" type="text" readonly placeholder="0,00" style="color:var(--amber)" />
+      <input class="fr-lit" type="text" readonly placeholder="0,000" style="color:var(--amber)" />
     </div>`).join("");
   document.querySelectorAll("#fuelRows .fr-total").forEach(el=>el.oninput=()=>{ maskDec(el,2); recalcLit(); });
-  document.querySelectorAll("#fuelRows .fr-ppl").forEach(el=>el.oninput=()=>{ maskDec(el,3); recalcLit(); });
+  document.querySelectorAll("#fuelRows .fr-ppl").forEach(el=>el.oninput=()=>{ maskDec(el,2); recalcLit(); });
   document.querySelectorAll("#fuelRows .fr-remove").forEach(b=>b.onclick=()=>{ readRowsFromDOM(); formRows.splice(parseInt(b.dataset.i,10),1); renderFuelRows(); });
   const n=fuels.length;
   $("addFuelRowWrap").style.display = (formRows.length<n && n>1) ? "flex" : "none";
+  if(fuelLocked){
+    $("fuelRows").querySelectorAll(".fr-fuel,.fr-total,.fr-ppl").forEach(el=>el.disabled=true);
+    $("fuelRows").querySelectorAll(".fr-remove").forEach(b=>b.style.display="none");
+    $("addFuelRowWrap").style.display="none";
+  }
   recalcLit();
 }
 function addFuelRowFn(){ readRowsFromDOM(); const used=formRows.map(r=>r.fuel); const next=availFuels().find(f=>!used.includes(f))||availFuels()[0]; formRows.push({fuel:next,total:"",ppl:""}); renderFuelRows(); }
 $("addFuelRow").onclick=addFuelRowFn;
 $("addFuelLbl").onclick=addFuelRowFn;
-function resetFuelForm(){ editFuel=null; $("aKm").value=""; $("aDate").value=todayISO(); formRows=[{fuel:(availFuels()[0]||""),total:"",ppl:""}]; renderFuelRows();
-  $("fuelFormTitle").textContent="Novo abastecimento"; $("btnFuel").textContent="Adicionar abastecimento"; $("btnFuelCancel").classList.add("hide"); }
-function startEditFuel(id){ const f=fuels.find(x=>String(x.id)===String(id)); if(!f)return; editFuel=f.id;
-  $("aDate").value=f.date; $("aKm").value=toInput(f.km);
+function isFirstFillCtx(){ const fs=fuelsFor(av()); if(editFuel){ return !!(fs[0] && String(fs[0].id)===String(editFuel)); } return fs.length===0; }
+function openFuelForm(){ $("fuelFormCard").classList.remove("hide"); $("btnNewFuel").classList.add("hide"); }
+function closeFuelForm(){ $("fuelFormCard").classList.add("hide"); $("btnNewFuel").classList.remove("hide"); }
+$("btnNewFuel").onclick=()=>{ resetFuelForm(); openFuelForm(); window.scrollTo({top:0,behavior:"smooth"}); };
+function setKmLabel(){ const first=isFirstFillCtx(); $("aKmLabel").textContent = first?"KM inicial":"Km Rodado (Trip)"; $("aKm").placeholder = first?"ex: 12300":"0,0"; }
+function resetFuelForm(){ editFuel=null; fuelLocked=false; $("aDate").disabled=false; $("aKm").disabled=false; $("aKm").value=""; $("aDate").value=todayISO(); formRows=[{fuel:(availFuels()[0]||""),total:"",ppl:""}]; renderFuelRows(); setKmLabel();
+  $("fuelFormTitle").textContent="Novo abastecimento"; $("btnFuel").textContent="Adicionar abastecimento"; $("btnFuel").classList.remove("hide");
+  $("fuelEditBtn").classList.add("hide"); $("fuelDelBtn").classList.add("hide"); $("btnFuelCancel").textContent="Cancelar"; $("btnFuelCancel").classList.remove("hide"); }
+function populateFuel(id){ const f=fuels.find(x=>String(x.id)===String(id)); if(!f)return false; editFuel=f.id;
+  $("aDate").value=f.date;
+  const fs=fuelsFor(av()); const isFirst=!!(fs[0] && String(fs[0].id)===String(f.id));
+  $("aKm").value = isFirst ? (av().kmInitial?toInput(av().kmInitial):"") : toInput(f.km);
   const items=(f.items&&f.items.length)?f.items:[{fuel:f.fuel,total:f.total,ppl:f.ppl,liters:f.liters}];
   formRows=items.map(it=>({fuel:it.fuel||"",total:toInput(it.total),ppl:toInput(it.ppl)}));
-  renderFuelRows();
-  $("fuelFormTitle").textContent="Editar abastecimento"; $("btnFuel").textContent="Salvar alterações"; $("btnFuelCancel").classList.remove("hide");
-  showTab("manut"); showSub("abast"); window.scrollTo({top:0,behavior:"smooth"}); }
-$("btnFuelCancel").onclick=resetFuelForm;
-$("btnFuel").onclick=()=>{ readRowsFromDOM(); const km=num($("aKm").value); const e=$("aErr");
+  return true; }
+function setFuelMode(mode){ fuelLocked=(mode==="view");
+  $("aDate").disabled=fuelLocked; $("aKm").disabled=fuelLocked;
+  $("btnFuel").classList.toggle("hide",fuelLocked); $("btnFuel").textContent="Salvar alterações";
+  $("fuelEditBtn").classList.toggle("hide",mode!=="view");
+  $("fuelDelBtn").classList.remove("hide");
+  $("fuelFormTitle").textContent = mode==="view"?"Dados do abastecimento":"Editar abastecimento";
+  $("btnFuelCancel").textContent="Cancelar"; $("btnFuelCancel").classList.remove("hide");
+  setKmLabel(); renderFuelRows(); }
+function viewFuel(id){ if(!populateFuel(id))return; showTab("manut"); showSub("abast"); openFuelForm(); setFuelMode("view"); window.scrollTo({top:0,behavior:"smooth"}); }
+function startEditFuel(id){ if(!populateFuel(id))return; showTab("manut"); showSub("abast"); openFuelForm(); setFuelMode("edit"); window.scrollTo({top:0,behavior:"smooth"}); }
+$("fuelEditBtn").onclick=()=>setFuelMode("edit");
+$("fuelDelBtn").onclick=()=>{ if(!editFuel)return; const id=editFuel;
+  askConfirm("Tem certeza que deseja excluir este abastecimento?","Excluir",()=>{ fuels=fuels.filter(f=>String(f.id)!==String(id)); saveAll(); resetFuelForm(); closeFuelForm(); render(); }); };
+$("btnFuelCancel").onclick=()=>{ resetFuelForm(); closeFuelForm(); };
+$("btnFuel").onclick=()=>{ readRowsFromDOM(); const kmEntered=num($("aKm").value); const e=$("aErr"); const first=isFirstFillCtx();
   const items=formRows.map(r=>({fuel:r.fuel,total:num(r.total),ppl:num(r.ppl)})).filter(it=>it.total>0&&it.ppl>0)
     .map(it=>({fuel:it.fuel,total:it.total,ppl:it.ppl,liters:Math.round((it.total/it.ppl)*100)/100}));
   if(!items.length){ e.textContent="Preencha o valor total e o valor por litro."; e.classList.remove("hide"); return; }
-  if(km<=0){ e.textContent="Informe os km rodados."; e.classList.remove("hide"); return; } e.classList.add("hide");
+  if(!first && kmEntered<=0){ e.textContent="Informe os km rodados (Trip)."; e.classList.remove("hide"); return; } e.classList.add("hide");
   const total=Math.round(items.reduce((s,i)=>s+i.total,0)*100)/100;
   const liters=Math.round(items.reduce((s,i)=>s+i.liters,0)*100)/100;
   const fuelLabel=items.map(i=>i.fuel).join(" + ");
   const ppl=liters>0?total/liters:0;
+  const km = first ? 0 : kmEntered;            // 1º abast.: trip = 0 (km informado vira KM inicial)
+  if(first){ av().kmInitial = kmEntered; }      // o valor informado no 1º abast. vai p/ o KM inicial do veículo
   if(editFuel){ const f=fuels.find(x=>x.id===editFuel); Object.assign(f,{date:$("aDate").value||todayISO(),km,items,total,liters,ppl,fuel:fuelLabel}); }
   else { fuels.push({id:uid(),vehicleId:activeId,date:$("aDate").value||todayISO(),km,items,total,liters,ppl,fuel:fuelLabel}); }
-  saveAll(); resetFuelForm(); render(); maybeNotifyOil(); };
+  saveAll(); resetFuelForm(); closeFuelForm(); render(); maybeNotifyOil(); };
 
 // ---------- troca de óleo (add/edit) ----------
 $("oLub").onchange=()=>{ const l=lubricants.find(x=>String(x.id)===$("oLub").value); if(l){ $("oBrand").value=l.brand; $("oType").value=l.type; $("oDur").value=l.durability; } };
+function openOilForm(){ $("oilFormCard").classList.remove("hide"); $("btnNewOil").classList.add("hide"); }
+function closeOilForm(){ $("oilFormCard").classList.add("hide"); $("btnNewOil").classList.remove("hide"); }
+$("btnNewOil").onclick=()=>{ resetOilForm(); openOilForm(); window.scrollTo({top:0,behavior:"smooth"}); };
 function resetOilForm(){ editOil=null; const v=av(); $("oDate").value=todayISO(); $("oLub").value=""; $("oBrand").value=""; $("oType").value="Sintético"; $("oDur").value=""; $("oCost").value="";
   $("oKm").value=String(Math.round(realKm(v))); $("oQty").value=v.oilCapacity?toInput(v.oilCapacity):"";
-  $("oilFormTitle").textContent="Registrar troca de óleo"; $("btnOil").textContent="Registrar troca"; $("btnOilCancel").classList.add("hide"); }
+  $("oilFormTitle").textContent="Registrar troca de óleo"; $("btnOil").textContent="Registrar troca"; $("btnOilCancel").textContent="Cancelar"; $("btnOilCancel").classList.remove("hide"); }
 function startEditOil(id){ const o=oils.find(x=>String(x.id)===String(id)); if(!o)return; editOil=o.id;
   $("oDate").value=o.date; $("oBrand").value=o.brand||""; $("oType").value=o.type||"Sintético"; $("oDur").value=o.durability||""; $("oCost").value=toInput(o.cost); $("oKm").value=String(Math.round(o.kmReal||0)); $("oQty").value=o.oilQty?toInput(o.oilQty):""; $("oLub").value="";
-  $("oilFormTitle").textContent="Editar troca de óleo"; $("btnOil").textContent="Salvar alterações"; $("btnOilCancel").classList.remove("hide");
-  showTab("manut"); showSub("oleo"); window.scrollTo({top:0,behavior:"smooth"}); }
-$("btnOilCancel").onclick=resetOilForm;
+  $("oilFormTitle").textContent="Editar troca de óleo"; $("btnOil").textContent="Salvar alterações"; $("btnOilCancel").textContent="Cancelar"; $("btnOilCancel").classList.remove("hide");
+  showTab("manut"); showSub("oleo"); openOilForm(); window.scrollTo({top:0,behavior:"smooth"}); }
+$("btnOilCancel").onclick=()=>{ resetOilForm(); closeOilForm(); };
 $("btnOil").onclick=()=>{ const dur=num($("oDur").value), cost=num($("oCost").value), kmReal=Math.round(num($("oKm").value)), oilQty=num($("oQty").value), e=$("oErr");
   const brand=$("oBrand").value.trim(), type=$("oType").value, date=$("oDate").value||todayISO();
   if(dur<=0){ e.textContent="Informe a durabilidade do óleo em km."; e.classList.remove("hide"); return; }
   if(kmReal<=0){ e.textContent="Informe o KM atual do hodômetro na troca."; e.classList.remove("hide"); return; } e.classList.add("hide");
   if(editOil){ const o=oils.find(x=>x.id===editOil); Object.assign(o,{date,brand,type,durability:dur,cost,kmReal,oilQty}); }
   else { oils.push({id:uid(),vehicleId:activeId,date,brand,type,durability:dur,cost,kmReal,oilQty,kmAt:totalKm(av())}); }
-  saveAll(); resetOilForm(); render(); };
+  saveAll(); resetOilForm(); closeOilForm(); render(); };
 
 // ---------- veículo ----------
-$("btnVehSave").onclick=()=>{ const v=av(); const nm=$("vName").value.trim(); if(nm)v.name=nm; v.tank=num($("vTank").value); v.kmInitial=Math.round(num($("vKmInit").value)); v.oilCapacity=num($("vOilCap").value); v.fuelTypes=[...vehFuelSel]; saveAll(); render(); };
-$("btnVehAdd").onclick=()=>{ const nm=$("nvName").value.trim(); if(!nm)return; const nv={id:uid(),name:nm,tank:num($("nvTank").value),kmInitial:Math.round(num($("nvKmInit").value)),oilCapacity:num($("nvOilCap").value),fuelTypes:[...newFuelSel],oilAlertOn:false,oilAdvance:0}; vehicles.push(nv); activeId=nv.id; newFuelSel=[]; $("nvFuelList").classList.add("hide"); saveAll(); $("nvName").value="";$("nvTank").value="";$("nvKmInit").value="";$("nvOilCap").value=""; showTab("indicadores"); render(); };
-$("vFuelField").onclick=()=>$("vFuelList").classList.toggle("hide");
-$("nvFuelField").onclick=()=>$("nvFuelList").classList.toggle("hide");
-let vehDelArm=false;
-$("btnVehDel").onclick=()=>{ if(vehicles.length<=1)return;
-  if(!vehDelArm){ vehDelArm=true; $("btnVehDel").textContent="Tocar de novo para excluir "+av().name;
-    setTimeout(()=>{ vehDelArm=false; $("btnVehDel").textContent="Excluir este veículo e seus dados"; },4000); return; }
-  vehDelArm=false; $("btnVehDel").textContent="Excluir este veículo e seus dados";
-  const id=activeId; fuels=fuels.filter(f=>String(f.vehicleId)!==String(id)); oils=oils.filter(o=>String(o.vehicleId)!==String(id)); vehicles=vehicles.filter(v=>String(v.id)!==String(id)); activeId=vehicles[0].id; saveAll(); render(); };
+function renderVehList(){
+  $("vehList").innerHTML = vehicles.map(v=>`
+    <div class="vehRow" data-veh="${v.id}">
+      <span class="vehIcon">${typeIcon(v.type)}</span>
+      <span class="vehName">${vehName(v).replace(/</g,"&lt;")}</span>
+      <button class="iconbtn vehEye" data-eye="${v.id}" title="Ver dados">👁</button>
+    </div>`).join("");
+  document.querySelectorAll("#vehList .vehRow").forEach(r=>r.onclick=()=>{ const id=r.dataset.veh; activeId=id; saveAll(); resetFuelForm(); resetOilForm(); openVehForm(id,"view"); render(); });
+  document.querySelectorAll("#vehList .vehEye").forEach(b=>b.onclick=(e)=>{ e.stopPropagation(); const id=b.dataset.eye; activeId=id; saveAll(); resetFuelForm(); resetOilForm(); openVehForm(id,"view"); render(); });
+}
+function setVehMode(mode){
+  const locked=(mode==="view");
+  ["vType","vMaker","vModel","vYear","vPlate","vTank","vKmInit","vOilCap"].forEach(id=>$(id).disabled=locked);
+  $("vehFormCard").classList.toggle("locked",locked);
+  $("btnVehSave").classList.toggle("hide",locked);
+  $("vehEditBtn").classList.toggle("hide",mode!=="view");
+  $("vehDelBtn").classList.toggle("hide",!vehFormId);
+  $("vehFormTitle").textContent = mode==="new"?"Cadastrar veículo":(mode==="view"?"Dados do veículo":"Editar veículo");
+}
+function openVehForm(id,mode){
+  vehFormId=id||null; $("vehErr").classList.add("hide"); $("vFuelList").classList.add("hide");
+  $("vehListWrap").classList.add("hide"); $("btnNewVeh").classList.add("hide"); $("vehFormCard").classList.remove("hide");
+  if(id){ const v=vehicles.find(x=>String(x.id)===String(id));
+    $("vType").value=v.type||"moto"; $("vMaker").value=v.maker||""; $("vModel").value=v.model||""; $("vYear").value=v.year||""; $("vPlate").value=v.plate||"";
+    $("vTank").value=v.tank?km1(v.tank):""; $("vKmInit").value=v.kmInitial?km1(v.kmInitial):""; $("vOilCap").value=v.oilCapacity?km1(v.oilCapacity):"";
+    vehFuelSel=[...(v.fuelTypes||[])];
+  } else {
+    $("vType").value="moto"; $("vMaker").value=""; $("vModel").value=""; $("vYear").value=""; $("vPlate").value=""; $("vTank").value=""; $("vKmInit").value=""; $("vOilCap").value="";
+    vehFuelSel=[];
+  }
+  paintMsel("vFuel", vehFuelSel);
+  setVehMode(mode);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function closeVehForm(){ $("vehFormCard").classList.add("hide"); $("vehListWrap").classList.remove("hide"); $("btnNewVeh").classList.remove("hide"); $("vFuelList").classList.add("hide"); vehFormId=null; }
+$("btnNewVeh").onclick=()=>openVehForm(null,"new");
+$("btnVehCancel").onclick=()=>{ closeVehForm(); render(); };
+$("vehEditBtn").onclick=()=>setVehMode("edit");
+$("vehDelBtn").onclick=()=>{ if(!vehFormId)return; const v=vehicles.find(x=>String(x.id)===String(vehFormId));
+  askConfirm('Tem certeza que deseja excluir "'+vehName(v)+'" e todos os seus dados?',"Excluir",()=>{
+    const id=vehFormId;
+    fuels=fuels.filter(f=>String(f.vehicleId)!==String(id));
+    oils=oils.filter(o=>String(o.vehicleId)!==String(id));
+    vehicles=vehicles.filter(x=>String(x.id)!==String(id));
+    if(!vehicles.length){ vehicles=[{id:uid(),name:"Meu veículo",type:"moto",maker:"",model:"",plate:"",year:"",tank:0,kmInitial:0,oilCapacity:0,oilAlertOn:false,oilAdvance:0,fuelTypes:[]}]; }
+    if(!vehicles.some(x=>String(x.id)===String(activeId))) activeId=vehicles[0].id;
+    saveAll(); closeVehForm(); resetFuelForm(); resetOilForm(); render();
+  }); };
+$("btnVehSave").onclick=()=>{
+  const maker=$("vMaker").value.trim(), model=$("vModel").value.trim(), plate=$("vPlate").value.trim(); const e=$("vehErr");
+  if(!maker && !model && !plate){ e.textContent="Informe ao menos fabricante, modelo ou placa."; e.classList.remove("hide"); return; } e.classList.add("hide");
+  askConfirm("Tem certeza que deseja salvar estes dados?","Salvar",()=>{
+    let v;
+    if(vehFormId){ v=vehicles.find(x=>String(x.id)===String(vehFormId)); }
+    else { v={id:uid(),oilAlertOn:false,oilAdvance:0,fuelTypes:[],kmInitial:0}; vehicles.push(v); }
+    v.type=$("vType").value; v.maker=maker; v.model=model; v.plate=plate; v.year=$("vYear").value.replace(/\D/g,"");
+    v.tank=num($("vTank").value); v.oilCapacity=num($("vOilCap").value);
+    v.fuelTypes=[...vehFuelSel]; v.name=vehName(v);
+    activeId=v.id; saveAll(); closeVehForm(); resetFuelForm(); resetOilForm(); render();
+  });
+};
+$("vFuelField").onclick=()=>{ if($("vehFormCard").classList.contains("locked"))return; $("vFuelList").classList.toggle("hide"); };
+// maiúsculas e ano numérico
+["vMaker","vModel","vPlate"].forEach(id=>$(id).addEventListener("input",()=>{ const el=$(id); const p=el.selectionStart; el.value=el.value.toUpperCase(); try{el.setSelectionRange(p,p);}catch(_){} }));
+$("vYear").addEventListener("input",()=>{ $("vYear").value=$("vYear").value.replace(/\D/g,"").slice(0,4); });
+// confirmação genérica
+function askConfirm(msg,yesLabel,cb){ $("confirmMsg").textContent=msg; $("confirmYes").textContent=yesLabel||"Confirmar"; confirmCb=cb; $("confirmOverlay").classList.remove("hide"); }
+$("confirmYes").onclick=()=>{ $("confirmOverlay").classList.add("hide"); const cb=confirmCb; confirmCb=null; if(cb)cb(); };
+$("confirmNo").onclick=()=>{ $("confirmOverlay").classList.add("hide"); confirmCb=null; };
+$("confirmOverlay").onclick=(e)=>{ if(e.target===$("confirmOverlay")){ $("confirmOverlay").classList.add("hide"); confirmCb=null; } };
 $("vehSelect").onchange=(e)=>{ activeId=e.target.value; resetFuelForm(); resetOilForm(); saveAll(); render(); };
 $("periodSel").onchange=(e)=>{ selPeriod=e.target.value; render(); };
 
@@ -829,7 +973,9 @@ function applyTheme(){ document.body.classList.toggle("light", theme==="light");
 $("darkSwitch").onclick=()=>{ theme=(theme==="dark")?"light":"dark"; store.set("theme",theme); applyTheme(); };
 
 // ---------- suporte ----------
-function openSupport(){ $("overlay").classList.add("hide"); supAttach=null; $("supMsg").value=""; $("supCount").textContent="0"; $("supFile").value=""; $("supThumb").innerHTML=""; $("supErr").classList.add("hide"); $("supOk").classList.add("hide"); renderSupportList(); $("supportOverlay").classList.remove("hide"); }
+function openSupport(){ $("overlay").classList.add("hide"); supAttach=null; $("supTema").selectedIndex=0; applySupTema(); $("supMsg").value=""; $("supCount").textContent="0"; $("supFile").value=""; $("supThumb").innerHTML=""; $("supErr").classList.add("hide"); $("supOk").classList.add("hide"); renderSupportList(); $("supportOverlay").classList.remove("hide"); }
+function applySupTema(){ const erros=$("supTema").value==="Erros"; $("supAttachWrap").classList.toggle("hide",!erros); if(!erros){ supAttach=null; $("supFile").value=""; $("supThumb").innerHTML=""; } }
+$("supTema").onchange=applySupTema;
 function closeSupport(back){ $("supportOverlay").classList.add("hide"); if(back) $("overlay").classList.remove("hide"); }
 $("btnSupport").onclick=openSupport;
 $("closeSupport").onclick=()=>closeSupport(false);
@@ -840,28 +986,31 @@ $("supFile").onchange=()=>{ const f=$("supFile").files[0]; const e=$("supErr"); 
   if(!f.type.startsWith("image/")){ e.textContent="Anexe um arquivo de imagem."; e.classList.remove("hide"); $("supFile").value=""; return; }
   if(f.size>2*1024*1024){ e.textContent="A imagem deve ter no máximo 2 MB."; e.classList.remove("hide"); $("supFile").value=""; supAttach=null; $("supThumb").innerHTML=""; return; }
   const r=new FileReader(); r.onload=()=>{ supAttach={name:f.name,data:r.result}; $("supThumb").innerHTML=`<div class="thumb"><img src="${r.result}" alt=""/><button id="supRm">&times;</button></div>`; $("supRm").onclick=()=>{ supAttach=null; $("supFile").value=""; $("supThumb").innerHTML=""; }; }; r.readAsDataURL(f); };
-$("btnSupSend").onclick=async ()=>{ const msg=$("supMsg").value.trim(); const e=$("supErr"), ok=$("supOk"); e.classList.add("hide"); ok.classList.add("hide");
+$("btnSupSend").onclick=async ()=>{ const msg=$("supMsg").value.trim(); const tema=$("supTema").value; const e=$("supErr"), ok=$("supOk"); e.classList.add("hide"); ok.classList.add("hide");
   if(!msg){ e.textContent="Escreva sua mensagem antes de enviar."; e.classList.remove("hide"); return; }
+  const fullMsg="[Tema: "+tema+"]\n\n"+msg;
   let sent=false;
+  const imgB64 = supAttach ? (String(supAttach.data).split(",")[1]||"") : "";
+  const imgName = supAttach ? (supAttach.name||"anexo.png") : "";
   if(EMAILJS.publicKey && window.emailjs){
     try{ emailjs.init(EMAILJS.publicKey);
-      await emailjs.send(EMAILJS.serviceId, EMAILJS.templateId, { message:msg, to_email:SUPPORT_EMAIL, image:(supAttach?supAttach.data:"") });
+      await emailjs.send(EMAILJS.serviceId, EMAILJS.templateId, { message:fullMsg, tema:tema, to_email:SUPPORT_EMAIL, image:imgB64, filename:imgName });
       sent=true;
     }catch(err){ sent=false; }
   }
   if(!sent){ // fallback: abre o app de e-mail (sem anexo)
-    const body=encodeURIComponent(msg+(supAttach?"\n\n[Anexo selecionado: não enviado automaticamente — anexe manualmente no e-mail.]":""));
-    window.location.href="mailto:"+SUPPORT_EMAIL+"?subject="+encodeURIComponent("FuelLog — Suporte")+"&body="+body;
+    const body=encodeURIComponent(fullMsg+(supAttach?"\n\n[Anexo selecionado: não enviado automaticamente — anexe manualmente no e-mail.]":""));
+    window.location.href="mailto:"+SUPPORT_EMAIL+"?subject="+encodeURIComponent("FuelLog — Suporte ("+tema+")")+"&body="+body;
   }
-  support.unshift({ id:uid(), date:todayISO(), text:msg, attach:!!supAttach, via:(sent?"automático":"e-mail") });
+  support.unshift({ id:uid(), date:todayISO(), tema:tema, text:msg, attach:!!supAttach, via:(sent?"automático":"e-mail") });
   saveAll(); renderSupportList();
-  $("supMsg").value=""; $("supCount").textContent="0"; $("supFile").value=""; $("supThumb").innerHTML=""; supAttach=null;
+  $("supTema").selectedIndex=0; applySupTema(); $("supMsg").value=""; $("supCount").textContent="0"; $("supFile").value=""; $("supThumb").innerHTML=""; supAttach=null;
   ok.textContent = sent ? "Enviado para o suporte. Obrigado!" : "Abrimos seu app de e-mail para concluir o envio.";
   ok.classList.remove("hide"); };
 function renderSupportList(){
   $("supList").innerHTML = support.length ? support.map(s=>
     `<div class="item"><div class="acts">${delBtn("sup",s.id)}</div>
-      <div class="ihead" style="font-size:13px;color:var(--ink)">${prettyDate(s.date)} ${s.attach?'<span class="chip">📎 anexo</span>':''}</div>
+      <div class="ihead" style="font-size:13px;color:var(--ink)">${prettyDate(s.date)}${s.tema?(' · '+s.tema):''} ${s.attach?'<span class="chip">📎 anexo</span>':''}</div>
       <div class="imeta" style="white-space:normal">${(s.text||"").replace(/</g,"&lt;").slice(0,160)}${(s.text||"").length>160?"…":""}</div></div>`).join("")
     : '<div class="empty">Nenhum envio ainda.</div>';
   document.querySelectorAll('[data-del="sup"]').forEach(()=>{}); // ligados pelo handler global em render(); reanexa abaixo
@@ -874,6 +1023,7 @@ function renderSupportList(){
 function showTab(name){
   document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===name));
   ["indicadores","manut","veiculo"].forEach(n=>$("tab-"+n).classList.toggle("hide",n!==name));
+  if(name==="veiculo"){ closeVehForm(); renderVehList(); }
 }
 function showSub(name){
   document.querySelectorAll(".subtab").forEach(t=>t.classList.toggle("active",t.dataset.sub===name));
