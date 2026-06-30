@@ -162,6 +162,13 @@
   .premItem .pk{width:22px;height:22px;border-radius:50%;background:rgba(122,209,122,.2);color:var(--green);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0}
   .premPrice{text-align:center;font-size:28px;font-weight:800;color:var(--amber);margin:6px 0 4px}
   .premPrice small{display:block;font-size:12px;color:var(--faint);font-weight:400}
+  .langOpt{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:11px 12px;border:1px solid var(--edge);border-radius:10px;background:var(--slot);color:var(--ink);font-size:14px;cursor:pointer;margin-bottom:8px}
+  .langOpt:last-child{margin-bottom:0}
+  .langOpt.on{border-color:var(--green);background:rgba(122,209,122,.15);color:var(--green)}
+  .langOpt .flag{font-size:20px;line-height:1}
+  .flagSvg{width:24px;height:16px;border-radius:3px;overflow:hidden;display:block;flex-shrink:0}
+  .chev{transition:transform .2s}
+  .chev.open{transform:rotate(90deg)}
   /* área de texto / suporte */
   textarea{width:100%;min-height:130px;padding:11px 12px;background:var(--slot);border:1px solid var(--edge);border-radius:10px;color:var(--ink);font-size:14px;font-family:var(--sans);outline:none;resize:vertical}
   .counter{font-size:11px;color:var(--faint);text-align:right;margin-top:4px}
@@ -183,16 +190,16 @@
 </div>
 <div class="wrap">
   <div class="top">
-    <span class="dot"></span><h1>Controle</h1>
+    <span class="dot"></span><h1 data-i18n="title">Controle</h1>
     <select id="vehSelect"></select>
     <button id="starBtn" class="gear" aria-label="Versão Premium" style="color:var(--amber)">&#9733;</button>
     <button id="gearBtn" class="gear" aria-label="Configurações">&#9881;</button>
   </div>
 
   <div class="tabs">
-    <button class="tab active" data-tab="indicadores">Indicadores</button>
-    <button class="tab" data-tab="manut">Abast./Óleo</button>
-    <button class="tab" data-tab="veiculo">Veículo</button>
+    <button class="tab active" data-tab="indicadores" data-i18n="tab_ind">Indicadores</button>
+    <button class="tab" data-tab="manut" data-i18n="tab_manut">Abast./Óleo</button>
+    <button class="tab" data-tab="veiculo" data-i18n="tab_veh">Veículo</button>
   </div>
 
   <!-- ================= INDICADORES ================= -->
@@ -200,54 +207,54 @@
     <div id="oilBanner" class="banner bannerWarn hide"></div>
 
     <div class="card panelMain">
-      <div class="eyebrow">Total rodado</div>
+      <div class="eyebrow" data-i18n="total_rodado">Total rodado</div>
       <div id="odoTotal" class="odo"></div>
       <div class="hr"></div>
       <div class="readings left">
-        <div class="read"><div class="lbl">KM total</div><div><span id="sTotal" class="val">0,0</span><span class="u">km</span></div></div>
-        <div class="read"><div class="lbl">Abasteci.</div><div><span id="sCount" class="val">0</span></div></div>
-        <div class="read"><div class="lbl">Trocas óleo</div><div><span id="sOil" class="val">0</span></div></div>
+        <div class="read"><div class="lbl" data-i18n="km_total">KM total</div><div><span id="sTotal" class="val">0,0</span><span class="u">km</span></div></div>
+        <div class="read"><div class="lbl" data-i18n="abast_short">Abasteci.</div><div><span id="sCount" class="val">0</span></div></div>
+        <div class="read"><div class="lbl" data-i18n="oilch_short">Trocas óleo</div><div><span id="sOil" class="val">0</span></div></div>
       </div>
     </div>
 
     <div style="margin:0 2px 16px">
-      <label style="margin-bottom:6px">Período dos indicadores</label>
+      <label style="margin-bottom:6px" data-i18n="period_label">Período dos indicadores</label>
       <select id="periodSel" class="fld" style="margin:0"></select>
     </div>
 
     <div class="card panelMain">
-      <div class="eyebrow">Consumo médio</div>
+      <div class="eyebrow" data-i18n="avg_consumption">Consumo médio</div>
       <div class="big" style="color:var(--amber)"><span id="avgKmL">—</span> <span style="font-size:14px;color:var(--faint)">km/L</span></div>
-      <div class="powerSub" style="margin-top:4px">Km rodados no período: <span id="aggKm" style="color:var(--ink);font-family:var(--mono)">0,0</span> km</div>
+      <div class="powerSub" style="margin-top:4px"><span data-i18n="km_period">Km rodados no período:</span> <span id="aggKm" style="color:var(--ink);font-family:var(--mono)">0,0</span> km</div>
       <div class="readings" style="margin-top:16px">
         <div class="read"><div class="lbl">R$/km</div><div><span id="aggRkm" class="val">—</span></div></div>
         <div class="read"><div class="lbl">L/km</div><div><span id="aggLkm" class="val">—</span></div></div>
-        <div class="read"><div class="lbl">Autonomia</div><div><span id="aggRange" class="val">—</span><span class="u">km</span></div></div>
+        <div class="read"><div class="lbl" data-i18n="autonomy">Autonomia</div><div><span id="aggRange" class="val">—</span><span class="u">km</span></div></div>
       </div>
       <div class="readings" style="margin-top:14px">
-        <div class="read"><div class="lbl">Gasto</div><div><span id="aggSpent" class="val" style="font-size:17px">R$ 0,00</span></div></div>
-        <div class="read"><div class="lbl">Litros</div><div><span id="aggLit" class="val">0,0</span><span class="u">L</span></div></div>
-        <div class="read"><div class="lbl">Abastec.</div><div><span id="aggCount" class="val">0</span></div></div>
+        <div class="read"><div class="lbl" data-i18n="spent">Gasto</div><div><span id="aggSpent" class="val" style="font-size:17px">R$ 0,00</span></div></div>
+        <div class="read"><div class="lbl" data-i18n="liters">Litros</div><div><span id="aggLit" class="val">0,0</span><span class="u">L</span></div></div>
+        <div class="read"><div class="lbl" data-i18n="abast_short2">Abastec.</div><div><span id="aggCount" class="val">0</span></div></div>
       </div>
       <div class="hr" style="margin:16px 0 14px"></div>
       <div class="readings left">
-        <div class="read"><div class="lbl">Trocas de óleo</div><div><span id="aggOilCount" class="val">0</span></div></div>
-        <div class="read"><div class="lbl">Gasto óleo</div><div><span id="aggOilCost" class="val" style="font-size:17px">R$ 0,00</span></div></div>
+        <div class="read"><div class="lbl" data-i18n="oil_changes">Trocas de óleo</div><div><span id="aggOilCount" class="val">0</span></div></div>
+        <div class="read"><div class="lbl" data-i18n="oil_spent">Gasto óleo</div><div><span id="aggOilCost" class="val" style="font-size:17px">R$ 0,00</span></div></div>
       </div>
       <div id="periodCaption" class="powerSub" style="margin-top:12px"></div>
     </div>
 
     <div id="cardFuelTypes" class="card hide">
-      <div class="eyebrow">Por combustível</div>
+      <div class="eyebrow" data-i18n="by_fuel">Por combustível</div>
       <div id="fuelTypes"></div>
     </div>
 
     <div id="cardMonths" class="card hide">
-      <div class="eyebrow">Km e gastos por mês</div>
+      <div class="eyebrow" data-i18n="km_cost_month">Km e gastos por mês</div>
       <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px;font-size:11px;color:var(--muted)">
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:11px;height:11px;border-radius:2px;background:linear-gradient(180deg,var(--amber),var(--amberDim))"></span>Km</span>
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:16px;height:3px;border-radius:2px;background:#6ea8ff"></span>Combustível R$</span>
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:16px;height:3px;border-radius:2px;background:var(--green)"></span>Óleo R$</span>
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:11px;height:11px;border-radius:2px;background:linear-gradient(180deg,var(--amber),var(--amberDim))"></span><span data-i18n="legend_km">Km</span></span>
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:16px;height:3px;border-radius:2px;background:#6ea8ff"></span><span data-i18n="legend_fuel">Combustível R$</span></span>
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:16px;height:3px;border-radius:2px;background:var(--green)"></span><span data-i18n="legend_oil">Óleo R$</span></span>
       </div>
       <div id="chart"></div>
     </div>
@@ -256,13 +263,13 @@
   <!-- ================= ABAST./ÓLEO ================= -->
   <div id="tab-manut" class="hide">
     <div class="subtabs">
-      <button class="subtab active" data-sub="abast">Abastecimento</button>
-      <button class="subtab" data-sub="oleo">Troca de óleo</button>
+      <button class="subtab active" data-sub="abast" data-i18n="sub_fuel">Abastecimento</button>
+      <button class="subtab" data-sub="oleo" data-i18n="sub_oil">Troca de óleo</button>
     </div>
 
     <!-- ---- sub: abastecimento ---- -->
     <div id="sub-abast">
-      <button id="btnNewFuel" class="btn btnGhost vehAddBtn"><span class="circlePlus">+</span> Informar novo abastecimento</button>
+      <button id="btnNewFuel" class="btn btnGhost vehAddBtn"><span class="circlePlus">+</span> <span data-i18n="new_fuel">Informar novo abastecimento</span></button>
       <div class="card hide" id="fuelFormCard">
         <div class="vehFormHead">
           <div class="eyebrow" id="fuelFormTitle" style="margin:0">Novo abastecimento</div>
@@ -272,16 +279,16 @@
           </div>
         </div>
         <div class="row">
-          <div class="col"><label>Data</label><input id="aDate" type="date" /></div>
+          <div class="col"><label data-i18n="date">Data</label><input id="aDate" type="date" /></div>
           <div class="col"><label id="aKmLabel">Km Rodado (Trip)</label><input id="aKm" type="text" inputmode="decimal" placeholder="0,0" /></div>
         </div>
         <div id="fuelRows"></div>
         <div id="addFuelRowWrap" style="display:none;align-items:center;gap:10px;margin:4px 0 12px">
           <button id="addFuelRow" class="addRow" aria-label="Adicionar outro combustível ao abastecimento">+</button>
-          <span id="addFuelLbl" style="color:var(--green);font-size:13px;font-weight:600;cursor:pointer">Adicionar outro combustível ao abastecimento</span>
+          <span id="addFuelLbl" data-i18n="add_fuel_row" style="color:var(--green);font-size:13px;font-weight:600;cursor:pointer">Adicionar outro combustível ao abastecimento</span>
         </div>
         <div id="aLitWrap">
-          <label>Litros total (automático)</label>
+          <label data-i18n="liters_auto">Litros total (automático)</label>
           <input id="aLit" type="text" readonly style="color:var(--amber)" placeholder="0,000" />
         </div>
         <div id="aTank" class="powerSub" style="margin:6px 0 12px 2px"></div>
@@ -289,103 +296,121 @@
         <button id="btnFuel" class="btn btnAmber">Adicionar abastecimento</button>
         <button id="btnFuelCancel" class="btn btnGhost hide" style="margin-top:8px">Cancelar edição</button>
       </div>
-      <div class="eyebrow" style="margin:0 4px 10px">Histórico</div>
+      <div class="eyebrow" style="margin:0 4px 10px" data-i18n="history">Histórico</div>
       <div id="fuelList"></div>
     </div>
 
     <!-- ---- sub: troca de óleo ---- -->
     <div id="sub-oleo" class="hide">
       <div class="card panelMain">
-        <div class="eyebrow">Situação do óleo</div>
-        <div class="big"><span id="oilSince">0</span> <span style="font-size:14px;color:var(--faint)">km desde a última troca</span></div>
+        <div class="eyebrow" data-i18n="oil_situation">Situação do óleo</div>
+        <div class="big"><span id="oilSince">0</span> <span style="font-size:14px;color:var(--faint)" data-i18n="since_change">km desde a última troca</span></div>
         <div class="prog"><div id="oilProg" class="progfill" style="width:0%"></div></div>
         <div id="oilStatus" class="powerSub"></div>
       </div>
 
-      <button id="btnNewOil" class="btn btnGhost vehAddBtn"><span class="circlePlus">+</span> Informar nova troca de óleo</button>
+      <button id="btnNewLub" class="btn btnGhost vehAddBtn"><span class="circlePlus">+</span> <span data-i18n="reg_lub">Cadastrar Lubrificante</span></button>
+
+      <div class="card hide" id="lubFormCard">
+        <div class="eyebrow" id="lubFormTitle" data-i18n="reg_lub">Cadastrar Lubrificante</div>
+        <div class="row"><div class="col"><label data-i18n="brand">Marca</label><input id="lBrand" type="text" placeholder="Mobil 4t 20w-50" /></div></div>
+        <div class="row">
+          <div class="col"><label data-i18n="type">Tipo</label>
+            <select id="lType" class="fld" style="margin:0"><option>Sintético</option><option>Semissintético</option><option>Mineral</option></select>
+          </div>
+          <div class="col"><label data-i18n="durability">Durabilidade (km)</label><input id="lDur" type="text" inputmode="numeric" placeholder="ex: 5000" /></div>
+        </div>
+        <button id="btnLubAdd" class="btn btnGreen" data-i18n="add_lub">Adicionar lubrificante</button>
+        <button id="btnLubCancel" class="btn btnGhost" style="margin-top:8px" data-i18n="cancel">Cancelar</button>
+      </div>
+
+      <div id="lubListWrap" class="hide">
+        <div class="eyebrow" style="margin:6px 4px 10px" data-i18n="lubs_registered">Lubrificantes cadastrados</div>
+        <div id="lubList" style="margin-bottom:18px"></div>
+      </div>
+
+      <button id="btnNewOil" class="btn btnGhost vehAddBtn"><span class="circlePlus">+</span> <span data-i18n="inform_oil">Informar Troca De Óleo</span></button>
 
       <div class="card hide" id="oilFormCard">
-        <div class="eyebrow" id="oilFormTitle">Registrar troca de óleo</div>
-        <label>Lubrificante cadastrado</label>
+        <div class="eyebrow" id="oilFormTitle" data-i18n="reg_oil_title">Registrar troca de óleo</div>
+        <label data-i18n="lub_registered">Lubrificante cadastrado</label>
         <select id="oLub" class="fld"></select>
         <div class="row">
-          <div class="col"><label>Dia da troca</label><input id="oDate" type="date" /></div>
-          <div class="col"><label>Marca do óleo</label><input id="oBrand" type="text" placeholder="ex: Motul" /></div>
+          <div class="col"><label data-i18n="change_day">Dia da troca</label><input id="oDate" type="date" /></div>
+          <div class="col"><label data-i18n="oil_brand">Marca do óleo</label><input id="oBrand" type="text" placeholder="ex: Motul" /></div>
         </div>
         <div class="row">
-          <div class="col"><label>Tipo</label>
+          <div class="col"><label data-i18n="type">Tipo</label>
             <select id="oType" class="fld" style="margin:0">
               <option>Sintético</option><option>Semissintético</option><option>Mineral</option>
             </select>
           </div>
-          <div class="col"><label>Durabilidade (km)</label><input id="oDur" type="text" inputmode="numeric" list="durList" placeholder="ex: 5000" />
+          <div class="col"><label data-i18n="durability">Durabilidade (km)</label><input id="oDur" type="text" inputmode="numeric" list="durList" placeholder="ex: 5000" />
             <datalist id="durList"><option value="1000"><option value="2000"><option value="3000"><option value="5000"><option value="7000"><option value="10000"></datalist>
           </div>
         </div>
-        <div class="row">
-          <div class="col"><label>KM atual (hodômetro)</label><input id="oKm" type="text" inputmode="numeric" placeholder="ex: 34723" /></div>
-          <div class="col"><label>Óleo usado (L)</label><input id="oQty" type="text" inputmode="decimal" placeholder="ex: 1,0" /></div>
-        </div>
-        <label>Valor gasto (R$)</label>
+        <label data-i18n="km_current">KM atual (hodômetro)</label>
+        <input id="oKm" type="text" inputmode="numeric" placeholder="ex: 34723" style="margin-bottom:12px" />
+        <label data-i18n="value_spent">Valor gasto (R$)</label>
         <input id="oCost" type="text" inputmode="decimal" placeholder="0,00" style="margin-bottom:12px" />
         <div id="oErr" class="err hide"></div>
-        <button id="btnOil" class="btn btnGreen">Registrar troca</button>
+        <button id="btnOil" class="btn btnGreen" data-i18n="register_change">Registrar troca</button>
         <button id="btnOilCancel" class="btn btnGhost hide" style="margin-top:8px">Cancelar edição</button>
       </div>
 
-      <div class="eyebrow" style="margin:0 4px 10px">Histórico de trocas</div>
+      <div class="eyebrow" style="margin:0 4px 10px" data-i18n="changes_history">Histórico de trocas</div>
       <div id="oilList"></div>
     </div>
   </div>
 
   <!-- ================= VEÍCULO ================= -->
   <div id="tab-veiculo" class="hide">
-    <button id="btnNewVeh" class="btn btnGhost vehAddBtn"><span class="circlePlus">+</span> Cadastrar veículo</button>
+    <button id="btnNewVeh" class="btn btnGhost vehAddBtn"><span class="circlePlus">+</span> <span data-i18n="reg_vehicle">Cadastrar veículo</span></button>
 
     <div id="vehListWrap" class="card">
-      <div class="eyebrow">Meus veículos</div>
+      <div class="eyebrow" data-i18n="my_vehicles">Meus veículos</div>
       <div id="vehList"></div>
     </div>
 
     <div id="vehFormCard" class="card hide">
       <div class="vehFormHead">
-        <div class="eyebrow" id="vehFormTitle" style="margin:0">Dados do veículo</div>
+        <div class="eyebrow" id="vehFormTitle" style="margin:0" data-i18n="veh_data">Dados do veículo</div>
         <div class="vehFormActs">
           <button id="vehEditBtn" class="iconbtn hide" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
           <button id="vehDelBtn" class="iconbtn hide" title="Excluir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"/><path d="M10 11v6M14 11v6"/></svg></button>
         </div>
       </div>
-      <label>Tipo do veículo</label>
+      <label data-i18n="type">Tipo do veículo</label>
       <select id="vType" class="fld">
-        <option value="moto">Moto</option>
-        <option value="carro">Carro</option>
-        <option value="van">Van</option>
-        <option value="onibus">Ônibus</option>
-        <option value="caminhao">Caminhão</option>
+        <option value="moto" data-i18n="t_moto">Moto</option>
+        <option value="carro" data-i18n="t_carro">Carro</option>
+        <option value="van" data-i18n="t_van">Van</option>
+        <option value="onibus" data-i18n="t_onibus">Ônibus</option>
+        <option value="caminhao" data-i18n="t_caminhao">Caminhão</option>
       </select>
       <div class="row">
-        <div class="col"><label>Fabricante</label><input id="vMaker" type="text" placeholder="ex: HONDA" /></div>
-        <div class="col"><label>Modelo</label><input id="vModel" type="text" placeholder="ex: BROS" /></div>
+        <div class="col"><label data-i18n="manufacturer">Fabricante</label><input id="vMaker" type="text" placeholder="ex: HONDA" /></div>
+        <div class="col"><label data-i18n="model">Modelo</label><input id="vModel" type="text" placeholder="ex: BROS" /></div>
       </div>
       <div class="row">
-        <div class="col"><label>Ano de fabricação</label><input id="vYear" type="text" inputmode="numeric" placeholder="ex: 2022" /></div>
-        <div class="col"><label>Placa do veículo</label><input id="vPlate" type="text" placeholder="ex: ABC1D23" /></div>
+        <div class="col"><label data-i18n="year">Ano</label><input id="vYear" type="text" inputmode="numeric" placeholder="ex: 2022" /></div>
+        <div class="col"><label data-i18n="plate">Placa</label><input id="vPlate" type="text" placeholder="ex: ABC1D23" /></div>
       </div>
       <div class="row">
-        <div class="col"><label>Tanque (litros)</label><input id="vTank" type="text" inputmode="decimal" placeholder="0,0" /></div>
-        <div class="col"><label>KM inicial</label><input id="vKmInit" type="text" readonly placeholder="Definido no 1º abast." /></div>
+        <div class="col"><label data-i18n="tank">Tanque (L)</label><input id="vTank" type="text" inputmode="decimal" placeholder="0,0" /></div>
+        <div class="col"><label data-i18n="km_initial">KM inicial</label><input id="vKmInit" type="text" readonly placeholder="Definido no 1º abast." /></div>
       </div>
-      <label>Capacidade de óleo do motor (litros)</label>
+      <label data-i18n="oil_capacity">Capacidade de óleo do motor (litros)</label>
       <input id="vOilCap" type="text" inputmode="decimal" placeholder="ex: 1,1" style="margin-bottom:6px" />
       <div class="powerSub" style="margin:-2px 0 12px 2px">Km que o veículo já tinha quando você começou a registrar aqui.</div>
-      <label>Combustível(is) utilizado(s)</label>
+      <label data-i18n="fuel">Combustível(is) utilizado(s)</label>
       <div class="msel">
         <div class="mselField" id="vFuelField"><span id="vFuelText" class="mselText ph">Selecionar…</span><span class="mselArrow">&#9662;</span></div>
         <div id="vFuelList" class="mselList hide"></div>
       </div>
       <div id="vehErr" class="err hide"></div>
-      <button id="btnVehSave" class="btn btnAmberGhost">Salvar dados</button>
-      <button id="btnVehCancel" class="btn btnGhost" style="margin-top:8px">Voltar</button>
+      <button id="btnVehSave" class="btn btnAmberGhost" data-i18n="save">Salvar dados</button>
+      <button id="btnVehCancel" class="btn btnGhost" style="margin-top:8px" data-i18n="back">Voltar</button>
     </div>
   </div>
 </div>
@@ -404,48 +429,66 @@
 <!-- ================= CONFIGURAÇÕES (overlay) ================= -->
 <div id="overlay" class="overlay hide">
   <div class="sheet">
-    <div class="sheetHead"><span class="t">Configurações</span><button id="closeCfg" class="iconbtn" style="font-size:18px">&#10005;</button></div>
+    <div class="sheetHead"><span class="t" data-i18n="settings">Configurações</span><button id="closeCfg" class="iconbtn" style="font-size:18px">&#10005;</button></div>
+
+    <div class="card">
+      <button id="langToggle" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;cursor:pointer;color:var(--ink);padding:0">
+        <span style="display:flex;align-items:center;gap:10px"><span id="langCurFlag" style="display:inline-flex"></span><span style="font-weight:600;font-size:15px" data-i18n="languages">Idiomas</span></span>
+        <span class="chev" id="langChev">&#8250;</span>
+      </button>
+      <div id="langList" class="hide" style="margin-top:12px"></div>
+    </div>
 
     <div class="card">
       <div class="switchRow">
         <div>
-          <div style="font-weight:600;font-size:15px">Modo escuro</div>
-          <div class="powerSub">Alterna entre tema escuro e claro</div>
+          <div style="font-weight:600;font-size:15px" data-i18n="dark_mode">Modo escuro</div>
+          <div class="powerSub" data-i18n="dark_sub">Alterna entre tema escuro e claro</div>
         </div>
         <div id="darkSwitch" class="switch" role="switch" tabindex="0"><span class="knob"></span></div>
       </div>
     </div>
 
     <div class="card">
-      <div class="switchRow">
-        <div>
-          <div style="font-weight:600;font-size:15px">Alerta de troca de óleo</div>
-          <div class="powerSub">Notifica ao abrir o app quando estiver na hora</div>
-        </div>
+      <div style="font-weight:700;font-size:16px" data-i18n="auto_alerts">Alertas Automáticos</div>
+      <div class="powerSub" style="margin-bottom:8px" data-i18n="alerts_sub">Notifica ao abrir o app quando estiver na hora</div>
+
+      <div class="switchRow" style="margin-top:8px">
+        <div><div style="font-weight:600;font-size:15px" data-i18n="oil_change">Troca de óleo</div></div>
         <div id="oilSwitch" class="switch" role="switch" tabindex="0"><span class="knob"></span></div>
       </div>
-      <div style="margin-top:14px">
-        <label>Avisar com antecedência de (km)</label>
-        <input id="advKm" type="text" inputmode="numeric" placeholder="ex: 200" />
-        <div class="powerSub" style="margin-top:6px">Notifica a partir de (km da troca + durabilidade − este valor).</div>
+      <div style="margin-top:12px">
+        <label data-i18n="advance_km">Avisar com antecedência de (km)</label>
+        <input id="advKm" type="text" inputmode="decimal" placeholder="Ex.: 200,0" />
+        <div class="powerSub" style="margin-top:6px" data-i18n="advance_sub">Notifica a partir de (km da troca + durabilidade − este valor).</div>
       </div>
-    </div>
 
-    <div class="card">
-      <div class="eyebrow">Cadastro de lubrificantes</div>
-      <div id="lubList" style="margin-bottom:12px"></div>
-      <div class="row"><div class="col"><label>Marca</label><input id="lBrand" type="text" placeholder="ex: Motul" /></div></div>
-      <div class="row">
-        <div class="col"><label>Tipo</label>
-          <select id="lType" class="fld" style="margin:0"><option>Sintético</option><option>Semissintético</option><option>Mineral</option></select>
+      <div style="margin-top:16px;border-top:1px solid var(--edge);padding-top:14px">
+        <div class="switchRow">
+          <div><div style="font-weight:600;font-size:15px" data-i18n="vehicle_rev">Revisão veicular</div></div>
+          <div id="revSwitch" class="switch" role="switch" tabindex="0"><span class="knob"></span></div>
         </div>
-        <div class="col"><label>Durabilidade (km)</label><input id="lDur" type="text" inputmode="numeric" placeholder="ex: 5000" /></div>
+        <div id="revOpts" style="margin-top:12px">
+          <label data-i18n="alert_type">Tipo de alerta</label>
+          <div class="donVals" id="revModeSel" style="margin:6px 0 12px">
+            <div class="donVal" data-revmode="km" style="flex:1 1 45%" data-i18n="by_km">Por KM</div>
+            <div class="donVal" data-revmode="tempo" style="flex:1 1 45%" data-i18n="by_time">Por tempo</div>
+          </div>
+          <div id="revKmWrap">
+            <label data-i18n="next_rev_km">Próxima revisão - a cada (km)</label>
+            <input id="revKm" type="text" inputmode="decimal" placeholder="Ex.: 12.000,0" />
+          </div>
+          <div id="revDateWrap" class="hide">
+            <label data-i18n="next_rev_date">Próxima revisão em (data)</label>
+            <input id="revDate" type="date" />
+          </div>
+          <div class="powerSub" style="margin-top:6px" data-i18n="rev_sub">Avisa quando o veículo atingir o km ou a data definida.</div>
+        </div>
       </div>
-      <button id="btnLubAdd" class="btn btnGhost">Adicionar lubrificante</button>
     </div>
 
-    <button id="btnSupport" class="menuItem"><span>Suporte</span><span class="chev">&#8250;</span></button>
-    <button id="btnDev" class="menuItem"><span>Desenvolvedor</span><span class="chev">&#8250;</span></button>
+    <button id="btnSupport" class="menuItem"><span data-i18n="support">Suporte</span><span class="chev">&#8250;</span></button>
+    <button id="btnDev" class="menuItem"><span data-i18n="developer">Desenvolvedor</span><span class="chev">&#8250;</span></button>
     <div class="ver" id="appVer"></div>
   </div>
 </div>
@@ -482,60 +525,59 @@
 <!-- ================= DESENVOLVEDOR (overlay) ================= -->
 <div id="devOverlay" class="overlay hide">
   <div class="sheet">
-    <div class="sheetHead"><span class="t">Desenvolvedor</span><span style="display:flex;gap:4px"><button id="devBackArrow" class="iconbtn" title="Voltar às configurações" style="font-size:18px">&#8592;</button><button id="closeDev" class="iconbtn" style="font-size:18px">&#10005;</button></span></div>
+    <div class="sheetHead"><span class="t" data-i18n="developer">Desenvolvedor</span><span style="display:flex;gap:4px"><button id="devBackArrow" class="iconbtn" title="Voltar às configurações" style="font-size:18px">&#8592;</button><button id="closeDev" class="iconbtn" style="font-size:18px">&#10005;</button></span></div>
     <div class="card">
-      <div class="eyebrow" style="font-size:15px;color:var(--ink);font-weight:700;letter-spacing:0">☕ Pague um café ao desenvolvedor</div>
-      <div class="powerSub" style="font-size:13px;line-height:1.5;margin:6px 0 14px">Este app é gratuito e feito com carinho. Se ele te ajuda, considere apoiar com um Pix de qualquer valor — isso ajuda a manter e melhorar o FuelLog. Muito obrigado! 🙏</div>
-      <label>Chave Pix</label>
-      <div class="copyRow"><span class="ck" id="pixKey">—</span><button id="btnCopyKey" class="btn btnGhost" style="width:auto;padding:8px 12px;margin:0">Copiar</button></div>
-      <label>Escolha um valor</label>
+      <div class="eyebrow" style="font-size:15px;color:var(--ink);font-weight:700;letter-spacing:0" data-i18n="coffee_title">☕ Pague um café ao desenvolvedor</div>
+      <div class="powerSub" style="font-size:13px;line-height:1.5;margin:6px 0 14px" data-i18n="coffee_sub">Este app é gratuito e feito com carinho. Se ele te ajuda, considere apoiar com um Pix de qualquer valor — isso ajuda a manter e melhorar o FuelLog. Muito obrigado! 🙏</div>
+      <label data-i18n="pix_key">Chave Pix</label>
+      <div class="copyRow"><span class="ck" id="pixKey">—</span><button id="btnCopyKey" class="btn btnGhost" style="width:auto;padding:8px 12px;margin:0" data-i18n="copy">Copiar</button></div>
+      <label data-i18n="choose_value">Escolha um valor</label>
       <div class="donVals" id="donVals">
         <div class="donVal" data-val="2">R$ 2</div>
         <div class="donVal" data-val="4">R$ 4</div>
         <div class="donVal" data-val="6">R$ 6</div>
         <div class="donVal" data-val="8">R$ 8</div>
         <div class="donVal" data-val="10">R$ 10</div>
-        <div class="donVal" data-val="other">Outro</div>
+        <div class="donVal" data-val="other" data-i18n="other">Outro</div>
       </div>
       <div id="donOtherWrap" class="hide" style="margin-bottom:12px">
-        <label>Outro valor (R$)</label>
+        <label data-i18n="other_value">Outro valor (R$)</label>
         <input id="donOther" type="text" inputmode="decimal" placeholder="0,00" />
       </div>
       <div id="donCodeWrap" class="hide">
-        <label>Pix Copia e Cola <span id="donCodeVal" style="color:var(--green)"></span></label>
+        <label><span data-i18n="pix_copia">Pix Copia e Cola</span> <span id="donCodeVal" style="color:var(--green)"></span></label>
         <div class="pixBox" id="pixCode"></div>
-        <button id="btnCopyPix" class="btn btnGreen" style="margin-top:10px">Copiar código Pix</button>
-        <div class="powerSub" style="margin-top:8px">Copie e cole na opção “Pix Copia e Cola” do app do seu banco.</div>
+        <button id="btnCopyPix" class="btn btnGreen" style="margin-top:10px" data-i18n="copy_pix">Copiar código Pix</button>
+        <div class="powerSub" style="margin-top:8px" data-i18n="copy_pix_bank">Copie e cole na opção “Pix Copia e Cola” do app do seu banco.</div>
       </div>
       <div id="donMsg" class="ok hide"></div>
     </div>
-    <button id="btnPremium" class="btn btnAmber" style="margin-bottom:10px">⭐ Migre para a versão Premium</button>
+    <button id="btnPremium" class="btn btnAmber" style="margin-bottom:10px" data-i18n="migrate_premium">⭐ Migre para a versão Premium</button>
   </div>
 </div>
 
 <!-- ================= PREMIUM (overlay) ================= -->
 <div id="premiumOverlay" class="overlay center hide">
   <div class="sheet">
-    <div class="sheetHead"><span class="t">Versão Premium</span><button id="closePremium" class="iconbtn" style="font-size:18px">&#10005;</button></div>
+    <div class="sheetHead"><span class="t" data-i18n="premium_head">Versão Premium</span><button id="closePremium" class="iconbtn" style="font-size:18px">&#10005;</button></div>
     <div class="card">
       <div class="eyebrow" style="font-size:15px;color:var(--ink);font-weight:700;letter-spacing:0">⭐ FuelLog Premium</div>
-      <div class="powerSub" style="margin:6px 0 0;font-style:italic">Ideal para motoristas e entregadores por aplicativos e autônomos.</div>
-      <div class="powerSub" style="margin:6px 0 4px">Desbloqueie recursos avançados:</div>
+      <div class="powerSub" style="margin:6px 0 0;font-style:italic" data-i18n="premium_audience">Ideal para motoristas e entregadores por aplicativos e autônomos.</div>
+      <div class="powerSub" style="margin:6px 0 4px" data-i18n="unlock">Desbloqueie recursos avançados:</div>
       <div class="premList">
-        <div class="premItem"><span class="pk">&#10003;</span> Fluxo de caixa</div>
-        <div class="premItem"><span class="pk">&#10003;</span> Controle de manutenção de veículos</div>
-        <div class="premItem"><span class="pk">&#10003;</span> Impostos</div>
-        <div class="premItem"><span class="pk">&#10003;</span> Veículos elétricos</div>
-        <div class="premItem"><span class="pk">&#10003;</span> Cadastro ilimitado de veículos</div>
-        <div class="premItem"><span class="pk">&#10003;</span> Sem anúncios</div>
+        <div class="premItem"><span class="pk">&#10003;</span> <span data-i18n="feat_cash">Fluxo de caixa</span></div>
+        <div class="premItem"><span class="pk">&#10003;</span> <span data-i18n="feat_maint">Controle de manutenção de veículos</span></div>
+        <div class="premItem"><span class="pk">&#10003;</span> <span data-i18n="feat_tax">Impostos</span></div>
+        <div class="premItem"><span class="pk">&#10003;</span> <span data-i18n="feat_unlimited">Cadastro ilimitado de veículos</span></div>
+        <div class="premItem"><span class="pk">&#10003;</span> <span data-i18n="feat_noads">Sem anúncios</span></div>
       </div>
-      <div class="premPrice">R$ 30,00<small>pagamento único</small></div>
-      <button id="btnPremiumPay" class="btn btnAmber">Migrar por R$ 30,00 (Pix)</button>
+      <div class="premPrice">R$ 30,00<small data-i18n="single_payment">pagamento único</small></div>
+      <button id="btnPremiumPay" class="btn btnAmber" data-i18n="migrate_btn">Migrar por R$ 30,00 (Pix)</button>
       <div id="premCodeWrap" class="hide" style="margin-top:12px">
-        <label>Pix Copia e Cola · R$ 30,00</label>
+        <label><span data-i18n="pix_copia">Pix Copia e Cola</span> · R$ 30,00</label>
         <div class="pixBox" id="premPixCode"></div>
-        <button id="btnCopyPrem" class="btn btnGreen" style="margin-top:10px">Copiar código Pix</button>
-        <div class="powerSub" style="margin-top:8px">Após o pagamento, fale com o Suporte para liberarmos a sua versão Premium.</div>
+        <button id="btnCopyPrem" class="btn btnGreen" style="margin-top:10px" data-i18n="copy_pix">Copiar código Pix</button>
+        <div class="powerSub" style="margin-top:8px" data-i18n="after_payment">Após o pagamento, fale com o Suporte para liberarmos a sua versão Premium.</div>
       </div>
       <div id="premMsg" class="ok hide"></div>
     </div>
@@ -548,6 +590,180 @@
 const $ = (id) => document.getElementById(id);
 const NM = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
 const VERSION = "1.0";
+
+// ===================== i18n =====================
+const MONTHS_LONG = {
+  "pt-BR":["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"],
+  "pt-PT":["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"],
+  "en":["January","February","March","April","May","June","July","August","September","October","November","December"],
+  "es":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"]
+};
+const MONTHS_SHORT = {
+  "pt-BR":["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"],
+  "pt-PT":["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"],
+  "en":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+  "es":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"]
+};
+const I18N = {
+"pt-BR":{
+title:"Controle", tab_ind:"Indicadores", tab_manut:"Abast./Óleo", tab_veh:"Veículo",
+sub_fuel:"Abastecimento", sub_oil:"Troca de óleo", splash_sub:"Gestor de Veículos e Combustíveis",
+total_rodado:"Total rodado", km_total:"KM total", abast_short:"Abasteci.", oilch_short:"Trocas óleo",
+period_label:"Período dos indicadores", period_all:"Geral (todos os meses)", avg_consumption:"Consumo médio",
+km_period:"Km rodados no período:", autonomy:"Autonomia", spent:"Gasto", liters:"Litros", abast_short2:"Abastec.",
+oil_changes:"Trocas de óleo", oil_spent:"Gasto óleo", by_fuel:"Por combustível", km_cost_month:"Km e gastos por mês",
+legend_km:"Km", legend_fuel:"Combustível R$", legend_oil:"Óleo R$",
+new_fuel:"Informar novo abastecimento", fuel_data:"Dados do abastecimento", date:"Data",
+km_initial:"KM inicial", km_trip:"Km Rodado (Trip)", fuel:"Combustível", total_value:"Valor total (R$)",
+ppl_value:"Valor por litro (R$/L)", liters_auto:"Litros (automático)", add_fuel_row:"Adicionar outro combustível ao abastecimento",
+add:"Adicionar", cancel:"Cancelar", history:"Histórico", chip_initial:"abastecimento inicial",
+ran_km:"rodou {km} km", meta_initial:"KM inicial {km}", meta_ran:"{km} km rodados", tank_pct:"{p}% tanque",
+empty_fuel:"Nenhum abastecimento registrado.",
+oil_situation:"Situação do óleo", since_change:"km desde a última troca",
+oil_remaining:"Faltam {km} km — próxima troca aos {due} km.", oil_overdue:"Troca vencida há {km} km (limite aos {due} km).",
+oil_none:"Nenhuma troca registrada ainda. Registre a primeira abaixo.",
+reg_lub:"Cadastrar Lubrificante", lubs_registered:"Lubrificantes cadastrados", brand:"Marca", type:"Tipo",
+durability:"Durabilidade (km)", add_lub:"Adicionar lubrificante", save_lub:"Salvar lubrificante",
+edit_lub:"Editar lubrificante", inform_oil:"Informar Troca De Óleo", reg_oil_title:"Registrar troca de óleo",
+lub_registered:"Lubrificante cadastrado", choose:"— Escolher —", change_day:"Dia da troca", oil_brand:"Marca do óleo",
+km_current:"KM atual (hodômetro)", value_spent:"Valor gasto (R$)", register_change:"Registrar troca",
+changes_history:"Histórico de trocas", empty_oil:"Nenhuma troca registrada.", dura_km:"dura {km} km",
+oil_meta:"{date} · aos {km} km · {dura}", oil_meta_cost:"{date} · aos {km} km · {dura} · {cost}",
+reg_vehicle:"Cadastrar veículo", my_vehicles:"Meus veículos", empty_veh:"Nenhum veículo cadastrado.",
+veh_data:"Dados do veículo", edit_vehicle:"Editar veículo", manufacturer:"Fabricante", model:"Modelo",
+year:"Ano", plate:"Placa", tank:"Tanque (L)", oil_capacity:"Capacidade de óleo (L)", save:"Salvar", back:"Voltar",
+t_moto:"Moto", t_carro:"Carro", t_van:"Van", t_onibus:"Ônibus", t_caminhao:"Caminhão",
+settings:"Configurações", languages:"Idiomas", dark_mode:"Modo escuro", dark_sub:"Alterna entre tema escuro e claro",
+auto_alerts:"Alertas Automáticos", alerts_sub:"Notifica ao abrir o app quando estiver na hora", oil_change:"Troca de óleo",
+advance_km:"Avisar com antecedência de (km)", advance_sub:"Notifica a partir de (km da troca + durabilidade − este valor).",
+vehicle_rev:"Revisão veicular", alert_type:"Tipo de alerta", by_km:"Por KM", by_time:"Por tempo",
+next_rev_km:"Próxima revisão - a cada (km)", next_rev_date:"Próxima revisão em (data)",
+rev_sub:"Avisa quando o veículo atingir o km ou a data definida.", support:"Suporte", developer:"Desenvolvedor",
+coffee_title:"☕ Pague um café ao desenvolvedor",
+coffee_sub:"Este app é gratuito e feito com carinho. Se ele te ajuda, considere apoiar com um Pix de qualquer valor — isso ajuda a manter e melhorar o FuelLog. Muito obrigado! 🙏",
+pix_key:"Chave Pix", copy:"Copiar", choose_value:"Escolha um valor", other:"Outro", other_value:"Outro valor (R$)",
+pix_copia:"Pix Copia e Cola", copy_pix_bank:"Copie e cole na opção “Pix Copia e Cola” do app do seu banco.",
+migrate_premium:"⭐ Migre para a versão Premium", premium_head:"Versão Premium",
+premium_audience:"Ideal para motoristas e entregadores por aplicativos e autônomos.", unlock:"Desbloqueie recursos avançados:",
+feat_cash:"Fluxo de caixa", feat_maint:"Controle de manutenção de veículos", feat_tax:"Impostos",
+feat_unlimited:"Cadastro ilimitado de veículos", feat_noads:"Sem anúncios", single_payment:"pagamento único",
+migrate_btn:"Migrar por R$ 30,00 (Pix)", after_payment:"Após o pagamento, fale com o Suporte para liberarmos a sua versão Premium.",
+copy_pix:"Copiar código Pix", support_head:"Suporte",
+empty_lub:"Nenhum lubrificante cadastrado.", oil_banner:"⚠️ Troca de óleo do {name} vencida há {km} km.",
+new_fuel_title:"Novo abastecimento", edit_fuel_title:"Editar abastecimento", add_fuel_btn:"Adicionar abastecimento",
+save_fuel_btn:"Salvar abastecimento", cancel_edit:"Cancelar edição", row_liters:"Litros",
+edit_oil_title:"Editar troca de óleo", save_change:"Salvar troca", select_ph:"Selecionar…"
+},
+"pt-PT":{},
+"en":{
+title:"Dashboard", tab_ind:"Stats", tab_manut:"Fuel/Oil", tab_veh:"Vehicle",
+sub_fuel:"Fuel-up", sub_oil:"Oil change", splash_sub:"Vehicle & Fuel Manager",
+total_rodado:"Total distance", km_total:"Total km", abast_short:"Fuel-ups", oilch_short:"Oil chgs",
+period_label:"Stats period", period_all:"Overall (all months)", avg_consumption:"Average consumption",
+km_period:"Km in the period:", autonomy:"Range", spent:"Spent", liters:"Liters", abast_short2:"Fuel-ups",
+oil_changes:"Oil changes", oil_spent:"Oil spent", by_fuel:"By fuel", km_cost_month:"Km and spend per month",
+legend_km:"Km", legend_fuel:"Fuel R$", legend_oil:"Oil R$",
+new_fuel:"Add new fuel-up", fuel_data:"Fuel-up details", date:"Date",
+km_initial:"Initial km", km_trip:"Km driven (Trip)", fuel:"Fuel", total_value:"Total value (R$)",
+ppl_value:"Price per liter (R$/L)", liters_auto:"Liters (automatic)", add_fuel_row:"Add another fuel to this fill-up",
+add:"Add", cancel:"Cancel", history:"History", chip_initial:"initial fuel-up",
+ran_km:"ran {km} km", meta_initial:"Initial km {km}", meta_ran:"{km} km driven", tank_pct:"{p}% tank",
+empty_fuel:"No fuel-up recorded.",
+oil_situation:"Oil status", since_change:"km since last change",
+oil_remaining:"{km} km left — next change at {due} km.", oil_overdue:"Change overdue by {km} km (limit at {due} km).",
+oil_none:"No change recorded yet. Add the first one below.",
+reg_lub:"Add Lubricant", lubs_registered:"Registered lubricants", brand:"Brand", type:"Type",
+durability:"Durability (km)", add_lub:"Add lubricant", save_lub:"Save lubricant",
+edit_lub:"Edit lubricant", inform_oil:"Add Oil Change", reg_oil_title:"Record oil change",
+lub_registered:"Registered lubricant", choose:"— Choose —", change_day:"Change date", oil_brand:"Oil brand",
+km_current:"Current km (odometer)", value_spent:"Amount spent (R$)", register_change:"Record change",
+changes_history:"Change history", empty_oil:"No change recorded.", dura_km:"lasts {km} km",
+oil_meta:"{date} · at {km} km · {dura}", oil_meta_cost:"{date} · at {km} km · {dura} · {cost}",
+reg_vehicle:"Add vehicle", my_vehicles:"My vehicles", empty_veh:"No vehicle registered.",
+veh_data:"Vehicle details", edit_vehicle:"Edit vehicle", manufacturer:"Make", model:"Model",
+year:"Year", plate:"Plate", tank:"Tank (L)", oil_capacity:"Oil capacity (L)", save:"Save", back:"Back",
+t_moto:"Motorcycle", t_carro:"Car", t_van:"Van", t_onibus:"Bus", t_caminhao:"Truck",
+settings:"Settings", languages:"Languages", dark_mode:"Dark mode", dark_sub:"Switch between dark and light theme",
+auto_alerts:"Automatic Alerts", alerts_sub:"Notifies on app open when it's time", oil_change:"Oil change",
+advance_km:"Notify in advance by (km)", advance_sub:"Notifies from (change km + durability − this value).",
+vehicle_rev:"Vehicle service", alert_type:"Alert type", by_km:"By KM", by_time:"By time",
+next_rev_km:"Next service - every (km)", next_rev_date:"Next service on (date)",
+rev_sub:"Alerts when the vehicle reaches the km or the set date.", support:"Support", developer:"Developer",
+coffee_title:"☕ Buy the developer a coffee",
+coffee_sub:"This app is free and made with care. If it helps you, consider supporting with a Pix of any amount — it helps keep and improve FuelLog. Thank you! 🙏",
+pix_key:"Pix key", copy:"Copy", choose_value:"Choose an amount", other:"Other", other_value:"Other amount (R$)",
+pix_copia:"Pix Copy & Paste", copy_pix_bank:"Copy and paste into your bank app's “Pix Copy & Paste”.",
+migrate_premium:"⭐ Upgrade to Premium", premium_head:"Premium",
+premium_audience:"Ideal for rideshare/delivery drivers and freelancers.", unlock:"Unlock advanced features:",
+feat_cash:"Cash flow", feat_maint:"Vehicle maintenance control", feat_tax:"Taxes",
+feat_unlimited:"Unlimited vehicle registration", feat_noads:"No ads", single_payment:"one-time payment",
+migrate_btn:"Upgrade for R$ 30.00 (Pix)", after_payment:"After payment, contact Support to unlock your Premium version.",
+copy_pix:"Copy Pix code", support_head:"Support",
+empty_lub:"No lubricant registered.", oil_banner:"⚠️ Oil change for {name} overdue by {km} km.",
+new_fuel_title:"New fuel-up", edit_fuel_title:"Edit fuel-up", add_fuel_btn:"Add fuel-up",
+save_fuel_btn:"Save fuel-up", cancel_edit:"Cancel edit", row_liters:"Liters",
+edit_oil_title:"Edit oil change", save_change:"Save change", select_ph:"Select…"
+},
+"es":{
+title:"Panel", tab_ind:"Indicadores", tab_manut:"Combust./Aceite", tab_veh:"Vehículo",
+sub_fuel:"Carga", sub_oil:"Cambio de aceite", splash_sub:"Gestor de Vehículos y Combustibles",
+total_rodado:"Total recorrido", km_total:"KM total", abast_short:"Cargas", oilch_short:"Camb. aceite",
+period_label:"Período de indicadores", period_all:"General (todos los meses)", avg_consumption:"Consumo medio",
+km_period:"Km recorridos en el período:", autonomy:"Autonomía", spent:"Gasto", liters:"Litros", abast_short2:"Cargas",
+oil_changes:"Cambios de aceite", oil_spent:"Gasto aceite", by_fuel:"Por combustible", km_cost_month:"Km y gastos por mes",
+legend_km:"Km", legend_fuel:"Combustible R$", legend_oil:"Aceite R$",
+new_fuel:"Registrar nueva carga", fuel_data:"Datos de la carga", date:"Fecha",
+km_initial:"KM inicial", km_trip:"Km recorridos (Trip)", fuel:"Combustible", total_value:"Valor total (R$)",
+ppl_value:"Precio por litro (R$/L)", liters_auto:"Litros (automático)", add_fuel_row:"Añadir otro combustible a esta carga",
+add:"Añadir", cancel:"Cancelar", history:"Historial", chip_initial:"carga inicial",
+ran_km:"recorrió {km} km", meta_initial:"KM inicial {km}", meta_ran:"{km} km recorridos", tank_pct:"{p}% tanque",
+empty_fuel:"Ninguna carga registrada.",
+oil_situation:"Estado del aceite", since_change:"km desde el último cambio",
+oil_remaining:"Faltan {km} km — próximo cambio a los {due} km.", oil_overdue:"Cambio vencido hace {km} km (límite a los {due} km).",
+oil_none:"Aún no hay cambios registrados. Registra el primero abajo.",
+reg_lub:"Registrar Lubricante", lubs_registered:"Lubricantes registrados", brand:"Marca", type:"Tipo",
+durability:"Durabilidad (km)", add_lub:"Añadir lubricante", save_lub:"Guardar lubricante",
+edit_lub:"Editar lubricante", inform_oil:"Registrar Cambio De Aceite", reg_oil_title:"Registrar cambio de aceite",
+lub_registered:"Lubricante registrado", choose:"— Elegir —", change_day:"Día del cambio", oil_brand:"Marca del aceite",
+km_current:"KM actual (odómetro)", value_spent:"Importe gastado (R$)", register_change:"Registrar cambio",
+changes_history:"Historial de cambios", empty_oil:"Ningún cambio registrado.", dura_km:"dura {km} km",
+oil_meta:"{date} · a los {km} km · {dura}", oil_meta_cost:"{date} · a los {km} km · {dura} · {cost}",
+reg_vehicle:"Registrar vehículo", my_vehicles:"Mis vehículos", empty_veh:"Ningún vehículo registrado.",
+veh_data:"Datos del vehículo", edit_vehicle:"Editar vehículo", manufacturer:"Fabricante", model:"Modelo",
+year:"Año", plate:"Matrícula", tank:"Tanque (L)", oil_capacity:"Capacidad de aceite (L)", save:"Guardar", back:"Volver",
+t_moto:"Moto", t_carro:"Coche", t_van:"Furgoneta", t_onibus:"Autobús", t_caminhao:"Camión",
+settings:"Ajustes", languages:"Idiomas", dark_mode:"Modo oscuro", dark_sub:"Alterna entre tema oscuro y claro",
+auto_alerts:"Alertas Automáticas", alerts_sub:"Notifica al abrir la app cuando sea el momento", oil_change:"Cambio de aceite",
+advance_km:"Avisar con antelación de (km)", advance_sub:"Notifica a partir de (km del cambio + durabilidad − este valor).",
+vehicle_rev:"Revisión del vehículo", alert_type:"Tipo de alerta", by_km:"Por KM", by_time:"Por tiempo",
+next_rev_km:"Próxima revisión - cada (km)", next_rev_date:"Próxima revisión en (fecha)",
+rev_sub:"Avisa cuando el vehículo alcance el km o la fecha definida.", support:"Soporte", developer:"Desarrollador",
+coffee_title:"☕ Invita un café al desarrollador",
+coffee_sub:"Esta app es gratuita y hecha con cariño. Si te ayuda, considera apoyar con un Pix de cualquier valor — ayuda a mantener y mejorar FuelLog. ¡Muchas gracias! 🙏",
+pix_key:"Clave Pix", copy:"Copiar", choose_value:"Elige un valor", other:"Otro", other_value:"Otro valor (R$)",
+pix_copia:"Pix Copia y Pega", copy_pix_bank:"Copia y pega en la opción “Pix Copia y Pega” de la app de tu banco.",
+migrate_premium:"⭐ Pásate a la versión Premium", premium_head:"Versión Premium",
+premium_audience:"Ideal para conductores de apps de reparto y autónomos.", unlock:"Desbloquea funciones avanzadas:",
+feat_cash:"Flujo de caja", feat_maint:"Control de mantenimiento de vehículos", feat_tax:"Impuestos",
+feat_unlimited:"Registro ilimitado de vehículos", feat_noads:"Sin anuncios", single_payment:"pago único",
+migrate_btn:"Pasar por R$ 30,00 (Pix)", after_payment:"Tras el pago, contacta con Soporte para activar tu versión Premium.",
+copy_pix:"Copiar código Pix", support_head:"Soporte",
+empty_lub:"Ningún lubricante registrado.", oil_banner:"⚠️ Cambio de aceite de {name} vencido hace {km} km.",
+new_fuel_title:"Nueva carga", edit_fuel_title:"Editar carga", add_fuel_btn:"Añadir carga",
+save_fuel_btn:"Guardar carga", cancel_edit:"Cancelar edición", row_liters:"Litros",
+edit_oil_title:"Editar cambio de aceite", save_change:"Guardar cambio", select_ph:"Seleccionar…"
+}
+};
+function t(k, vars){
+  let s = (I18N[lang] && I18N[lang][k]) || I18N["pt-BR"][k] || k;
+  if(vars) Object.keys(vars).forEach(p=>{ s = s.replace(new RegExp("\\{"+p+"\\}","g"), vars[p]); });
+  return s;
+}
+function applyI18n(){
+  try{ document.documentElement.lang = lang; }catch(e){}
+  document.querySelectorAll("[data-i18n]").forEach(el=>{ el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-ph]").forEach(el=>{ el.setAttribute("placeholder", t(el.dataset.i18nPh)); });
+}
 const FUEL_OPTIONS = ["Gasolina comum","Gasolina aditivada","Gasolina premium","Etanol","Diesel S-10","Diesel comum","GNV"];
 const SUPPORT_EMAIL = "suporte.fuellog@outlook.com";
 const VEH_TYPES = [["moto","Moto","🏍️"],["carro","Carro","🚗"],["van","Van","🚐"],["onibus","Ônibus","🚌"],["caminhao","Caminhão","🚚"]];
@@ -576,8 +792,8 @@ const todayISO = ()=>{ const d=new Date(); return new Date(d-d.getTimezoneOffset
 const monthKey = (iso)=>iso.slice(0,7);
 const prettyDate = (iso)=>{ const [y,m,d]=iso.split("-"); return d+"/"+m+"/"+y; };
 const NMF = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
-const monthName = (k)=>{ const [y,m]=k.split("-"); return NMF[parseInt(m,10)-1]+"/"+y; };
-const monthShort = (k)=>{ const [y,m]=k.split("-"); return NM[parseInt(m,10)-1]+"/"+y.slice(2); };
+const monthName = (k)=>{ const [y,m]=k.split("-"); return (MONTHS_LONG[lang]||MONTHS_LONG["pt-BR"])[parseInt(m,10)-1]+"/"+y; };
+const monthShort = (k)=>{ const [y,m]=k.split("-"); return (MONTHS_SHORT[lang]||MONTHS_SHORT["pt-BR"])[parseInt(m,10)-1]+"/"+y.slice(2); };
 const uid = ()=> Date.now()+Math.floor(Math.random()*1000);
 
 function chartSVG(data){
@@ -620,7 +836,7 @@ function renderOdo(el,value,color){
     +`<span class="dec" style="font-size:${dfs}px;color:${color};text-shadow:0 0 8px ${color}55">,${dec}</span><span class="unit">km</span>`;
 }
 
-let vehicles, fuels, oils, lubricants, activeId, selPeriod="all", editFuel=null, editOil=null, pendingDel=null, delTimer=null, support=[], theme="dark", supAttach=null, vehFuelSel=[], newFuelSel=[], formRows=[{fuel:"",total:"",ppl:""}], vehFormId=null, confirmCb=null, fuelLocked=false;
+let vehicles, fuels, oils, lubricants, activeId, selPeriod="all", editFuel=null, editOil=null, pendingDel=null, delTimer=null, support=[], theme="dark", supAttach=null, vehFuelSel=[], newFuelSel=[], formRows=[{fuel:"",total:"",ppl:""}], vehFormId=null, confirmCb=null, fuelLocked=false, editLub=null, lang="pt-BR";
 function load(){
   try{ vehicles=JSON.parse(store.get("vehicles")||"[]"); }catch(e){ vehicles=[]; }
   try{ fuels=JSON.parse(store.get("fuels")||"[]"); }catch(e){ fuels=[]; }
@@ -628,11 +844,14 @@ function load(){
   try{ lubricants=JSON.parse(store.get("lubricants")||"[]"); }catch(e){ lubricants=[]; }
   try{ support=JSON.parse(store.get("support")||"[]"); }catch(e){ support=[]; }
   theme=store.get("theme")||"dark";
+  lang=store.get("lang")||"pt-BR";
   if(!vehicles.length){ vehicles=[{id:uid(),name:"Minha moto",tank:0,oilAlertOn:false,oilAdvance:0,kmInitial:0,oilCapacity:0,fuelTypes:[]}]; }
-  vehicles.forEach(v=>{ if(v.tank==null)v.tank=0; if(v.oilAlertOn==null)v.oilAlertOn=false; if(v.oilAdvance==null)v.oilAdvance=0; if(v.kmInitial==null)v.kmInitial=0; if(v.oilCapacity==null)v.oilCapacity=0; if(!Array.isArray(v.fuelTypes))v.fuelTypes=[]; if(v.type==null)v.type="moto"; if(v.maker==null)v.maker=""; if(v.model==null)v.model=""; if(v.plate==null)v.plate=""; if(v.year==null)v.year=""; });
+  vehicles.forEach(v=>{ if(v.tank==null)v.tank=0; if(v.oilAlertOn==null)v.oilAlertOn=false; if(v.oilAdvance==null)v.oilAdvance=0; if(v.kmInitial==null)v.kmInitial=0; if(v.oilCapacity==null)v.oilCapacity=0; if(!Array.isArray(v.fuelTypes))v.fuelTypes=[]; if(v.type==null)v.type="moto"; if(v.maker==null)v.maker=""; if(v.model==null)v.model=""; if(v.plate==null)v.plate=""; if(v.year==null)v.year=""; if(v.revAlertOn==null)v.revAlertOn=false; if(v.revMode==null)v.revMode="km"; if(v.revKm==null)v.revKm=0; if(v.revDate==null)v.revDate=""; });
   activeId=store.get("activeId");
   if(!vehicles.some(v=>String(v.id)===String(activeId))) activeId=vehicles[0].id;
   fuels.forEach(f=>{ if(f.vehicleId==null)f.vehicleId=activeId; if(f.km==null)f.km=0; if(f.fuel==null)f.fuel=""; if(!Array.isArray(f.items)) f.items=[{fuel:f.fuel||"",total:f.total||0,ppl:f.ppl||0,liters:f.liters||0}]; });
+  // garante que o abastecimento mais antigo de cada veículo seja o marco zero (km rodado = 0)
+  vehicles.forEach(v=>{ const fl=fuelsFor(v); if(fl.length && (fl[0].km||0)!==0){ v.kmInitial=(v.kmInitial||0)+(fl[0].km||0); fl[0].km=0; } });
   oils.forEach(o=>{ if(o.vehicleId==null)o.vehicleId=activeId;
     if(o.kmReal==null){ const vv=vehicles.find(x=>String(x.id)===String(o.vehicleId)); o.kmReal=(o.kmAt||0)+((vv&&vv.kmInitial)||0); } // migra: km real = km inicial + distância na troca
     if(o.oilQty==null)o.oilQty=0; });
@@ -692,27 +911,47 @@ function maybeNotifyOil(){
                           : (v.name+": faltam "+Math.round(st.dueAt-st.total)+" km para a troca.");
   showOilNotif(body);
 }
+async function showNotif(title, body, tag){
+  try{
+    if(!("Notification" in window) || Notification.permission!=="granted") return;
+    const reg = ("serviceWorker" in navigator) ? await navigator.serviceWorker.getRegistration() : null;
+    const opts={body,icon:"icon-192.png",badge:"icon-192.png",tag};
+    if(reg && reg.showNotification) reg.showNotification(title, opts);
+    else new Notification(title, opts);
+  }catch(e){}
+}
+function maybeNotifyRev(){
+  const v=av(); if(!v.revAlertOn) return;
+  if((v.revMode||"km")==="km"){
+    const interval=v.revKm||0; if(interval<=0) return; const cur=realKm(v);
+    if(cur>=interval){ const nextDue=(Math.floor(cur/interval)+1)*interval;
+      showNotif("Revisão veicular", v.name+": revisão a cada "+Math.round(interval)+" km — você já rodou "+Math.round(cur)+" km. Próxima aos "+Math.round(nextDue)+" km.", "rev-"+v.id); }
+  } else {
+    if(!v.revDate) return; const today=todayISO();
+    if(today>=v.revDate) showNotif("Revisão veicular", v.name+": revisão prevista para "+prettyDate(v.revDate)+".", "rev-"+v.id);
+  }
+}
 
 function renderVehSelect(){
   $("vehSelect").innerHTML=vehicles.map(v=>`<option value="${v.id}" ${String(v.id)===String(activeId)?"selected":""}>${typeIcon(v.type)} ${vehName(v)}</option>`).join("");
 }
 function renderLubOptions(){
-  $("oLub").innerHTML='<option value="">— informar manualmente —</option>'+lubricants.map(l=>`<option value="${l.id}">${l.brand} · ${l.type} · ${l.durability} km</option>`).join("");
+  $("oLub").innerHTML='<option value="">— Escolher —</option>'+lubricants.map(l=>`<option value="${l.id}">${l.brand} · ${l.type} · ${l.durability} km</option>`).join("");
 }
 function renderVehFuelChecks(){
   paintMsel("vFuel", vehFuelSel);
 }
 function paintMsel(prefix, sel){
-  const t=$(prefix+"Text");
-  t.textContent = sel.length ? sel.join(", ") : "Selecionar…";
-  t.classList.toggle("ph", sel.length===0);
+  const el=$(prefix+"Text");
+  el.textContent = sel.length ? sel.join(", ") : t("select_ph");
+  el.classList.toggle("ph", sel.length===0);
   $(prefix+"List").innerHTML = FUEL_OPTIONS.map(f=>`<div class="mselOpt${sel.includes(f)?" on":""}" data-f="${f}"><span>${f}</span><span class="mselCk">&#10003;</span></div>`).join("");
   $(prefix+"List").querySelectorAll(".mselOpt").forEach(o=>o.onclick=()=>{
     const f=o.dataset.f, i=sel.indexOf(f);
     if(i>=0) sel.splice(i,1); else sel.push(f);
     o.classList.toggle("on");
-    t.textContent = sel.length ? sel.join(", ") : "Selecionar…";
-    t.classList.toggle("ph", sel.length===0);
+    el.textContent = sel.length ? sel.join(", ") : t("select_ph");
+    el.classList.toggle("ph", sel.length===0);
   });
 }
 function readChecks(){ return []; }
@@ -729,13 +968,14 @@ function annFuels(v){
   const fs=fuelsFor(v); // ascendente (mais antigo -> mais novo)
   return fs.map((f,i)=>({ id:f.id, date:f.date, fuel:f.fuel||"", km:f.km||0, liters:f.liters||0, total:f.total||0, ppl:f.ppl||0,
     items: (f.items&&f.items.length)?f.items:[{fuel:f.fuel||"",total:f.total||0,ppl:f.ppl||0,liters:f.liters||0}],
-    rendered: i<fs.length-1 ? (fs[i+1].km||0) : null })); // distância rodada com este combustível = km do próximo abast.
+    rendered: i>0 ? (f.km||0) : null })); // economia do trecho usa o PRÓPRIO km rodado; o 1º (mais antigo) é o marco zero
 }
 
 function render(){
   const v=av();
   renderVehSelect();
   renderLubOptions();
+  renderLubList();
   renderVehFuelChecks();
   const a=agg(v);
 
@@ -749,7 +989,7 @@ function render(){
   const ann=annFuels(v);
   const monthsList=[...new Set(ann.map(f=>monthKey(f.date)))].sort((x,y)=>y.localeCompare(x));
   if(selPeriod!=="all" && !monthsList.includes(selPeriod)) selPeriod="all";
-  $("periodSel").innerHTML='<option value="all">Geral (todos os meses)</option>'+monthsList.map(m=>`<option value="${m}">${monthName(m)}</option>`).join("");
+  $("periodSel").innerHTML='<option value="all">'+t("period_all")+'</option>'+monthsList.map(m=>`<option value="${m}">${monthName(m)}</option>`).join("");
   $("periodSel").value=selPeriod;
   const periodAnn = selPeriod==="all" ? ann : ann.filter(f=>monthKey(f.date)===selPeriod);
   // tanque a tanque: o rendimento usa a distância rodada COM aquele combustível (km do próximo abastecimento)
@@ -811,44 +1051,55 @@ function render(){
     const pct = interval>0 ? Math.min(100,(st.since/interval)*100) : 0;
     $("oilSince").textContent=Math.round(st.since);
     $("oilProg").style.width=pct+"%";
-    $("oilProg").style.background = st.overdue ? "var(--danger)" : "linear-gradient(90deg,var(--green),#9be09b)";
+    let oc1,oc2;
+    if(st.overdue || pct>=83){ oc1="#b91c1c"; oc2="#ef4444"; }      // vermelho (83–100%)
+    else if(pct<=31){ oc1="#1e3a8a"; oc2="#2563eb"; }               // azul escuro (0–31%)
+    else if(pct<=56){ oc1="#22a06b"; oc2="#7ad17a"; }               // verde (31–56%)
+    else if(pct<=71){ oc1="#d4a017"; oc2="#facc15"; }               // amarelo (57–71%)
+    else { oc1="#ea7317"; oc2="#fb923c"; }                          // laranja (72–82%)
+    $("oilProg").style.background = "linear-gradient(90deg,"+oc1+","+oc2+")";
     $("oilStatus").textContent = st.overdue
-      ? ("Troca vencida há "+Math.round(st.total-st.dueAt)+" km (limite aos "+Math.round(st.dueAt)+" km).")
-      : ("Faltam "+Math.round(st.dueAt-st.total)+" km — próxima troca aos "+Math.round(st.dueAt)+" km.");
+      ? t("oil_overdue",{km:Math.round(st.total-st.dueAt), due:Math.round(st.dueAt)})
+      : t("oil_remaining",{km:Math.round(st.dueAt-st.total), due:Math.round(st.dueAt)});
     $("oilStatus").style.color = st.overdue ? "var(--danger)" : "var(--faint)";
   } else {
     $("oilSince").textContent="0"; $("oilProg").style.width="0%";
-    $("oilStatus").textContent="Nenhuma troca registrada ainda. Registre a primeira abaixo.";
+    $("oilStatus").textContent=t("oil_none");
     $("oilStatus").style.color="var(--faint)";
   }
   if(st.has && st.overdue){ $("oilBanner").classList.remove("hide");
-    $("oilBanner").textContent = "⚠️ Troca de óleo do "+v.name+" vencida há "+Math.round(st.total-st.dueAt)+" km.";
+    $("oilBanner").textContent = t("oil_banner",{name:v.name, km:Math.round(st.total-st.dueAt)});
   } else $("oilBanner").classList.add("hide");
 
   // lista abastecimentos (rendimento = distância rodada com este combustível)
   $("fuelList").innerHTML = ann.length ? ann.slice().reverse().map(f=>{
+    const isFirst = f.rendered==null;
     const dist=f.rendered;
     const fkmL=(dist!=null&&f.liters>0)?dist/f.liters:null, frkm=(dist!=null&&dist>0)?f.total/dist:null, flkm=(dist!=null&&dist>0)?f.liters/dist:null;
     const pctTank=v.tank>0?Math.round((f.liters/v.tank)*100):null;
-    const status = dist!=null
-      ? `<span class="chip chipT">rodou ${km1(dist)} km</span>`
-      : `<span class="chip" style="background:rgba(139,144,156,.18);color:var(--muted)">aguardando próximo</span>`;
+    const status = isFirst
+      ? `<span class="chip" style="background:rgba(139,144,156,.18);color:var(--muted)">${t("chip_initial")}</span>`
+      : `<span class="chip chipT">${t("ran_km",{km:km1(dist)})}</span>`;
+    const metaKm = isFirst ? t("meta_initial",{km:km1(v.kmInitial||0)}) : t("meta_ran",{km:km1(f.km)});
     return `<div class="item clk" data-view-fuel="${f.id}">
       <div class="ihead">${km1(f.liters)} <span style="font-size:11px;color:var(--faint)">L · ${brl(f.total)}</span>${f.fuel?`<span class="chip">${f.fuel}</span>`:""}${status}</div>
-      <div class="imeta">${prettyDate(f.date)} · ${km1(f.km)} km até abastecer · ${brl(f.ppl)}/L${pctTank!=null?(" · "+pctTank+"% tanque"):""}</div>
+      <div class="imeta">${prettyDate(f.date)} · ${metaKm} · ${brl(f.ppl)}/L${pctTank!=null?(" · "+t("tank_pct",{p:pctTank})):""}</div>
       <div class="find"><div class="i"><div class="iv">${fkmL!=null?km1(fkmL):"—"}</div><div class="il">km/L</div></div>
         <div class="i"><div class="iv">${frkm!=null?brl(frkm):"—"}</div><div class="il">R$/km</div></div>
         <div class="i"><div class="iv">${flkm!=null?d3(flkm):"—"}</div><div class="il">L/km</div></div></div></div>`;
-  }).join("") : '<div class="empty">Nenhum abastecimento registrado.</div>';
+  }).join("") : `<div class="empty">${t("empty_fuel")}</div>`;
   document.querySelectorAll("[data-view-fuel]").forEach(b=>b.onclick=()=>viewFuel(b.dataset.viewFuel));
 
   // lista trocas de óleo
   const ocs=oilsFor(v);
-  $("oilList").innerHTML = ocs.length ? ocs.slice().reverse().map(o=>
-    `<div class="item"><div class="acts"><button class="iconbtn" data-edit-oil="${o.id}">&#9998;</button>${delBtn('oil',o.id)}</div>
+  $("oilList").innerHTML = ocs.length ? ocs.slice().reverse().map(o=>{
+    const dura=t("dura_km",{km:Math.round(o.durability||0)});
+    const meta=o.cost? t("oil_meta_cost",{date:prettyDate(o.date),km:Math.round(o.kmReal||0),dura:dura,cost:brl(o.cost)})
+                     : t("oil_meta",{date:prettyDate(o.date),km:Math.round(o.kmReal||0),dura:dura});
+    return `<div class="item"><div class="acts"><button class="iconbtn" data-edit-oil="${o.id}">&#9998;</button>${delBtn('oil',o.id)}</div>
       <div class="ihead" style="font-size:15px">${o.brand||"Óleo"} <span class="chip chipT">${o.type||""}</span></div>
-      <div class="imeta">${prettyDate(o.date)} · aos ${Math.round(o.kmReal||0)} km · dura ${Math.round(o.durability||0)} km${o.oilQty?(" · "+km1(o.oilQty)+" L de óleo"):""}${o.cost?(" · "+brl(o.cost)):""}</div></div>`
-  ).join("") : '<div class="empty">Nenhuma troca registrada.</div>';
+      <div class="imeta">${meta}</div></div>`;
+  }).join("") : `<div class="empty">${t("empty_oil")}</div>`;
   document.querySelectorAll("[data-edit-oil]").forEach(b=>b.onclick=()=>startEditOil(b.dataset.editOil));
   document.querySelectorAll("[data-del]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation();
     const k=b.dataset.del;
@@ -870,15 +1121,15 @@ function renderFuelRows(){
   $("fuelRows").innerHTML=formRows.map((r,i)=>`
     <div class="frow" data-i="${i}">
       <div style="display:flex;align-items:center;justify-content:space-between">
-        <label style="margin-bottom:5px">Combustível${i>0?(" "+(i+1)):""}</label>
+        <label style="margin-bottom:5px">${t("fuel")}${i>0?(" "+(i+1)):""}</label>
         ${i>0?`<button class="fr-remove" data-i="${i}" style="color:var(--danger)">remover</button>`:""}
       </div>
       <select class="fld fr-fuel">${fuels.map(f=>`<option ${f===r.fuel?"selected":""}>${f}</option>`).join("")}</select>
       <div class="row" style="margin-bottom:8px">
-        <div class="col"><label>Valor total (R$)</label><input class="fr-total" type="text" inputmode="decimal" placeholder="0,00" value="${r.total||""}"/></div>
-        <div class="col"><label>Valor por litro (R$/L)</label><input class="fr-ppl" type="text" inputmode="decimal" placeholder="0,00" value="${r.ppl||""}"/></div>
+        <div class="col"><label>${t("total_value")}</label><input class="fr-total" type="text" inputmode="decimal" placeholder="0,00" value="${r.total||""}"/></div>
+        <div class="col"><label>${t("ppl_value")}</label><input class="fr-ppl" type="text" inputmode="decimal" placeholder="0,00" value="${r.ppl||""}"/></div>
       </div>
-      <label>Litros (automático)</label>
+      <label>${t("liters_auto")}</label>
       <input class="fr-lit" type="text" readonly placeholder="0,000" style="color:var(--amber)" />
     </div>`).join("");
   document.querySelectorAll("#fuelRows .fr-total").forEach(el=>el.oninput=()=>{ maskDec(el,2); recalcLit(); });
@@ -897,13 +1148,13 @@ function addFuelRowFn(){ readRowsFromDOM(); const used=formRows.map(r=>r.fuel); 
 $("addFuelRow").onclick=addFuelRowFn;
 $("addFuelLbl").onclick=addFuelRowFn;
 function isFirstFillCtx(){ const fs=fuelsFor(av()); if(editFuel){ return !!(fs[0] && String(fs[0].id)===String(editFuel)); } return fs.length===0; }
-function openFuelForm(){ $("fuelFormCard").classList.remove("hide"); $("btnNewFuel").classList.add("hide"); }
-function closeFuelForm(){ $("fuelFormCard").classList.add("hide"); $("btnNewFuel").classList.remove("hide"); }
-$("btnNewFuel").onclick=()=>{ resetFuelForm(); openFuelForm(); window.scrollTo({top:0,behavior:"smooth"}); };
-function setKmLabel(){ const first=isFirstFillCtx(); $("aKmLabel").textContent = first?"KM inicial":"Km Rodado (Trip)"; $("aKm").placeholder = first?"ex: 12300":"0,0"; }
+function openFuelForm(){ $("fuelFormCard").classList.remove("hide"); }
+function closeFuelForm(){ $("fuelFormCard").classList.add("hide"); }
+$("btnNewFuel").onclick=()=>{ if($("fuelFormCard").classList.contains("hide")){ resetFuelForm(); openFuelForm(); window.scrollTo({top:0,behavior:"smooth"}); } else { closeFuelForm(); } };
+function setKmLabel(){ const first=isFirstFillCtx(); $("aKmLabel").textContent = first?t("km_initial"):t("km_trip"); $("aKm").placeholder = first?"ex: 12300":"0,0"; }
 function resetFuelForm(){ editFuel=null; fuelLocked=false; $("aDate").disabled=false; $("aKm").disabled=false; $("aKm").value=""; $("aDate").value=todayISO(); formRows=[{fuel:(availFuels()[0]||""),total:"",ppl:""}]; renderFuelRows(); setKmLabel();
-  $("fuelFormTitle").textContent="Novo abastecimento"; $("btnFuel").textContent="Adicionar abastecimento"; $("btnFuel").classList.remove("hide");
-  $("fuelEditBtn").classList.add("hide"); $("fuelDelBtn").classList.add("hide"); $("btnFuelCancel").textContent="Cancelar"; $("btnFuelCancel").classList.remove("hide"); }
+  $("fuelFormTitle").textContent=t("new_fuel_title"); $("btnFuel").textContent=t("add_fuel_btn"); $("btnFuel").classList.remove("hide");
+  $("fuelEditBtn").classList.add("hide"); $("fuelDelBtn").classList.add("hide"); $("btnFuelCancel").textContent=t("cancel"); $("btnFuelCancel").classList.remove("hide"); }
 function populateFuel(id){ const f=fuels.find(x=>String(x.id)===String(id)); if(!f)return false; editFuel=f.id;
   $("aDate").value=f.date;
   const fs=fuelsFor(av()); const isFirst=!!(fs[0] && String(fs[0].id)===String(f.id));
@@ -913,17 +1164,24 @@ function populateFuel(id){ const f=fuels.find(x=>String(x.id)===String(id)); if(
   return true; }
 function setFuelMode(mode){ fuelLocked=(mode==="view");
   $("aDate").disabled=fuelLocked; $("aKm").disabled=fuelLocked;
-  $("btnFuel").classList.toggle("hide",fuelLocked); $("btnFuel").textContent="Salvar alterações";
+  $("btnFuel").classList.toggle("hide",fuelLocked); $("btnFuel").textContent=t("save_fuel_btn");
   $("fuelEditBtn").classList.toggle("hide",mode!=="view");
   $("fuelDelBtn").classList.remove("hide");
-  $("fuelFormTitle").textContent = mode==="view"?"Dados do abastecimento":"Editar abastecimento";
-  $("btnFuelCancel").textContent="Cancelar"; $("btnFuelCancel").classList.remove("hide");
+  $("fuelFormTitle").textContent = mode==="view"?t("fuel_data"):t("edit_fuel_title");
+  $("btnFuelCancel").textContent=t("cancel"); $("btnFuelCancel").classList.remove("hide");
   setKmLabel(); renderFuelRows(); }
 function viewFuel(id){ if(!populateFuel(id))return; showTab("manut"); showSub("abast"); openFuelForm(); setFuelMode("view"); window.scrollTo({top:0,behavior:"smooth"}); }
 function startEditFuel(id){ if(!populateFuel(id))return; showTab("manut"); showSub("abast"); openFuelForm(); setFuelMode("edit"); window.scrollTo({top:0,behavior:"smooth"}); }
 $("fuelEditBtn").onclick=()=>setFuelMode("edit");
 $("fuelDelBtn").onclick=()=>{ if(!editFuel)return; const id=editFuel;
-  askConfirm("Tem certeza que deseja excluir este abastecimento?","Excluir",()=>{ fuels=fuels.filter(f=>String(f.id)!==String(id)); saveAll(); resetFuelForm(); closeFuelForm(); render(); }); };
+  askConfirm("Tem certeza que deseja excluir este abastecimento?","Excluir",()=>{
+    const f=fuels.find(x=>String(x.id)===String(id));
+    if(f){ const v=vehicles.find(x=>String(x.id)===String(f.vehicleId));
+      const list=v?fuelsFor(v):[]; const wasFirst = list.length && String(list[0].id)===String(id); const dk=f.km||0;
+      fuels=fuels.filter(x=>String(x.id)!==String(id));
+      if(v && wasFirst){ const nl=fuelsFor(v); if(nl.length){ v.kmInitial=(v.kmInitial||0)+dk+(nl[0].km||0); nl[0].km=0; } }
+    }
+    saveAll(); resetFuelForm(); closeFuelForm(); render(); }); };
 $("btnFuelCancel").onclick=()=>{ resetFuelForm(); closeFuelForm(); };
 $("btnFuel").onclick=()=>{ readRowsFromDOM(); const kmEntered=num($("aKm").value); const e=$("aErr"); const first=isFirstFillCtx();
   const items=formRows.map(r=>({fuel:r.fuel,total:num(r.total),ppl:num(r.ppl)})).filter(it=>it.total>0&&it.ppl>0)
@@ -938,27 +1196,27 @@ $("btnFuel").onclick=()=>{ readRowsFromDOM(); const kmEntered=num($("aKm").value
   if(first){ av().kmInitial = kmEntered; }      // o valor informado no 1º abast. vai p/ o KM inicial do veículo
   if(editFuel){ const f=fuels.find(x=>x.id===editFuel); Object.assign(f,{date:$("aDate").value||todayISO(),km,items,total,liters,ppl,fuel:fuelLabel}); }
   else { fuels.push({id:uid(),vehicleId:activeId,date:$("aDate").value||todayISO(),km,items,total,liters,ppl,fuel:fuelLabel}); }
-  saveAll(); resetFuelForm(); closeFuelForm(); render(); maybeNotifyOil(); };
+  saveAll(); resetFuelForm(); closeFuelForm(); render(); maybeNotifyOil(); maybeNotifyRev(); };
 
 // ---------- troca de óleo (add/edit) ----------
 $("oLub").onchange=()=>{ const l=lubricants.find(x=>String(x.id)===$("oLub").value); if(l){ $("oBrand").value=l.brand; $("oType").value=l.type; $("oDur").value=l.durability; } };
-function openOilForm(){ $("oilFormCard").classList.remove("hide"); $("btnNewOil").classList.add("hide"); }
-function closeOilForm(){ $("oilFormCard").classList.add("hide"); $("btnNewOil").classList.remove("hide"); }
-$("btnNewOil").onclick=()=>{ resetOilForm(); openOilForm(); window.scrollTo({top:0,behavior:"smooth"}); };
+function openOilForm(){ $("oilFormCard").classList.remove("hide"); }
+function closeOilForm(){ $("oilFormCard").classList.add("hide"); }
+$("btnNewOil").onclick=()=>{ if($("oilFormCard").classList.contains("hide")){ resetOilForm(); openOilForm(); window.scrollTo({top:0,behavior:"smooth"}); } else { closeOilForm(); } };
 function resetOilForm(){ editOil=null; const v=av(); $("oDate").value=todayISO(); $("oLub").value=""; $("oBrand").value=""; $("oType").value="Sintético"; $("oDur").value=""; $("oCost").value="";
-  $("oKm").value=String(Math.round(realKm(v))); $("oQty").value=v.oilCapacity?toInput(v.oilCapacity):"";
-  $("oilFormTitle").textContent="Registrar troca de óleo"; $("btnOil").textContent="Registrar troca"; $("btnOilCancel").textContent="Cancelar"; $("btnOilCancel").classList.remove("hide"); }
+  $("oKm").value=String(Math.round(realKm(v)));
+  $("oilFormTitle").textContent=t("reg_oil_title"); $("btnOil").textContent=t("register_change"); $("btnOilCancel").textContent=t("cancel"); $("btnOilCancel").classList.remove("hide"); }
 function startEditOil(id){ const o=oils.find(x=>String(x.id)===String(id)); if(!o)return; editOil=o.id;
-  $("oDate").value=o.date; $("oBrand").value=o.brand||""; $("oType").value=o.type||"Sintético"; $("oDur").value=o.durability||""; $("oCost").value=toInput(o.cost); $("oKm").value=String(Math.round(o.kmReal||0)); $("oQty").value=o.oilQty?toInput(o.oilQty):""; $("oLub").value="";
-  $("oilFormTitle").textContent="Editar troca de óleo"; $("btnOil").textContent="Salvar alterações"; $("btnOilCancel").textContent="Cancelar"; $("btnOilCancel").classList.remove("hide");
+  $("oDate").value=o.date; $("oBrand").value=o.brand||""; $("oType").value=o.type||"Sintético"; $("oDur").value=o.durability||""; $("oCost").value=toInput(o.cost); $("oKm").value=String(Math.round(o.kmReal||0)); $("oLub").value="";
+  $("oilFormTitle").textContent=t("edit_oil_title"); $("btnOil").textContent=t("save_change"); $("btnOilCancel").textContent=t("cancel"); $("btnOilCancel").classList.remove("hide");
   showTab("manut"); showSub("oleo"); openOilForm(); window.scrollTo({top:0,behavior:"smooth"}); }
 $("btnOilCancel").onclick=()=>{ resetOilForm(); closeOilForm(); };
-$("btnOil").onclick=()=>{ const dur=num($("oDur").value), cost=num($("oCost").value), kmReal=Math.round(num($("oKm").value)), oilQty=num($("oQty").value), e=$("oErr");
+$("btnOil").onclick=()=>{ const dur=num($("oDur").value), cost=num($("oCost").value), kmReal=Math.round(num($("oKm").value)), e=$("oErr");
   const brand=$("oBrand").value.trim(), type=$("oType").value, date=$("oDate").value||todayISO();
   if(dur<=0){ e.textContent="Informe a durabilidade do óleo em km."; e.classList.remove("hide"); return; }
   if(kmReal<=0){ e.textContent="Informe o KM atual do hodômetro na troca."; e.classList.remove("hide"); return; } e.classList.add("hide");
-  if(editOil){ const o=oils.find(x=>x.id===editOil); Object.assign(o,{date,brand,type,durability:dur,cost,kmReal,oilQty}); }
-  else { oils.push({id:uid(),vehicleId:activeId,date,brand,type,durability:dur,cost,kmReal,oilQty,kmAt:totalKm(av())}); }
+  if(editOil){ const o=oils.find(x=>x.id===editOil); Object.assign(o,{date,brand,type,durability:dur,cost,kmReal}); }
+  else { oils.push({id:uid(),vehicleId:activeId,date,brand,type,durability:dur,cost,kmReal,kmAt:totalKm(av())}); }
   saveAll(); resetOilForm(); closeOilForm(); render(); };
 
 // ---------- veículo ----------
@@ -979,11 +1237,11 @@ function setVehMode(mode){
   $("btnVehSave").classList.toggle("hide",locked);
   $("vehEditBtn").classList.toggle("hide",mode!=="view");
   $("vehDelBtn").classList.toggle("hide",!vehFormId);
-  $("vehFormTitle").textContent = mode==="new"?"Cadastrar veículo":(mode==="view"?"Dados do veículo":"Editar veículo");
+  $("vehFormTitle").textContent = mode==="new"?t("reg_vehicle"):(mode==="view"?t("veh_data"):t("edit_vehicle"));
 }
 function openVehForm(id,mode){
   vehFormId=id||null; $("vehErr").classList.add("hide"); $("vFuelList").classList.add("hide");
-  $("vehListWrap").classList.add("hide"); $("btnNewVeh").classList.add("hide"); $("vehFormCard").classList.remove("hide");
+  $("vehListWrap").classList.add("hide"); $("vehFormCard").classList.remove("hide");
   if(id){ const v=vehicles.find(x=>String(x.id)===String(id));
     $("vType").value=v.type||"moto"; $("vMaker").value=v.maker||""; $("vModel").value=v.model||""; $("vYear").value=v.year||""; $("vPlate").value=v.plate||"";
     $("vTank").value=v.tank?km1(v.tank):""; $("vKmInit").value=v.kmInitial?km1(v.kmInitial):""; $("vOilCap").value=v.oilCapacity?km1(v.oilCapacity):"";
@@ -997,7 +1255,7 @@ function openVehForm(id,mode){
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function closeVehForm(){ $("vehFormCard").classList.add("hide"); $("vehListWrap").classList.remove("hide"); $("btnNewVeh").classList.remove("hide"); $("vFuelList").classList.add("hide"); vehFormId=null; }
-$("btnNewVeh").onclick=()=>openVehForm(null,"new");
+$("btnNewVeh").onclick=()=>{ if($("vehFormCard").classList.contains("hide")){ openVehForm(null,"new"); } else { closeVehForm(); render(); } };
 $("btnVehCancel").onclick=()=>{ closeVehForm(); render(); };
 $("vehEditBtn").onclick=()=>setVehMode("edit");
 $("vehDelBtn").onclick=()=>{ if(!vehFormId)return; const v=vehicles.find(x=>String(x.id)===String(vehFormId));
@@ -1040,22 +1298,63 @@ function renderSettings(){
   const v=av();
   $("darkSwitch").classList.toggle("on", theme==="dark");
   $("appVer").textContent="FuelLog • versão "+VERSION;
+  renderLangList();
+  document.querySelectorAll("#langList .langOpt").forEach(b=>b.classList.toggle("on", b.dataset.lang===lang));
+  $("langCurFlag").innerHTML = FLAGS[lang]||"";
   $("oilSwitch").classList.toggle("on",!!v.oilAlertOn);
   $("advKm").disabled=!v.oilAlertOn;
-  $("advKm").value = v.oilAlertOn ? (v.oilAdvance?String(v.oilAdvance):"") : "";
-  $("lubList").innerHTML = lubricants.length ? lubricants.map(l=>
-    `<div class="item" style="margin-bottom:8px"><div class="acts"><button class="iconbtn" data-del-lub="${l.id}">&times;</button></div>
-      <div class="ihead" style="font-size:14px">${l.brand}</div><div class="imeta">${l.type} · dura ${l.durability} km</div></div>`).join("")
-    : '<div class="empty">Nenhum lubrificante cadastrado.</div>';
-  document.querySelectorAll("[data-del-lub]").forEach(b=>b.onclick=()=>{ lubricants=lubricants.filter(l=>String(l.id)!==b.dataset.delLub); saveAll(); renderSettings(); render(); });
+  $("advKm").value = v.oilAlertOn ? (v.oilAdvance?toInput(v.oilAdvance):"") : "";
+  // revisão veicular
+  $("revSwitch").classList.toggle("on",!!v.revAlertOn);
+  $("revOpts").style.display = v.revAlertOn ? "" : "none";
+  document.querySelectorAll("#revModeSel .donVal").forEach(b=>b.classList.toggle("on", b.dataset.revmode===(v.revMode||"km")));
+  $("revKmWrap").classList.toggle("hide", (v.revMode||"km")!=="km");
+  $("revDateWrap").classList.toggle("hide", (v.revMode||"km")!=="tempo");
+  $("revKm").value = v.revKm?toInput(v.revKm):"";
+  $("revDate").value = v.revDate||"";
 }
+const FLAGS = {
+  "pt-BR":'<svg class="flagSvg" viewBox="0 0 24 16"><rect width="24" height="16" fill="#009b3a"/><path d="M12 2.2 21.5 8 12 13.8 2.5 8Z" fill="#fedf00"/><circle cx="12" cy="8" r="3.1" fill="#002776"/></svg>',
+  "pt-PT":'<svg class="flagSvg" viewBox="0 0 24 16"><rect width="24" height="16" fill="#da291c"/><rect width="9.6" height="16" fill="#046a38"/><circle cx="9.6" cy="8" r="2.6" fill="none" stroke="#ffe900" stroke-width="1.3"/></svg>',
+  "en":'<svg class="flagSvg" viewBox="0 0 24 16"><rect width="24" height="16" fill="#012169"/><path d="M0 0 24 16M24 0 0 16" stroke="#fff" stroke-width="3.2"/><path d="M0 0 24 16M24 0 0 16" stroke="#c8102e" stroke-width="1.6"/><path d="M12 0V16M0 8H24" stroke="#fff" stroke-width="5"/><path d="M12 0V16M0 8H24" stroke="#c8102e" stroke-width="3"/></svg>',
+  "es":'<svg class="flagSvg" viewBox="0 0 24 16"><rect width="24" height="16" fill="#c60b1e"/><rect y="4" width="24" height="8" fill="#ffc400"/></svg>'
+};
+const LANGS = [["pt-BR","Português (Brasil)"],["pt-PT","Português (Portugal)"],["en","English"],["es","Español"]];
+function renderLangList(){
+  $("langList").innerHTML = LANGS.map(([code,name])=>`<button class="langOpt" data-lang="${code}">${FLAGS[code]} ${name}</button>`).join("");
+  document.querySelectorAll("#langList .langOpt").forEach(b=>b.onclick=()=>{ lang=b.dataset.lang; store.set("lang",lang); applyI18n(); render(); renderSettings(); });
+}
+$("langToggle").onclick=()=>{ const willHide=$("langList").classList.toggle("hide"); $("langChev").classList.toggle("open", !willHide); };
 $("gearBtn").onclick=()=>{ renderSettings(); $("overlay").classList.remove("hide"); };
 $("closeCfg").onclick=()=>$("overlay").classList.add("hide");
 $("overlay").onclick=(e)=>{ if(e.target===$("overlay")) $("overlay").classList.add("hide"); };
 $("oilSwitch").onclick=async ()=>{ const v=av(); v.oilAlertOn=!v.oilAlertOn; if(v.oilAlertOn){ await ensureNotifyPerm(); } saveAll(); renderSettings(); render(); maybeNotifyOil(); };
-$("advKm").oninput=()=>{ const v=av(); if(v.oilAlertOn){ v.oilAdvance=Math.round(num($("advKm").value)); saveAll(); render(); } };
+$("advKm").oninput=()=>{ maskDec($("advKm"),1); const v=av(); if(v.oilAlertOn){ v.oilAdvance=num($("advKm").value); saveAll(); render(); } };
+$("revSwitch").onclick=async ()=>{ const v=av(); v.revAlertOn=!v.revAlertOn; if(v.revAlertOn){ await ensureNotifyPerm(); } saveAll(); renderSettings(); maybeNotifyRev(); };
+document.querySelectorAll("#revModeSel .donVal").forEach(b=>b.onclick=()=>{ const v=av(); v.revMode=b.dataset.revmode; saveAll(); renderSettings(); });
+$("revKm").oninput=()=>{ maskDec($("revKm"),1); const v=av(); v.revKm=num($("revKm").value); saveAll(); };
+$("revDate").onchange=()=>{ const v=av(); v.revDate=$("revDate").value; saveAll(); maybeNotifyRev(); };
+
+// ---------- cadastro de lubrificantes ----------
+function renderLubList(){
+  $("lubList").innerHTML = lubricants.length ? lubricants.map(l=>
+    `<div class="item" style="margin-bottom:8px"><div class="acts"><button class="iconbtn" data-edit-lub="${l.id}" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button><button class="iconbtn" data-del-lub="${l.id}" title="Excluir">&times;</button></div>
+      <div class="ihead" style="font-size:14px;padding-right:60px">${l.brand}</div><div class="imeta">${l.type} · ${t("dura_km",{km:l.durability})}</div></div>`).join("")
+    : `<div class="empty">${t("empty_lub")}</div>`;
+  document.querySelectorAll("[data-del-lub]").forEach(b=>b.onclick=()=>{ if(String(editLub)===String(b.dataset.delLub)){ resetLubForm(); closeLubForm(); } lubricants=lubricants.filter(l=>String(l.id)!==b.dataset.delLub); saveAll(); render(); });
+  document.querySelectorAll("[data-edit-lub]").forEach(b=>b.onclick=()=>startEditLub(b.dataset.editLub));
+}
+function openLubForm(){ $("lubFormCard").classList.remove("hide"); $("lubListWrap").classList.remove("hide"); }
+function closeLubForm(){ $("lubFormCard").classList.add("hide"); $("lubListWrap").classList.add("hide"); }
+$("btnNewLub").onclick=()=>{ if($("lubFormCard").classList.contains("hide")){ resetLubForm(); openLubForm(); } else { closeLubForm(); } };
+function resetLubForm(){ editLub=null; $("lBrand").value="";$("lType").value="Sintético";$("lDur").value=""; $("lubFormTitle").textContent="Cadastrar Lubrificante"; $("btnLubAdd").textContent="Adicionar lubrificante"; }
+function startEditLub(id){ const l=lubricants.find(x=>String(x.id)===String(id)); if(!l)return; editLub=l.id; $("lBrand").value=l.brand; $("lType").value=l.type; $("lDur").value=String(l.durability); $("lubFormTitle").textContent="Editar lubrificante"; $("btnLubAdd").textContent="Salvar lubrificante"; openLubForm(); }
+$("btnLubCancel").onclick=()=>{ resetLubForm(); closeLubForm(); };
 $("btnLubAdd").onclick=()=>{ const brand=$("lBrand").value.trim(), type=$("lType").value, dur=Math.round(num($("lDur").value));
-  if(!brand||dur<=0)return; lubricants.push({id:uid(),brand,type,durability:dur}); saveAll(); $("lBrand").value="";$("lDur").value=""; renderSettings(); render(); };
+  if(!brand||dur<=0)return;
+  if(editLub){ const l=lubricants.find(x=>String(x.id)===String(editLub)); if(l) Object.assign(l,{brand,type,durability:dur}); }
+  else { lubricants.push({id:uid(),brand,type,durability:dur}); }
+  resetLubForm(); closeLubForm(); saveAll(); render(); };
 
 // ---------- tema ----------
 function applyTheme(){ document.body.classList.toggle("light", theme==="light");
@@ -1177,11 +1476,11 @@ document.querySelectorAll(".subtab").forEach(t=>t.onclick=()=>showSub(t.dataset.
 
 // init
 $("aDate").value=todayISO(); $("oDate").value=todayISO();
-try{ load(); applyTheme(); render(); resetOilForm(); resetFuelForm(); initAds(); $("appVer").textContent="FuelLog • versão "+VERSION; }catch(err){ console.error(err); }
+try{ load(); applyI18n(); applyTheme(); render(); resetOilForm(); resetFuelForm(); initAds(); $("appVer").textContent="FuelLog • versão "+VERSION; }catch(err){ console.error(err); }
 setTimeout(()=>{ const s=$("splash"); if(s){ s.classList.add("gone"); setTimeout(()=>{ s.style.display="none"; },500); }
   setTimeout(()=>{ try{ openPremium(); }catch(e){} },600); },1300);
-if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").then(()=>{ setTimeout(maybeNotifyOil,800); }).catch(()=>{ maybeNotifyOil(); }); }
-else maybeNotifyOil();
+if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").then(()=>{ setTimeout(()=>{ maybeNotifyOil(); maybeNotifyRev(); },800); }).catch(()=>{ maybeNotifyOil(); maybeNotifyRev(); }); }
+else { maybeNotifyOil(); maybeNotifyRev(); }
 </script>
 </body>
 </html>
