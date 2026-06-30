@@ -1195,6 +1195,7 @@ $("aKm").oninput=()=>maskMil($("aKm"),1);
 $("oKm").oninput=()=>maskMil($("oKm"),1);
 $("oDur").oninput=()=>maskMil($("oDur"),1);
 $("oCost").oninput=()=>maskMil($("oCost"),2);
+$("lDur").oninput=()=>maskMil($("lDur"),1);
 function availFuels(){ const v=av(); return (v.fuelTypes&&v.fuelTypes.length)?v.fuelTypes:FUEL_OPTIONS; }
 function readRowsFromDOM(){ const rows=[...document.querySelectorAll("#fuelRows .frow")]; if(rows.length) formRows=rows.map(r=>({ fuel:r.querySelector(".fr-fuel").value, total:r.querySelector(".fr-total").value, ppl:r.querySelector(".fr-ppl").value })); }
 function recalcLit(){ let liters=0; document.querySelectorAll("#fuelRows .frow").forEach(r=>{ const t=numMil(r.querySelector(".fr-total").value), p=num(r.querySelector(".fr-ppl").value); const l=(p>0)?t/p:0; liters+=l; const fl=r.querySelector(".fr-lit"); if(fl) fl.value = l>0 ? d3(l) : ""; }); $("aLit").value = liters>0 ? d3(liters) : ""; if($("aLitWrap")) $("aLitWrap").style.display = (formRows.length>1)?"block":"none"; return liters; }
@@ -1454,9 +1455,9 @@ function openLubForm(){ $("lubFormCard").classList.remove("hide"); $("lubListWra
 function closeLubForm(){ $("lubFormCard").classList.add("hide"); $("lubListWrap").classList.add("hide"); }
 $("btnNewLub").onclick=()=>{ if($("lubFormCard").classList.contains("hide")){ resetLubForm(); openLubForm(); } else { closeLubForm(); } };
 function resetLubForm(){ editLub=null; $("lBrand").value="";$("lType").value="Sintético";$("lDur").value=""; $("lubFormTitle").textContent="Cadastrar Lubrificante"; $("btnLubAdd").textContent="Adicionar lubrificante"; }
-function startEditLub(id){ const l=lubricants.find(x=>String(x.id)===String(id)); if(!l)return; editLub=l.id; $("lBrand").value=l.brand; $("lType").value=l.type; $("lDur").value=String(l.durability); $("lubFormTitle").textContent="Editar lubrificante"; $("btnLubAdd").textContent="Salvar lubrificante"; openLubForm(); }
+function startEditLub(id){ const l=lubricants.find(x=>String(x.id)===String(id)); if(!l)return; editLub=l.id; $("lBrand").value=l.brand; $("lType").value=l.type; $("lDur").value=l.durability?km1(l.durability):""; $("lubFormTitle").textContent="Editar lubrificante"; $("btnLubAdd").textContent="Salvar lubrificante"; openLubForm(); }
 $("btnLubCancel").onclick=()=>{ resetLubForm(); closeLubForm(); };
-$("btnLubAdd").onclick=()=>{ const brand=$("lBrand").value.trim(), type=$("lType").value, dur=Math.round(num($("lDur").value));
+$("btnLubAdd").onclick=()=>{ const brand=$("lBrand").value.trim(), type=$("lType").value, dur=Math.round(numMil($("lDur").value));
   if(!brand||dur<=0)return;
   if(editLub){ const l=lubricants.find(x=>String(x.id)===String(editLub)); if(l) Object.assign(l,{brand,type,durability:dur}); }
   else { lubricants.push({id:uid(),brand,type,durability:dur}); }
