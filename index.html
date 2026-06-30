@@ -179,6 +179,21 @@
   .thumb img{max-width:120px;max-height:120px;border-radius:8px;border:1px solid var(--edge)}
   .thumb button{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;border:none;background:var(--danger);color:#fff;cursor:pointer;font-size:13px}
   .ok{color:var(--green);font-size:12px;margin-top:8px}
+  #tourOverlay{position:fixed;inset:0;z-index:4000;display:none}
+  #tourOverlay.show{display:block}
+  #tourHole{position:fixed;left:50%;top:50%;width:0;height:0;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.74);transition:all .25s ease;pointer-events:none}
+  #tourHole.spot{border:2px solid var(--amber)}
+  #tourCard{position:fixed;z-index:4001;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:16px 16px 14px;width:min(330px,calc(100vw - 28px));box-shadow:0 14px 44px rgba(0,0,0,.5)}
+  #tourCard .tt{font-weight:700;font-size:16.5px;margin-bottom:6px;color:var(--ink)}
+  #tourCard .td{font-size:13.5px;line-height:1.55;color:var(--muted)}
+  #tourCard .tnav{display:flex;align-items:center;justify-content:space-between;margin-top:16px;gap:8px}
+  #tourCard .tstep{font-size:12px;color:var(--faint);font-family:var(--mono)}
+  #tourCard .tbtns{display:flex;gap:8px}
+  .tbtn{border:none;border-radius:9px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer}
+  .tbtn.skip{background:none;color:var(--faint);padding:8px 6px}
+  .tbtn.prev{background:rgba(127,127,127,.16);color:var(--ink)}
+  .tbtn.prev.hide{display:none}
+  .tbtn.next{background:var(--amber);color:#1a1300}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
@@ -199,14 +214,14 @@
   <div class="tabs">
     <button class="tab active" data-tab="indicadores" data-i18n="tab_ind">Indicadores</button>
     <button class="tab" data-tab="manut" data-i18n="tab_manut">Abast./Óleo</button>
-    <button class="tab" data-tab="veiculo" data-i18n="tab_veh">Veículo</button>
+    <button class="tab" data-tab="veiculo" data-i18n="tab_veh">Veículos</button>
   </div>
 
   <!-- ================= INDICADORES ================= -->
   <div id="tab-indicadores">
     <div id="oilBanner" class="banner bannerWarn hide"></div>
 
-    <div class="card panelMain">
+    <div class="card panelMain" id="cardOdo">
       <div class="eyebrow" data-i18n="total_rodado">Total rodado</div>
       <div id="odoTotal" class="odo"></div>
       <div class="hr"></div>
@@ -332,7 +347,13 @@
       <button id="btnNewOil" class="btn btnGhost vehAddBtn"><span class="circlePlus">+</span> <span data-i18n="inform_oil">Informar Troca De Óleo</span></button>
 
       <div class="card hide" id="oilFormCard">
-        <div class="eyebrow" id="oilFormTitle" data-i18n="reg_oil_title">Registrar troca de óleo</div>
+        <div class="vehFormHead">
+          <div class="eyebrow" id="oilFormTitle" style="margin:0" data-i18n="reg_oil_title">Registrar troca de óleo</div>
+          <div class="vehFormActs">
+            <button id="oilEditBtn" class="iconbtn hide" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+            <button id="oilDelBtn" class="iconbtn hide" title="Excluir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"/><path d="M10 11v6M14 11v6"/></svg></button>
+          </div>
+        </div>
         <label data-i18n="lub_registered">Lubrificante cadastrado</label>
         <select id="oLub" class="fld"></select>
         <div class="row">
@@ -408,6 +429,45 @@
         <div class="mselField" id="vFuelField"><span id="vFuelText" class="mselText ph">Selecionar…</span><span class="mselArrow">&#9662;</span></div>
         <div id="vFuelList" class="mselList hide"></div>
       </div>
+
+      <div style="margin-top:18px;border-top:1px solid var(--edge);padding-top:16px">
+        <div style="font-weight:700;font-size:16px" data-i18n="auto_alerts">Alertas Automáticos</div>
+        <div class="powerSub" style="margin-bottom:8px" data-i18n="alerts_sub">Notifica ao abrir o app quando estiver na hora</div>
+
+        <div class="switchRow" style="margin-top:8px">
+          <div><div style="font-weight:600;font-size:15px" data-i18n="oil_change">Troca de óleo</div></div>
+          <div id="oilSwitch" class="switch" role="switch" tabindex="0"><span class="knob"></span></div>
+        </div>
+        <div id="oilOpts" style="margin-top:12px">
+          <label data-i18n="advance_km">Avisar com antecedência de (km)</label>
+          <input id="advKm" type="text" inputmode="decimal" placeholder="Ex.: 200,0" />
+          <div class="powerSub" style="margin-top:6px" data-i18n="advance_sub">Notifica a partir de (km da troca + durabilidade − este valor).</div>
+        </div>
+
+        <div style="margin-top:16px;border-top:1px solid var(--edge);padding-top:14px">
+          <div class="switchRow">
+            <div><div style="font-weight:600;font-size:15px" data-i18n="vehicle_rev">Revisão veicular</div></div>
+            <div id="revSwitch" class="switch" role="switch" tabindex="0"><span class="knob"></span></div>
+          </div>
+          <div id="revOpts" style="margin-top:12px">
+            <label data-i18n="alert_type">Tipo de alerta</label>
+            <div class="donVals" id="revModeSel" style="margin:6px 0 12px">
+              <div class="donVal" data-revmode="km" style="flex:1 1 45%" data-i18n="by_km">Por KM</div>
+              <div class="donVal" data-revmode="tempo" style="flex:1 1 45%" data-i18n="by_time">Por tempo</div>
+            </div>
+            <div id="revKmWrap">
+              <label data-i18n="next_rev_km">Próxima revisão - a cada (km)</label>
+              <input id="revKm" type="text" inputmode="decimal" placeholder="Ex.: 12.000,0" />
+            </div>
+            <div id="revDateWrap" class="hide">
+              <label data-i18n="next_rev_date">Próxima revisão em (data)</label>
+              <input id="revDate" type="date" />
+            </div>
+            <div class="powerSub" style="margin-top:6px" data-i18n="rev_sub">Avisa quando o veículo atingir o km ou a data definida.</div>
+          </div>
+        </div>
+      </div>
+
       <div id="vehErr" class="err hide"></div>
       <button id="btnVehSave" class="btn btnAmberGhost" data-i18n="save">Salvar dados</button>
       <button id="btnVehCancel" class="btn btnGhost" style="margin-top:8px" data-i18n="back">Voltar</button>
@@ -449,46 +509,9 @@
       </div>
     </div>
 
-    <div class="card">
-      <div style="font-weight:700;font-size:16px" data-i18n="auto_alerts">Alertas Automáticos</div>
-      <div class="powerSub" style="margin-bottom:8px" data-i18n="alerts_sub">Notifica ao abrir o app quando estiver na hora</div>
-
-      <div class="switchRow" style="margin-top:8px">
-        <div><div style="font-weight:600;font-size:15px" data-i18n="oil_change">Troca de óleo</div></div>
-        <div id="oilSwitch" class="switch" role="switch" tabindex="0"><span class="knob"></span></div>
-      </div>
-      <div id="oilOpts" style="margin-top:12px">
-        <label data-i18n="advance_km">Avisar com antecedência de (km)</label>
-        <input id="advKm" type="text" inputmode="decimal" placeholder="Ex.: 200,0" />
-        <div class="powerSub" style="margin-top:6px" data-i18n="advance_sub">Notifica a partir de (km da troca + durabilidade − este valor).</div>
-      </div>
-
-      <div style="margin-top:16px;border-top:1px solid var(--edge);padding-top:14px">
-        <div class="switchRow">
-          <div><div style="font-weight:600;font-size:15px" data-i18n="vehicle_rev">Revisão veicular</div></div>
-          <div id="revSwitch" class="switch" role="switch" tabindex="0"><span class="knob"></span></div>
-        </div>
-        <div id="revOpts" style="margin-top:12px">
-          <label data-i18n="alert_type">Tipo de alerta</label>
-          <div class="donVals" id="revModeSel" style="margin:6px 0 12px">
-            <div class="donVal" data-revmode="km" style="flex:1 1 45%" data-i18n="by_km">Por KM</div>
-            <div class="donVal" data-revmode="tempo" style="flex:1 1 45%" data-i18n="by_time">Por tempo</div>
-          </div>
-          <div id="revKmWrap">
-            <label data-i18n="next_rev_km">Próxima revisão - a cada (km)</label>
-            <input id="revKm" type="text" inputmode="decimal" placeholder="Ex.: 12.000,0" />
-          </div>
-          <div id="revDateWrap" class="hide">
-            <label data-i18n="next_rev_date">Próxima revisão em (data)</label>
-            <input id="revDate" type="date" />
-          </div>
-          <div class="powerSub" style="margin-top:6px" data-i18n="rev_sub">Avisa quando o veículo atingir o km ou a data definida.</div>
-        </div>
-      </div>
-    </div>
-
     <button id="btnSupport" class="menuItem"><span data-i18n="support">Suporte</span><span class="chev">&#8250;</span></button>
     <button id="btnDev" class="menuItem"><span data-i18n="developer">Desenvolvedor</span><span class="chev">&#8250;</span></button>
+    <button id="btnTutorial" class="menuItem"><span data-i18n="tutorial_menu">Ver tutorial novamente</span><span class="chev">&#8250;</span></button>
     <div class="ver" id="appVer"></div>
   </div>
 </div>
@@ -584,6 +607,23 @@
   </div>
 </div>
 
+<!-- ================= TUTORIAL ================= -->
+<div id="tourOverlay">
+  <div id="tourHole"></div>
+  <div id="tourCard">
+    <div class="tt" id="tourTitle"></div>
+    <div class="td" id="tourDesc"></div>
+    <div class="tnav">
+      <span class="tstep" id="tourStep"></span>
+      <div class="tbtns">
+        <button class="tbtn skip" id="tourSkip"></button>
+        <button class="tbtn prev hide" id="tourPrev"></button>
+        <button class="tbtn next" id="tourNext"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="adbar" class="hide"></div>
 
 <script>
@@ -606,7 +646,7 @@ const MONTHS_SHORT = {
 };
 const I18N = {
 "pt-BR":{
-title:"Controle", tab_ind:"Indicadores", tab_manut:"Abast./Óleo", tab_veh:"Veículo",
+title:"Controle", tab_ind:"Indicadores", tab_manut:"Abast./Óleo", tab_veh:"Veículos",
 sub_fuel:"Abastecimento", sub_oil:"Troca de óleo", splash_sub:"Gestor de Veículos e Combustíveis",
 total_rodado:"Total rodado", km_total:"KM total", abast_short:"Abasteci.", oilch_short:"Trocas óleo",
 period_label:"Período dos indicadores", period_all:"Geral (todos os meses)", avg_consumption:"Consumo médio",
@@ -652,11 +692,23 @@ copy_pix:"Copiar código Pix", support_head:"Suporte",
 empty_lub:"Nenhum lubrificante cadastrado.", oil_banner:"⚠️ Troca de óleo do {name} vencida há {km} km.",
 new_fuel_title:"Novo abastecimento", edit_fuel_title:"Editar abastecimento", add_fuel_btn:"Adicionar abastecimento",
 save_fuel_btn:"Salvar abastecimento", cancel_edit:"Cancelar edição", row_liters:"Litros",
-edit_oil_title:"Editar troca de óleo", save_change:"Salvar troca", select_ph:"Selecionar…"
+edit_oil_title:"Editar troca de óleo", save_change:"Salvar troca", select_ph:"Selecionar…",
+tutorial_menu:"Ver tutorial novamente", tut_skip:"Pular", tut_next:"Próximo", tut_prev:"Anterior", tut_finish:"Concluir", tut_step:"{n} de {total}",
+tut_welcome_t:"Bem-vindo ao FuelLog! 👋", tut_welcome_d:"Vou te mostrar rapidinho como o app funciona. Você pode pular a qualquer momento.",
+tut_veh_t:"Seus veículos", tut_veh_d:"Aqui você troca entre os veículos cadastrados. Cada um tem seus próprios abastecimentos, trocas de óleo e indicadores.",
+tut_star_t:"Versão Premium", tut_star_d:"Acesso rápido aos recursos avançados: fluxo de caixa, manutenção, impostos e mais.",
+tut_gear_t:"Configurações", tut_gear_d:"Idioma, tema escuro, suporte e este tutorial.",
+tut_ind_t:"Indicadores", tut_ind_d:"Seu resumo: total rodado, consumo médio (km/L), gastos com combustível e óleo, autonomia e muito mais.",
+tut_period_t:"Período", tut_period_d:"Filtre os indicadores por um mês específico ou veja o geral de todos os meses.",
+tut_fuel_t:"Abastecimentos", tut_fuel_d:"Toque aqui para registrar um abastecimento. O primeiro define o KM inicial; os seguintes calculam o consumo automaticamente.",
+tut_oil_t:"Troca de óleo", tut_oil_d:"Acompanhe quantos km faltam para a próxima troca, cadastre lubrificantes e registre as trocas feitas.",
+tut_vehadd_t:"Cadastrar veículo", tut_vehadd_d:"Adicione um veículo com tipo, tanque, capacidade de óleo, combustíveis e os alertas de troca de óleo e revisão.",
+tut_done_t:"Tudo pronto! 🎉", tut_done_d:"Você pode rever este tutorial quando quiser em Configurações. Bons quilômetros!",
+oil_data:"Dados da troca de óleo", confirm_del_oil:"Tem certeza que deseja excluir esta troca de óleo?", del:"Excluir"
 },
 "pt-PT":{},
 "en":{
-title:"Dashboard", tab_ind:"Stats", tab_manut:"Fuel/Oil", tab_veh:"Vehicle",
+title:"Dashboard", tab_ind:"Stats", tab_manut:"Fuel/Oil", tab_veh:"Vehicles",
 sub_fuel:"Fuel-up", sub_oil:"Oil change", splash_sub:"Vehicle & Fuel Manager",
 total_rodado:"Total distance", km_total:"Total km", abast_short:"Fuel-ups", oilch_short:"Oil chgs",
 period_label:"Stats period", period_all:"Overall (all months)", avg_consumption:"Average consumption",
@@ -702,10 +754,22 @@ copy_pix:"Copy Pix code", support_head:"Support",
 empty_lub:"No lubricant registered.", oil_banner:"⚠️ Oil change for {name} overdue by {km} km.",
 new_fuel_title:"New fuel-up", edit_fuel_title:"Edit fuel-up", add_fuel_btn:"Add fuel-up",
 save_fuel_btn:"Save fuel-up", cancel_edit:"Cancel edit", row_liters:"Liters",
-edit_oil_title:"Edit oil change", save_change:"Save change", select_ph:"Select…"
+edit_oil_title:"Edit oil change", save_change:"Save change", select_ph:"Select…",
+tutorial_menu:"Replay tutorial", tut_skip:"Skip", tut_next:"Next", tut_prev:"Back", tut_finish:"Done", tut_step:"{n} of {total}",
+tut_welcome_t:"Welcome to FuelLog! 👋", tut_welcome_d:"Let me quickly show you how the app works. You can skip anytime.",
+tut_veh_t:"Your vehicles", tut_veh_d:"Switch between your registered vehicles here. Each has its own fuel-ups, oil changes and stats.",
+tut_star_t:"Premium", tut_star_d:"Quick access to advanced features: cash flow, maintenance, taxes and more.",
+tut_gear_t:"Settings", tut_gear_d:"Language, dark theme, support and this tutorial.",
+tut_ind_t:"Stats", tut_ind_d:"Your summary: total distance, average consumption (km/L), fuel and oil spend, range and more.",
+tut_period_t:"Period", tut_period_d:"Filter the stats by a specific month or see the overall across all months.",
+tut_fuel_t:"Fuel-ups", tut_fuel_d:"Tap here to record a fuel-up. The first sets the initial km; the next ones compute consumption automatically.",
+tut_oil_t:"Oil change", tut_oil_d:"Track how many km until the next change, register lubricants and log the changes you make.",
+tut_vehadd_t:"Add vehicle", tut_vehadd_d:"Add a vehicle with type, tank, oil capacity, fuels and its oil-change and service alerts.",
+tut_done_t:"All set! 🎉", tut_done_d:"You can replay this tutorial anytime in Settings. Safe travels!",
+oil_data:"Oil change details", confirm_del_oil:"Are you sure you want to delete this oil change?", del:"Delete"
 },
 "es":{
-title:"Panel", tab_ind:"Indicadores", tab_manut:"Combust./Aceite", tab_veh:"Vehículo",
+title:"Panel", tab_ind:"Indicadores", tab_manut:"Combust./Aceite", tab_veh:"Vehículos",
 sub_fuel:"Carga", sub_oil:"Cambio de aceite", splash_sub:"Gestor de Vehículos y Combustibles",
 total_rodado:"Total recorrido", km_total:"KM total", abast_short:"Cargas", oilch_short:"Camb. aceite",
 period_label:"Período de indicadores", period_all:"General (todos los meses)", avg_consumption:"Consumo medio",
@@ -751,7 +815,19 @@ copy_pix:"Copiar código Pix", support_head:"Soporte",
 empty_lub:"Ningún lubricante registrado.", oil_banner:"⚠️ Cambio de aceite de {name} vencido hace {km} km.",
 new_fuel_title:"Nueva carga", edit_fuel_title:"Editar carga", add_fuel_btn:"Añadir carga",
 save_fuel_btn:"Guardar carga", cancel_edit:"Cancelar edición", row_liters:"Litros",
-edit_oil_title:"Editar cambio de aceite", save_change:"Guardar cambio", select_ph:"Seleccionar…"
+edit_oil_title:"Editar cambio de aceite", save_change:"Guardar cambio", select_ph:"Seleccionar…",
+tutorial_menu:"Ver tutorial de nuevo", tut_skip:"Saltar", tut_next:"Siguiente", tut_prev:"Atrás", tut_finish:"Finalizar", tut_step:"{n} de {total}",
+tut_welcome_t:"¡Bienvenido a FuelLog! 👋", tut_welcome_d:"Te muestro rápidamente cómo funciona la app. Puedes saltarlo cuando quieras.",
+tut_veh_t:"Tus vehículos", tut_veh_d:"Cambia entre tus vehículos registrados aquí. Cada uno tiene sus cargas, cambios de aceite e indicadores.",
+tut_star_t:"Premium", tut_star_d:"Acceso rápido a las funciones avanzadas: flujo de caja, mantenimiento, impuestos y más.",
+tut_gear_t:"Ajustes", tut_gear_d:"Idioma, tema oscuro, soporte y este tutorial.",
+tut_ind_t:"Indicadores", tut_ind_d:"Tu resumen: total recorrido, consumo medio (km/L), gastos de combustible y aceite, autonomía y más.",
+tut_period_t:"Período", tut_period_d:"Filtra los indicadores por un mes específico o ve el general de todos los meses.",
+tut_fuel_t:"Cargas", tut_fuel_d:"Toca aquí para registrar una carga. La primera define el km inicial; las siguientes calculan el consumo automáticamente.",
+tut_oil_t:"Cambio de aceite", tut_oil_d:"Controla cuántos km faltan para el próximo cambio, registra lubricantes y anota los cambios hechos.",
+tut_vehadd_t:"Registrar vehículo", tut_vehadd_d:"Añade un vehículo con tipo, tanque, capacidad de aceite, combustibles y sus alertas de aceite y revisión.",
+tut_done_t:"¡Todo listo! 🎉", tut_done_d:"Puedes volver a ver este tutorial cuando quieras en Ajustes. ¡Buen viaje!",
+oil_data:"Datos del cambio de aceite", confirm_del_oil:"¿Seguro que quieres eliminar este cambio de aceite?", del:"Eliminar"
 }
 };
 function t(k, vars){
@@ -784,6 +860,7 @@ const store = (()=>{ let mem={}; try{ const t="__t"; localStorage.setItem(t,"1")
 
 const num = (v)=>{ const n=parseFloat(String(v).replace(",",".")); return isNaN(n)?0:n; };
 const toInput = (n)=> (n||n===0)? String(n).replace(".",",") : "";
+const mil2 = (n)=> (n||n===0)? Number(n).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}) : "";
 const km1 = (n)=> n.toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1});
 const d2 = (n)=> n.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
 const d3 = (n)=> n.toLocaleString("pt-BR",{minimumFractionDigits:3,maximumFractionDigits:3});
@@ -836,7 +913,7 @@ function renderOdo(el,value,color){
     +`<span class="dec" style="font-size:${dfs}px;color:${color};text-shadow:0 0 8px ${color}55">,${dec}</span><span class="unit">km</span>`;
 }
 
-let vehicles, fuels, oils, lubricants, activeId, selPeriod="all", editFuel=null, editOil=null, pendingDel=null, delTimer=null, support=[], theme="dark", supAttach=null, vehFuelSel=[], newFuelSel=[], formRows=[{fuel:"",total:"",ppl:""}], vehFormId=null, confirmCb=null, fuelLocked=false, editLub=null, lang="pt-BR";
+let vehicles, fuels, oils, lubricants, activeId, selPeriod="all", editFuel=null, editOil=null, pendingDel=null, delTimer=null, support=[], theme="dark", supAttach=null, vehFuelSel=[], newFuelSel=[], formRows=[{fuel:"",total:"",ppl:""}], vehFormId=null, confirmCb=null, fuelLocked=false, oilLocked=false, editLub=null, vehAlerts={}, lang="pt-BR";
 function load(){
   try{ vehicles=JSON.parse(store.get("vehicles")||"[]"); }catch(e){ vehicles=[]; }
   try{ fuels=JSON.parse(store.get("fuels")||"[]"); }catch(e){ fuels=[]; }
@@ -1096,11 +1173,11 @@ function render(){
     const dura=t("dura_km",{km:Math.round(o.durability||0)});
     const meta=o.cost? t("oil_meta_cost",{date:prettyDate(o.date),km:Math.round(o.kmReal||0),dura:dura,cost:brl(o.cost)})
                      : t("oil_meta",{date:prettyDate(o.date),km:Math.round(o.kmReal||0),dura:dura});
-    return `<div class="item"><div class="acts"><button class="iconbtn" data-edit-oil="${o.id}">&#9998;</button>${delBtn('oil',o.id)}</div>
+    return `<div class="item clk" data-view-oil="${o.id}">
       <div class="ihead" style="font-size:15px">${o.brand||"Óleo"} <span class="chip chipT">${o.type||""}</span></div>
       <div class="imeta">${meta}</div></div>`;
   }).join("") : `<div class="empty">${t("empty_oil")}</div>`;
-  document.querySelectorAll("[data-edit-oil]").forEach(b=>b.onclick=()=>startEditOil(b.dataset.editOil));
+  document.querySelectorAll("[data-view-oil]").forEach(b=>b.onclick=()=>viewOil(b.dataset.viewOil));
   document.querySelectorAll("[data-del]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation();
     const k=b.dataset.del;
     if(pendingDel===k){ doDelete(k); }
@@ -1112,10 +1189,15 @@ function render(){
 
 // ---------- abastecimento (múltiplos combustíveis) ----------
 function maskDec(el,dec){ let d=el.value.replace(/\D/g,""); if(!d){ el.value=""; return; } d=d.padStart(dec+1,"0"); const intp=String(parseInt(d.slice(0,d.length-dec),10)); const frac=d.slice(d.length-dec); el.value = dec>0 ? (intp+","+frac) : intp; }
-$("aKm").oninput=()=>maskDec($("aKm"),1);
+function maskMil(el,dec){ let d=el.value.replace(/\D/g,""); if(!d){ el.value=""; return; } d=d.padStart(dec+1,"0"); let intp=String(parseInt(d.slice(0,d.length-dec),10)); intp=intp.replace(/\B(?=(\d{3})+(?!\d))/g,"."); const frac=d.slice(d.length-dec); el.value = dec>0 ? (intp+","+frac) : intp; }
+const numMil = (v)=> num(String(v).replace(/\./g,""));
+$("aKm").oninput=()=>maskMil($("aKm"),1);
+$("oKm").oninput=()=>maskMil($("oKm"),1);
+$("oDur").oninput=()=>maskMil($("oDur"),1);
+$("oCost").oninput=()=>maskMil($("oCost"),2);
 function availFuels(){ const v=av(); return (v.fuelTypes&&v.fuelTypes.length)?v.fuelTypes:FUEL_OPTIONS; }
 function readRowsFromDOM(){ const rows=[...document.querySelectorAll("#fuelRows .frow")]; if(rows.length) formRows=rows.map(r=>({ fuel:r.querySelector(".fr-fuel").value, total:r.querySelector(".fr-total").value, ppl:r.querySelector(".fr-ppl").value })); }
-function recalcLit(){ let liters=0; document.querySelectorAll("#fuelRows .frow").forEach(r=>{ const t=num(r.querySelector(".fr-total").value), p=num(r.querySelector(".fr-ppl").value); const l=(p>0)?t/p:0; liters+=l; const fl=r.querySelector(".fr-lit"); if(fl) fl.value = l>0 ? d3(l) : ""; }); $("aLit").value = liters>0 ? d3(liters) : ""; if($("aLitWrap")) $("aLitWrap").style.display = (formRows.length>1)?"block":"none"; return liters; }
+function recalcLit(){ let liters=0; document.querySelectorAll("#fuelRows .frow").forEach(r=>{ const t=numMil(r.querySelector(".fr-total").value), p=num(r.querySelector(".fr-ppl").value); const l=(p>0)?t/p:0; liters+=l; const fl=r.querySelector(".fr-lit"); if(fl) fl.value = l>0 ? d3(l) : ""; }); $("aLit").value = liters>0 ? d3(liters) : ""; if($("aLitWrap")) $("aLitWrap").style.display = (formRows.length>1)?"block":"none"; return liters; }
 function renderFuelRows(){
   const fuels=availFuels();
   $("fuelRows").innerHTML=formRows.map((r,i)=>`
@@ -1132,7 +1214,7 @@ function renderFuelRows(){
       <label>${t("liters_auto")}</label>
       <input class="fr-lit" type="text" readonly placeholder="0,000" style="color:var(--amber)" />
     </div>`).join("");
-  document.querySelectorAll("#fuelRows .fr-total").forEach(el=>el.oninput=()=>{ maskDec(el,2); recalcLit(); });
+  document.querySelectorAll("#fuelRows .fr-total").forEach(el=>el.oninput=()=>{ maskMil(el,2); recalcLit(); });
   document.querySelectorAll("#fuelRows .fr-ppl").forEach(el=>el.oninput=()=>{ maskDec(el,2); recalcLit(); });
   document.querySelectorAll("#fuelRows .fr-remove").forEach(b=>b.onclick=()=>{ readRowsFromDOM(); formRows.splice(parseInt(b.dataset.i,10),1); renderFuelRows(); });
   const n=fuels.length;
@@ -1158,9 +1240,9 @@ function resetFuelForm(){ editFuel=null; fuelLocked=false; $("aDate").disabled=f
 function populateFuel(id){ const f=fuels.find(x=>String(x.id)===String(id)); if(!f)return false; editFuel=f.id;
   $("aDate").value=f.date;
   const fs=fuelsFor(av()); const isFirst=!!(fs[0] && String(fs[0].id)===String(f.id));
-  $("aKm").value = isFirst ? (av().kmInitial?toInput(av().kmInitial):"") : toInput(f.km);
+  $("aKm").value = isFirst ? (av().kmInitial?km1(av().kmInitial):"") : km1(f.km);
   const items=(f.items&&f.items.length)?f.items:[{fuel:f.fuel,total:f.total,ppl:f.ppl,liters:f.liters}];
-  formRows=items.map(it=>({fuel:it.fuel||"",total:toInput(it.total),ppl:toInput(it.ppl)}));
+  formRows=items.map(it=>({fuel:it.fuel||"",total:mil2(it.total),ppl:toInput(it.ppl)}));
   return true; }
 function setFuelMode(mode){ fuelLocked=(mode==="view");
   $("aDate").disabled=fuelLocked; $("aKm").disabled=fuelLocked;
@@ -1183,8 +1265,8 @@ $("fuelDelBtn").onclick=()=>{ if(!editFuel)return; const id=editFuel;
     }
     saveAll(); resetFuelForm(); closeFuelForm(); render(); }); };
 $("btnFuelCancel").onclick=()=>{ resetFuelForm(); closeFuelForm(); };
-$("btnFuel").onclick=()=>{ readRowsFromDOM(); const kmEntered=num($("aKm").value); const e=$("aErr"); const first=isFirstFillCtx();
-  const items=formRows.map(r=>({fuel:r.fuel,total:num(r.total),ppl:num(r.ppl)})).filter(it=>it.total>0&&it.ppl>0)
+$("btnFuel").onclick=()=>{ readRowsFromDOM(); const kmEntered=numMil($("aKm").value); const e=$("aErr"); const first=isFirstFillCtx();
+  const items=formRows.map(r=>({fuel:r.fuel,total:numMil(r.total),ppl:num(r.ppl)})).filter(it=>it.total>0&&it.ppl>0)
     .map(it=>({fuel:it.fuel,total:it.total,ppl:it.ppl,liters:Math.round((it.total/it.ppl)*100)/100}));
   if(!items.length){ e.textContent="Preencha o valor total e o valor por litro."; e.classList.remove("hide"); return; }
   if(!first && kmEntered<=0){ e.textContent="Informe os km rodados (Trip)."; e.classList.remove("hide"); return; } e.classList.add("hide");
@@ -1199,19 +1281,31 @@ $("btnFuel").onclick=()=>{ readRowsFromDOM(); const kmEntered=num($("aKm").value
   saveAll(); resetFuelForm(); closeFuelForm(); render(); maybeNotifyOil(); maybeNotifyRev(); };
 
 // ---------- troca de óleo (add/edit) ----------
-$("oLub").onchange=()=>{ const l=lubricants.find(x=>String(x.id)===$("oLub").value); if(l){ $("oBrand").value=l.brand; $("oType").value=l.type; $("oDur").value=l.durability; } };
+$("oLub").onchange=()=>{ const l=lubricants.find(x=>String(x.id)===$("oLub").value); if(l){ $("oBrand").value=l.brand; $("oType").value=l.type; $("oDur").value=l.durability?km1(l.durability):""; } };
 function openOilForm(){ $("oilFormCard").classList.remove("hide"); }
 function closeOilForm(){ $("oilFormCard").classList.add("hide"); }
 $("btnNewOil").onclick=()=>{ if($("oilFormCard").classList.contains("hide")){ resetOilForm(); openOilForm(); window.scrollTo({top:0,behavior:"smooth"}); } else { closeOilForm(); } };
-function resetOilForm(){ editOil=null; const v=av(); $("oDate").value=todayISO(); $("oLub").value=""; $("oBrand").value=""; $("oType").value="Sintético"; $("oDur").value=""; $("oCost").value="";
-  $("oKm").value=String(Math.round(realKm(v)));
-  $("oilFormTitle").textContent=t("reg_oil_title"); $("btnOil").textContent=t("register_change"); $("btnOilCancel").textContent=t("cancel"); $("btnOilCancel").classList.remove("hide"); }
-function startEditOil(id){ const o=oils.find(x=>String(x.id)===String(id)); if(!o)return; editOil=o.id;
-  $("oDate").value=o.date; $("oBrand").value=o.brand||""; $("oType").value=o.type||"Sintético"; $("oDur").value=o.durability||""; $("oCost").value=toInput(o.cost); $("oKm").value=String(Math.round(o.kmReal||0)); $("oLub").value="";
-  $("oilFormTitle").textContent=t("edit_oil_title"); $("btnOil").textContent=t("save_change"); $("btnOilCancel").textContent=t("cancel"); $("btnOilCancel").classList.remove("hide");
-  showTab("manut"); showSub("oleo"); openOilForm(); window.scrollTo({top:0,behavior:"smooth"}); }
+function setOilFields(o){ $("oDate").value=o.date; $("oBrand").value=o.brand||""; $("oType").value=o.type||"Sintético"; $("oDur").value=o.durability?km1(o.durability):""; $("oCost").value=mil2(o.cost); $("oKm").value=km1(Math.round(o.kmReal||0)); $("oLub").value=""; }
+function lockOilFields(lock){ ["oLub","oDate","oBrand","oType","oDur","oKm","oCost"].forEach(id=>{ const el=$(id); if(el) el.disabled=lock; }); }
+function resetOilForm(){ editOil=null; oilLocked=false; lockOilFields(false); const v=av(); $("oDate").value=todayISO(); $("oLub").value=""; $("oBrand").value=""; $("oType").value="Sintético"; $("oDur").value=""; $("oCost").value="";
+  $("oKm").value=km1(Math.round(realKm(v)));
+  $("oilFormTitle").textContent=t("reg_oil_title"); $("btnOil").textContent=t("register_change"); $("btnOil").classList.remove("hide");
+  $("oilEditBtn").classList.add("hide"); $("oilDelBtn").classList.add("hide");
+  $("btnOilCancel").textContent=t("cancel"); $("btnOilCancel").classList.remove("hide"); $("oErr").classList.add("hide"); }
+function setOilMode(mode){ oilLocked=(mode==="view"); lockOilFields(oilLocked);
+  $("btnOil").classList.toggle("hide",oilLocked); $("btnOil").textContent=t("save_change");
+  $("oilEditBtn").classList.toggle("hide",mode!=="view");
+  $("oilDelBtn").classList.remove("hide");
+  $("oilFormTitle").textContent = mode==="view"?t("oil_data"):t("edit_oil_title");
+  $("btnOilCancel").textContent=t("cancel"); $("btnOilCancel").classList.remove("hide"); $("oErr").classList.add("hide"); }
+function openOilFor(id){ const o=oils.find(x=>String(x.id)===String(id)); if(!o)return null; editOil=o.id; setOilFields(o); showTab("manut"); showSub("oleo"); openOilForm(); window.scrollTo({top:0,behavior:"smooth"}); return o; }
+function viewOil(id){ if(!openOilFor(id))return; setOilMode("view"); }
+function startEditOil(id){ if(!openOilFor(id))return; setOilMode("edit"); }
+$("oilEditBtn").onclick=()=>setOilMode("edit");
+$("oilDelBtn").onclick=()=>{ if(!editOil)return; const id=editOil;
+  askConfirm(t("confirm_del_oil"),t("del"),()=>{ oils=oils.filter(x=>String(x.id)!==String(id)); saveAll(); resetOilForm(); closeOilForm(); render(); }); };
 $("btnOilCancel").onclick=()=>{ resetOilForm(); closeOilForm(); };
-$("btnOil").onclick=()=>{ const dur=num($("oDur").value), cost=num($("oCost").value), kmReal=Math.round(num($("oKm").value)), e=$("oErr");
+$("btnOil").onclick=()=>{ const dur=numMil($("oDur").value), cost=numMil($("oCost").value), kmReal=Math.round(numMil($("oKm").value)), e=$("oErr");
   const brand=$("oBrand").value.trim(), type=$("oType").value, date=$("oDate").value||todayISO();
   if(dur<=0){ e.textContent="Informe a durabilidade do óleo em km."; e.classList.remove("hide"); return; }
   if(kmReal<=0){ e.textContent="Informe o KM atual do hodômetro na troca."; e.classList.remove("hide"); return; } e.classList.add("hide");
@@ -1230,6 +1324,22 @@ function renderVehList(){
   document.querySelectorAll("#vehList .vehRow").forEach(r=>r.onclick=()=>{ const id=r.dataset.veh; activeId=id; saveAll(); resetFuelForm(); resetOilForm(); openVehForm(id,"view"); render(); });
   document.querySelectorAll("#vehList .vehEye").forEach(b=>b.onclick=(e)=>{ e.stopPropagation(); const id=b.dataset.eye; activeId=id; saveAll(); resetFuelForm(); resetOilForm(); openVehForm(id,"view"); render(); });
 }
+function paintVehAlerts(){
+  const a=vehAlerts, locked=$("vehFormCard").classList.contains("locked");
+  $("oilSwitch").classList.toggle("on",!!a.oilAlertOn);
+  $("oilOpts").style.display = a.oilAlertOn ? "" : "none";
+  $("advKm").value = a.oilAdvance?toInput(a.oilAdvance):"";
+  $("revSwitch").classList.toggle("on",!!a.revAlertOn);
+  $("revOpts").style.display = a.revAlertOn ? "" : "none";
+  const mode=a.revMode||"km";
+  document.querySelectorAll("#revModeSel .donVal").forEach(b=>b.classList.toggle("on", b.dataset.revmode===mode));
+  $("revKmWrap").classList.toggle("hide", mode!=="km");
+  $("revDateWrap").classList.toggle("hide", mode!=="tempo");
+  $("revKm").value = a.revKm?km1(a.revKm):"";
+  $("revDate").value = a.revDate||"";
+  ["advKm","revKm","revDate"].forEach(id=>$(id).disabled=locked);
+  ["oilSwitch","revSwitch","revModeSel"].forEach(id=>{ const el=$(id); el.style.pointerEvents=locked?"none":""; el.style.opacity=locked?".55":""; });
+}
 function setVehMode(mode){
   const locked=(mode==="view");
   ["vType","vMaker","vModel","vYear","vPlate","vTank","vKmInit","vOilCap"].forEach(id=>$(id).disabled=locked);
@@ -1238,6 +1348,7 @@ function setVehMode(mode){
   $("vehEditBtn").classList.toggle("hide",mode!=="view");
   $("vehDelBtn").classList.toggle("hide",!vehFormId);
   $("vehFormTitle").textContent = mode==="new"?t("reg_vehicle"):(mode==="view"?t("veh_data"):t("edit_vehicle"));
+  paintVehAlerts();
 }
 function openVehForm(id,mode){
   vehFormId=id||null; $("vehErr").classList.add("hide"); $("vFuelList").classList.add("hide");
@@ -1246,9 +1357,11 @@ function openVehForm(id,mode){
     $("vType").value=v.type||"moto"; $("vMaker").value=v.maker||""; $("vModel").value=v.model||""; $("vYear").value=v.year||""; $("vPlate").value=v.plate||"";
     $("vTank").value=v.tank?km1(v.tank):""; $("vKmInit").value=v.kmInitial?km1(v.kmInitial):""; $("vOilCap").value=v.oilCapacity?km1(v.oilCapacity):"";
     vehFuelSel=[...(v.fuelTypes||[])];
+    vehAlerts={oilAlertOn:!!v.oilAlertOn,oilAdvance:v.oilAdvance||0,revAlertOn:!!v.revAlertOn,revMode:v.revMode||"km",revKm:v.revKm||0,revDate:v.revDate||""};
   } else {
     $("vType").value="moto"; $("vMaker").value=""; $("vModel").value=""; $("vYear").value=""; $("vPlate").value=""; $("vTank").value=""; $("vKmInit").value=""; $("vOilCap").value="";
     vehFuelSel=[];
+    vehAlerts={oilAlertOn:false,oilAdvance:0,revAlertOn:false,revMode:"km",revKm:0,revDate:""};
   }
   paintMsel("vFuel", vehFuelSel);
   setVehMode(mode);
@@ -1276,15 +1389,19 @@ $("btnVehSave").onclick=()=>{
     if(vehFormId){ v=vehicles.find(x=>String(x.id)===String(vehFormId)); }
     else { v={id:uid(),oilAlertOn:false,oilAdvance:0,fuelTypes:[],kmInitial:0}; vehicles.push(v); }
     v.type=$("vType").value; v.maker=maker; v.model=model; v.plate=plate; v.year=$("vYear").value.replace(/\D/g,"");
-    v.tank=num($("vTank").value); v.oilCapacity=num($("vOilCap").value);
+    v.tank=numMil($("vTank").value); v.oilCapacity=numMil($("vOilCap").value);
     v.fuelTypes=[...vehFuelSel]; v.name=vehName(v);
-    activeId=v.id; saveAll(); closeVehForm(); resetFuelForm(); resetOilForm(); render();
+    v.oilAlertOn=!!vehAlerts.oilAlertOn; v.oilAdvance=vehAlerts.oilAdvance||0;
+    v.revAlertOn=!!vehAlerts.revAlertOn; v.revMode=vehAlerts.revMode||"km"; v.revKm=vehAlerts.revKm||0; v.revDate=vehAlerts.revDate||"";
+    activeId=v.id; saveAll(); closeVehForm(); resetFuelForm(); resetOilForm(); render(); maybeNotifyOil(); maybeNotifyRev();
   });
 };
 $("vFuelField").onclick=()=>{ if($("vehFormCard").classList.contains("locked"))return; $("vFuelList").classList.toggle("hide"); };
 // maiúsculas e ano numérico
 ["vMaker","vModel","vPlate"].forEach(id=>$(id).addEventListener("input",()=>{ const el=$(id); const p=el.selectionStart; el.value=el.value.toUpperCase(); try{el.setSelectionRange(p,p);}catch(_){} }));
 $("vYear").addEventListener("input",()=>{ $("vYear").value=$("vYear").value.replace(/\D/g,"").slice(0,4); });
+$("vTank").oninput=()=>maskMil($("vTank"),1);
+$("vOilCap").oninput=()=>maskMil($("vOilCap"),1);
 // confirmação genérica
 function askConfirm(msg,yesLabel,cb){ $("confirmMsg").textContent=msg; $("confirmYes").textContent=yesLabel||"Confirmar"; confirmCb=cb; $("confirmOverlay").classList.remove("hide"); }
 $("confirmYes").onclick=()=>{ $("confirmOverlay").classList.add("hide"); const cb=confirmCb; confirmCb=null; if(cb)cb(); };
@@ -1301,17 +1418,6 @@ function renderSettings(){
   renderLangList();
   document.querySelectorAll("#langList .langOpt").forEach(b=>b.classList.toggle("on", b.dataset.lang===lang));
   $("langCurFlag").innerHTML = FLAGS[lang]||"";
-  $("oilSwitch").classList.toggle("on",!!v.oilAlertOn);
-  $("oilOpts").style.display = v.oilAlertOn ? "" : "none";
-  $("advKm").value = v.oilAlertOn ? (v.oilAdvance?toInput(v.oilAdvance):"") : "";
-  // revisão veicular
-  $("revSwitch").classList.toggle("on",!!v.revAlertOn);
-  $("revOpts").style.display = v.revAlertOn ? "" : "none";
-  document.querySelectorAll("#revModeSel .donVal").forEach(b=>b.classList.toggle("on", b.dataset.revmode===(v.revMode||"km")));
-  $("revKmWrap").classList.toggle("hide", (v.revMode||"km")!=="km");
-  $("revDateWrap").classList.toggle("hide", (v.revMode||"km")!=="tempo");
-  $("revKm").value = v.revKm?toInput(v.revKm):"";
-  $("revDate").value = v.revDate||"";
 }
 const FLAGS = {
   "pt-BR":'<svg class="flagSvg" viewBox="0 0 24 16"><rect width="24" height="16" fill="#009b3a"/><path d="M12 2.2 21.5 8 12 13.8 2.5 8Z" fill="#fedf00"/><circle cx="12" cy="8" r="3.1" fill="#002776"/></svg>',
@@ -1328,12 +1434,12 @@ $("langToggle").onclick=()=>{ const willHide=$("langList").classList.toggle("hid
 $("gearBtn").onclick=()=>{ renderSettings(); $("overlay").classList.remove("hide"); };
 $("closeCfg").onclick=()=>$("overlay").classList.add("hide");
 $("overlay").onclick=(e)=>{ if(e.target===$("overlay")) $("overlay").classList.add("hide"); };
-$("oilSwitch").onclick=async ()=>{ const v=av(); v.oilAlertOn=!v.oilAlertOn; if(v.oilAlertOn){ await ensureNotifyPerm(); } saveAll(); renderSettings(); render(); maybeNotifyOil(); };
-$("advKm").oninput=()=>{ maskDec($("advKm"),1); const v=av(); if(v.oilAlertOn){ v.oilAdvance=num($("advKm").value); saveAll(); render(); } };
-$("revSwitch").onclick=async ()=>{ const v=av(); v.revAlertOn=!v.revAlertOn; if(v.revAlertOn){ await ensureNotifyPerm(); } saveAll(); renderSettings(); maybeNotifyRev(); };
-document.querySelectorAll("#revModeSel .donVal").forEach(b=>b.onclick=()=>{ const v=av(); v.revMode=b.dataset.revmode; saveAll(); renderSettings(); });
-$("revKm").oninput=()=>{ maskDec($("revKm"),1); const v=av(); v.revKm=num($("revKm").value); saveAll(); };
-$("revDate").onchange=()=>{ const v=av(); v.revDate=$("revDate").value; saveAll(); maybeNotifyRev(); };
+$("oilSwitch").onclick=async ()=>{ if($("vehFormCard").classList.contains("locked"))return; vehAlerts.oilAlertOn=!vehAlerts.oilAlertOn; if(vehAlerts.oilAlertOn){ await ensureNotifyPerm(); } paintVehAlerts(); };
+$("advKm").oninput=()=>{ maskDec($("advKm"),1); vehAlerts.oilAdvance=num($("advKm").value); };
+$("revSwitch").onclick=async ()=>{ if($("vehFormCard").classList.contains("locked"))return; vehAlerts.revAlertOn=!vehAlerts.revAlertOn; if(vehAlerts.revAlertOn){ await ensureNotifyPerm(); } paintVehAlerts(); };
+document.querySelectorAll("#revModeSel .donVal").forEach(b=>b.onclick=()=>{ if($("vehFormCard").classList.contains("locked"))return; vehAlerts.revMode=b.dataset.revmode; paintVehAlerts(); });
+$("revKm").oninput=()=>{ maskMil($("revKm"),1); vehAlerts.revKm=numMil($("revKm").value); };
+$("revDate").onchange=()=>{ vehAlerts.revDate=$("revDate").value; };
 
 // ---------- cadastro de lubrificantes ----------
 function renderLubList(){
@@ -1474,11 +1580,68 @@ function showSub(name){
 document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>showTab(t.dataset.tab));
 document.querySelectorAll(".subtab").forEach(t=>t.onclick=()=>showSub(t.dataset.sub));
 
+// ---------- tutorial / tour guiado ----------
+const TOUR_STEPS = [
+  { key:"tut_welcome", center:true },
+  { key:"tut_veh", sel:"#vehSelect", tab:"indicadores" },
+  { key:"tut_star", sel:"#starBtn" },
+  { key:"tut_gear", sel:"#gearBtn" },
+  { key:"tut_ind", sel:"#cardOdo", tab:"indicadores" },
+  { key:"tut_period", sel:"#periodSel", tab:"indicadores" },
+  { key:"tut_fuel", sel:"#btnNewFuel", tab:"manut", sub:"abast" },
+  { key:"tut_oil", sel:"#oilProg", tab:"manut", sub:"oleo" },
+  { key:"tut_vehadd", sel:"#btnNewVeh", tab:"veiculo" },
+  { key:"tut_done", center:true }
+];
+let tourIdx = 0;
+function tourCenter(){
+  const hole=$("tourHole"), card=$("tourCard");
+  hole.className=""; hole.style.left="50%"; hole.style.top="50%"; hole.style.width="0"; hole.style.height="0";
+  card.style.transform="translate(-50%,-50%)"; card.style.left="50%"; card.style.top="50%";
+}
+function tourLayout(){
+  const step=TOUR_STEPS[tourIdx], hole=$("tourHole"), card=$("tourCard");
+  $("tourTitle").textContent=t(step.key+"_t");
+  $("tourDesc").textContent=t(step.key+"_d");
+  $("tourStep").textContent=t("tut_step",{n:tourIdx+1,total:TOUR_STEPS.length});
+  $("tourSkip").textContent=t("tut_skip");
+  $("tourPrev").textContent=t("tut_prev");
+  $("tourPrev").classList.toggle("hide",tourIdx===0);
+  $("tourNext").textContent=(tourIdx===TOUR_STEPS.length-1)?t("tut_finish"):t("tut_next");
+  const el = (step.center||!step.sel) ? null : document.querySelector(step.sel);
+  if(!el){ tourCenter(); return; }
+  const r=el.getBoundingClientRect(); const pad=8;
+  const hx=Math.max(6,r.left-pad), hy=Math.max(6,r.top-pad), hw=r.width+pad*2, hh=r.height+pad*2;
+  hole.className="spot"; hole.style.left=hx+"px"; hole.style.top=hy+"px"; hole.style.width=hw+"px"; hole.style.height=hh+"px";
+  card.style.transform="none";
+  const cardW=Math.min(330,window.innerWidth-28); card.style.width=cardW+"px";
+  card.style.left=Math.min(Math.max(12,r.left+r.width/2-cardW/2),window.innerWidth-cardW-12)+"px";
+  const ch=card.offsetHeight||160, below=hy+hh+12;
+  card.style.top=(below+ch<=window.innerHeight-12 ? below : Math.max(12,hy-ch-12))+"px";
+}
+function tourShow(){
+  const step=TOUR_STEPS[tourIdx];
+  if(step.tab){ showTab(step.tab); if(step.sub) showSub(step.sub); }
+  ["overlay","devOverlay","premiumOverlay","supportOverlay"].forEach(id=>{ const o=$(id); if(o) o.classList.add("hide"); });
+  const target = (step.sel && !step.center) ? document.querySelector(step.sel) : null;
+  if(target){ try{ target.scrollIntoView({block:"center",behavior:"auto"}); }catch(e){} }
+  setTimeout(tourLayout, target?180:0);
+}
+function startTour(){ tourIdx=0; $("tourOverlay").classList.add("show"); tourShow(); }
+function endTour(){ $("tourOverlay").classList.remove("show"); store.set("tutorialDone","1"); showTab("indicadores"); }
+function tourNext(){ if(tourIdx>=TOUR_STEPS.length-1){ endTour(); return; } tourIdx++; tourShow(); }
+function tourPrev(){ if(tourIdx<=0) return; tourIdx--; tourShow(); }
+$("tourSkip").onclick=endTour;
+$("tourNext").onclick=tourNext;
+$("tourPrev").onclick=tourPrev;
+$("btnTutorial").onclick=()=>{ $("overlay").classList.add("hide"); startTour(); };
+window.addEventListener("resize",()=>{ if($("tourOverlay").classList.contains("show")) tourLayout(); });
+
 // init
 $("aDate").value=todayISO(); $("oDate").value=todayISO();
 try{ load(); applyI18n(); applyTheme(); render(); resetOilForm(); resetFuelForm(); initAds(); $("appVer").textContent="FuelLog • versão "+VERSION; }catch(err){ console.error(err); }
 setTimeout(()=>{ const s=$("splash"); if(s){ s.classList.add("gone"); setTimeout(()=>{ s.style.display="none"; },500); }
-  setTimeout(()=>{ try{ openPremium(); }catch(e){} },600); },1300);
+  setTimeout(()=>{ try{ if(!store.get("tutorialDone")){ startTour(); } else { openPremium(); } }catch(e){} },600); },1300);
 if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").then(()=>{ setTimeout(()=>{ maybeNotifyOil(); maybeNotifyRev(); },800); }).catch(()=>{ maybeNotifyOil(); maybeNotifyRev(); }); }
 else { maybeNotifyOil(); maybeNotifyRev(); }
 </script>
