@@ -457,7 +457,7 @@
         <div><div style="font-weight:600;font-size:15px" data-i18n="oil_change">Troca de óleo</div></div>
         <div id="oilSwitch" class="switch" role="switch" tabindex="0"><span class="knob"></span></div>
       </div>
-      <div style="margin-top:12px">
+      <div id="oilOpts" style="margin-top:12px">
         <label data-i18n="advance_km">Avisar com antecedência de (km)</label>
         <input id="advKm" type="text" inputmode="decimal" placeholder="Ex.: 200,0" />
         <div class="powerSub" style="margin-top:6px" data-i18n="advance_sub">Notifica a partir de (km da troca + durabilidade − este valor).</div>
@@ -1302,7 +1302,7 @@ function renderSettings(){
   document.querySelectorAll("#langList .langOpt").forEach(b=>b.classList.toggle("on", b.dataset.lang===lang));
   $("langCurFlag").innerHTML = FLAGS[lang]||"";
   $("oilSwitch").classList.toggle("on",!!v.oilAlertOn);
-  $("advKm").disabled=!v.oilAlertOn;
+  $("oilOpts").style.display = v.oilAlertOn ? "" : "none";
   $("advKm").value = v.oilAlertOn ? (v.oilAdvance?toInput(v.oilAdvance):"") : "";
   // revisão veicular
   $("revSwitch").classList.toggle("on",!!v.revAlertOn);
