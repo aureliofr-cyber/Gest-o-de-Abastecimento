@@ -27,6 +27,17 @@
   h1{font-size:14px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin:0;font-weight:600}
   select{background:var(--slot);border:1px solid var(--edge);color:var(--ink);border-radius:8px;padding:7px 9px;font-size:13px;font-family:var(--sans)}
   #vehSelect{margin-left:auto;flex:1 1 auto;min-width:0;max-width:none}
+  .vehSel{position:relative;margin-left:auto;flex:1 1 auto;min-width:0}
+  .vehSelField{width:100%;display:flex;align-items:center;gap:8px;background:var(--slot);border:1px solid var(--edge);color:var(--ink);border-radius:8px;padding:6px 9px;font-size:13px;font-family:var(--sans);cursor:pointer;min-width:0}
+  .vehSelIcon{display:inline-flex;flex-shrink:0;color:var(--muted)}
+  .vehSelIcon svg{width:20px;height:20px}
+  .vehSelName{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+  .vehSelArrow{flex-shrink:0;color:var(--faint);font-size:11px}
+  .vehSelList{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--panel);border:1px solid var(--edge);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.5);z-index:60;max-height:280px;overflow:auto;padding:4px}
+  .vehSelOpt{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:13px}
+  .vehSelOpt:hover,.vehSelOpt.on{background:var(--slot)}
+  .vehSelOpt .oname{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .vehSelOpt.on{color:var(--amber)}
   select.fld{width:100%;margin:0 0 10px 0;padding:11px 12px;font-size:15px;border-radius:10px}
   .gear{background:var(--slot);border:1px solid var(--edge);color:var(--ink);border-radius:8px;width:36px;height:34px;font-size:15px;cursor:pointer}
   .tabs{display:flex;gap:6px;background:var(--slot);border:1px solid var(--edge);border-radius:12px;padding:4px;margin-bottom:16px}
@@ -138,7 +149,8 @@
   .vehAddBtn{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px}
   .circlePlus{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;border:2px solid currentColor;font-size:15px;line-height:1;font-weight:700}
   .vehRow{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--edge);border-radius:10px;background:var(--panel);margin-bottom:8px;cursor:pointer}
-  .vehRow .vehIcon{font-size:20px;flex-shrink:0}
+  .vehRow .vehIcon{display:inline-flex;align-items:center;flex-shrink:0;color:var(--muted)}
+  .vehRow .vehIcon svg{width:24px;height:24px}
   .vehRow .vehName{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;color:var(--ink)}
   .vehEye{font-size:18px;flex-shrink:0}
   .vehFormHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
@@ -211,7 +223,14 @@
 <div class="wrap">
   <div class="top">
     <span class="dot"></span><h1 data-i18n="title">Controle</h1>
-    <select id="vehSelect"></select>
+    <div id="vehSelWrap" class="vehSel">
+      <button id="vehSelBtn" class="vehSelField" type="button">
+        <span id="vehSelIcon" class="vehSelIcon"></span>
+        <span id="vehSelName" class="vehSelName"></span>
+        <span class="vehSelArrow">&#9662;</span>
+      </button>
+      <div id="vehSelList" class="vehSelList hide"></div>
+    </div>
     <button id="starBtn" class="gear" aria-label="Versão Premium" style="color:var(--amber)">&#9733;</button>
     <button id="gearBtn" class="gear" aria-label="Configurações">&#9881;</button>
   </div>
@@ -883,6 +902,16 @@ const FUEL_OPTIONS = ["Gasolina comum","Gasolina aditivada","Gasolina premium","
 const SUPPORT_EMAIL = "suporte.fuellog@outlook.com";
 const VEH_TYPES = [["moto","Moto","🏍️"],["carro","Carro","🚗"],["van","Van","🚐"],["onibus","Ônibus","🚌"],["caminhao","Caminhão","🚚"]];
 function typeIcon(t){ const f=VEH_TYPES.find(x=>x[0]===t); return f?f[2]:"🚗"; }
+function typeSvg(t){
+  const P={
+    moto:'<circle cx="5.5" cy="16.5" r="3"/><circle cx="18.5" cy="16.5" r="3"/><path d="M5.5 16.5l3-5h5l3 5"/><path d="M8.5 11.5h6"/><path d="M14 8.5h3l1 3"/>',
+    carro:'<path d="M5 12l1.6-4.2A2 2 0 0 1 8.5 6.5h7a2 2 0 0 1 1.9 1.3L20 12"/><path d="M4 12h16v3H4z"/><circle cx="8" cy="16.5" r="1.8"/><circle cx="16" cy="16.5" r="1.8"/>',
+    van:'<path d="M2 7a1 1 0 0 1 1-1h12l4 4v5H2Z"/><path d="M15 6v5h5"/><circle cx="7" cy="18" r="1.8"/><circle cx="16" cy="18" r="1.8"/>',
+    onibus:'<rect x="3" y="5" width="18" height="11" rx="2"/><path d="M3 11h18"/><path d="M8 5v6M13 5v6"/><circle cx="7.5" cy="18.5" r="1.3"/><circle cx="16.5" cy="18.5" r="1.3"/>',
+    caminhao:'<path d="M2 6h11a1 1 0 0 1 1 1v8H2Z"/><path d="M14 9h4l3 3v3h-7Z"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>'
+  };
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+(P[t]||P.carro)+'</svg>';
+}
 function vehName(v){ const s=[v.maker,v.model,v.plate].map(x=>(x||"").trim()).filter(Boolean).join(" "); return s||v.name||"Veículo"; }
 // Para envio automático COM anexo, crie conta grátis no EmailJS e preencha as 3 chaves abaixo
 // (no template do EmailJS, defina o destinatário como suporte.fuellog@outlook.com):
@@ -973,7 +1002,11 @@ function load(){
     if(o.oilQty==null)o.oilQty=0; });
   saveAll();
 }
+function normalizeFuels(){
+  vehicles.forEach(v=>{ const fl=fuelsFor(v); if(fl.length && (fl[0].km||0)!==0){ v.kmInitial=(v.kmInitial||0)+(fl[0].km||0); fl[0].km=0; } });
+}
 function saveAll(){
+  normalizeFuels();
   store.set("vehicles",JSON.stringify(vehicles)); store.set("fuels",JSON.stringify(fuels));
   store.set("oils",JSON.stringify(oils)); store.set("lubricants",JSON.stringify(lubricants));
   store.set("support",JSON.stringify(support)); store.set("activeId",String(activeId));
@@ -1109,7 +1142,11 @@ function maybeNotifyRev(){
 }
 
 function renderVehSelect(){
-  $("vehSelect").innerHTML=vehicles.map(v=>`<option value="${v.id}" ${String(v.id)===String(activeId)?"selected":""}>${typeIcon(v.type)} ${vehName(v)}</option>`).join("");
+  const v=av();
+  $("vehSelIcon").innerHTML = v?typeSvg(v.type):"";
+  $("vehSelName").textContent = v?vehName(v):"—";
+  $("vehSelList").innerHTML = vehicles.map(x=>`<div class="vehSelOpt${String(x.id)===String(activeId)?" on":""}" data-veh="${x.id}"><span class="vehSelIcon">${typeSvg(x.type)}</span><span class="oname">${vehName(x).replace(/</g,"&lt;")}</span></div>`).join("");
+  $("vehSelList").querySelectorAll(".vehSelOpt").forEach(o=>o.onclick=()=>{ activeId=o.dataset.veh; $("vehSelList").classList.add("hide"); resetFuelForm(); resetOilForm(); saveAll(); render(); });
 }
 function renderLubOptions(){
   $("oLub").innerHTML='<option value="">— Escolher —</option>'+lubricants.map(l=>`<option value="${l.id}">${l.brand} · ${l.type} · ${l.durability} km</option>`).join("");
@@ -1422,7 +1459,7 @@ $("btnOil").onclick=()=>{ const dur=numMil($("oDur").value), cost=numMil($("oCos
 function renderVehList(){
   $("vehList").innerHTML = vehicles.map(v=>`
     <div class="vehRow" data-veh="${v.id}">
-      <span class="vehIcon">${typeIcon(v.type)}</span>
+      <span class="vehIcon">${typeSvg(v.type)}</span>
       <span class="vehName">${vehName(v).replace(/</g,"&lt;")}</span>
       <button class="iconbtn vehEye" data-eye="${v.id}" title="Ver dados"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
     </div>`).join("");
@@ -1525,7 +1562,8 @@ function askConfirm(msg,yesLabel,cb){ $("confirmMsg").textContent=msg; $("confir
 $("confirmYes").onclick=()=>{ $("confirmOverlay").classList.add("hide"); const cb=confirmCb; confirmCb=null; if(cb)cb(); };
 $("confirmNo").onclick=()=>{ $("confirmOverlay").classList.add("hide"); confirmCb=null; };
 $("confirmOverlay").onclick=(e)=>{ if(e.target===$("confirmOverlay")){ $("confirmOverlay").classList.add("hide"); confirmCb=null; } };
-$("vehSelect").onchange=(e)=>{ activeId=e.target.value; resetFuelForm(); resetOilForm(); saveAll(); render(); };
+$("vehSelBtn").onclick=(e)=>{ e.stopPropagation(); $("vehSelList").classList.toggle("hide"); };
+document.addEventListener("click",(e)=>{ if(!$("vehSelWrap").contains(e.target)) $("vehSelList").classList.add("hide"); });
 $("periodSel").onchange=(e)=>{ selPeriod=e.target.value; render(); };
 
 // ---------- configurações ----------
@@ -1716,7 +1754,7 @@ document.querySelectorAll(".subtab").forEach(t=>t.onclick=()=>showSub(t.dataset.
 // ---------- tutorial / tour guiado ----------
 const TOUR_STEPS = [
   { key:"tut_welcome", center:true },
-  { key:"tut_veh", sel:"#vehSelect", tab:"indicadores" },
+  { key:"tut_veh", sel:"#vehSelBtn", tab:"indicadores" },
   { key:"tut_star", sel:"#starBtn" },
   { key:"tut_gear", sel:"#gearBtn" },
   { key:"tut_ind", sel:"#cardOdo", tab:"indicadores" },
