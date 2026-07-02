@@ -107,7 +107,7 @@
   .switch.on{background:rgba(122,209,122,.25);border-color:var(--green)}
   .switch .knob{position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:var(--faint);transition:left .2s,background .2s}
   .switch.on .knob{left:23px;background:var(--green)}
-  .overlay{position:fixed;inset:0;height:100vh;height:100dvh;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:50}
+  .overlay{position:fixed;inset:0;height:100vh;height:100dvh;height:var(--appvh,100dvh);background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:50}
   .sheet{background:var(--bg);border:1px solid var(--edge);border-radius:18px 18px 0 0;width:100%;max-width:460px;max-height:94vh;max-height:94dvh;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:18px 16px calc(40px + env(safe-area-inset-bottom,0px))}
   .sheet.sheetCol{display:flex;flex-direction:column;padding:0;overflow:hidden}
   .sheet.sheetCol .sheetBody{overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:18px 16px 12px;min-height:0;flex:1 1 auto}
@@ -683,7 +683,7 @@
 <script>
 const $ = (id) => document.getElementById(id);
 const NM = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
-const VERSION = "1.0.81";
+const VERSION = "1.0.82";
 
 // ===================== i18n =====================
 const MONTHS_LONG = {
@@ -1819,6 +1819,11 @@ window.addEventListener("resize",()=>{ if($("tourOverlay").classList.contains("s
 
 // init
 $("aDate").value=todayISO(); $("oDate").value=todayISO();
+function setAppVH(){ try{ const h=(window.visualViewport&&window.visualViewport.height)||window.innerHeight; if(h) document.documentElement.style.setProperty("--appvh", h+"px"); }catch(e){} }
+setAppVH();
+window.addEventListener("resize", setAppVH);
+window.addEventListener("orientationchange", setAppVH);
+if(window.visualViewport){ window.visualViewport.addEventListener("resize", setAppVH); }
 try{ load(); applyI18n(); applyTheme(); render(); resetOilForm(); resetFuelForm(); initAds(); $("appVer").textContent="FuelLog • versão "+VERSION; }catch(err){ console.error(err); }
 setTimeout(()=>{ const s=$("splash"); if(s){ s.classList.add("gone"); setTimeout(()=>{ s.style.display="none"; },500); }
   setTimeout(()=>{ try{ if(!store.get("tutorialDone")){ startTour(); } else { openPremium(); } }catch(e){} },600); },1300);
