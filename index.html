@@ -107,10 +107,13 @@
   .switch.on{background:rgba(122,209,122,.25);border-color:var(--green)}
   .switch .knob{position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:var(--faint);transition:left .2s,background .2s}
   .switch.on .knob{left:23px;background:var(--green)}
-  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:50}
-  .sheet{background:var(--bg);border:1px solid var(--edge);border-radius:18px 18px 0 0;width:100%;max-width:460px;max-height:90vh;overflow:auto;padding:18px 16px 36px}
+  .overlay{position:fixed;inset:0;height:100vh;height:100dvh;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:50}
+  .sheet{background:var(--bg);border:1px solid var(--edge);border-radius:18px 18px 0 0;width:100%;max-width:460px;max-height:94vh;max-height:94dvh;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:18px 16px calc(40px + env(safe-area-inset-bottom,0px))}
+  .sheet.sheetCol{display:flex;flex-direction:column;padding:0;overflow:hidden}
+  .sheet.sheetCol .sheetBody{overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:18px 16px 12px;min-height:0;flex:1 1 auto}
+  .verFoot{flex:0 0 auto;text-align:center;color:var(--muted);font-size:12px;padding:12px 16px calc(16px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--edge);background:var(--bg)}
   .overlay.center{align-items:center}
-  .overlay.center .sheet{border-radius:18px;max-height:88vh;margin:0 14px;padding:18px 16px 22px;box-shadow:0 16px 50px rgba(0,0,0,.5)}
+  .overlay.center .sheet{border-radius:18px;max-height:88vh;max-height:88dvh;margin:0 14px;padding:18px 16px 22px;box-shadow:0 16px 50px rgba(0,0,0,.5)}
   .sheetHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
   .sheetHead .t{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:600}
   .switchRow{display:flex;align-items:center;justify-content:space-between;gap:14px}
@@ -191,7 +194,7 @@
   .counter{font-size:11px;color:var(--faint);text-align:right;margin-top:4px}
   .menuItem{display:flex;align-items:center;justify-content:space-between;width:100%;background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:14px 14px;color:var(--ink);font-size:15px;font-weight:600;cursor:pointer;font-family:var(--sans);margin-bottom:16px}
   .menuItem .chev{color:var(--faint);font-size:18px}
-  .ver{text-align:center;color:var(--faint);font-size:11px;margin-top:6px}
+  .ver{text-align:center;color:var(--muted);font-size:12px;margin:-6px 0 14px;padding-bottom:14px;border-bottom:1px solid var(--edge)}
   .thumb{position:relative;display:inline-block;margin-top:10px}
   .thumb img{max-width:120px;max-height:120px;border-radius:8px;border:1px solid var(--edge)}
   .thumb button{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;border:none;background:var(--danger);color:#fff;cursor:pointer;font-size:13px}
@@ -537,7 +540,8 @@
 
 <!-- ================= CONFIGURAÇÕES (overlay) ================= -->
 <div id="overlay" class="overlay hide">
-  <div class="sheet">
+  <div class="sheet sheetCol">
+    <div class="sheetBody">
     <div class="sheetHead"><span class="t" data-i18n="settings">Configurações</span><button id="closeCfg" class="iconbtn" style="font-size:18px">&#10005;</button></div>
 
     <div class="card">
@@ -561,7 +565,8 @@
     <button id="btnSupport" class="menuItem"><span data-i18n="support">Suporte</span><span class="chev">&#8250;</span></button>
     <button id="btnDev" class="menuItem"><span data-i18n="developer">Desenvolvedor</span><span class="chev">&#8250;</span></button>
     <button id="btnTutorial" class="menuItem"><span data-i18n="tutorial_menu">Ver tutorial novamente</span><span class="chev">&#8250;</span></button>
-    <div class="ver" id="appVer"></div>
+    </div>
+    <div class="verFoot" id="appVer"></div>
   </div>
 </div>
 
@@ -678,7 +683,7 @@
 <script>
 const $ = (id) => document.getElementById(id);
 const NM = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
-const VERSION = "1.0";
+const VERSION = "1.0.81";
 
 // ===================== i18n =====================
 const MONTHS_LONG = {
